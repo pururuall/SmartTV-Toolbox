@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Полное руководство: Настройка, деблоат и установка приложений на Smart TV (Яндекс ТВ / Android TV)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.2);
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 15px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      color: #fff;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .lead {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+      color: #fff;
+    }
+
+    .step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .alert {
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin: 18px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .alert-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fde68a;
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #bbf7d0;
+    }
+
+    .key-combo {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      background: #090d16;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    ul, ol {
+      margin-left: 24px;
+      margin-bottom: 16px;
+      color: #cbd5e1;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      background: #243047;
+      border: 1px solid #3b4d6b;
+      padding: 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #fff;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      background: #2d3d5a;
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+
+    .action-btn .btn-header {
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+
+    .action-btn .btn-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .action-btn.danger .btn-header {
+      color: #f87171;
+    }
+
+    .action-btn.success .btn-header {
+      color: #4ade80;
+    }
+
+    .apps-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-top: 15px;
+    }
+
+    .app-item {
+      background: #151e2e;
+      border: 1px solid #283548;
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .app-item strong {
+      display: block;
+      color: #fff;
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+
+    .app-item span {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .screen-img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      margin: 15px 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .img-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .img-box {
+      background: #151e2e;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .img-box h4 {
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+
+    code {
+      background: #090d16;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.9em;
+      color: #38bdf8;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--card-border);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge">ИНСТРУКЦИЯ ДЛЯ ЛЮБОГО ПОЛЬЗОВАТЕЛЯ</div>
+      <h1>Прокачка и Очистка Smart TV (Tuvio / Яндекс ТВ)</h1>
+      <p class="lead">Пошаговое руководство: как открыть скрытый доступ к отладке (ADB), установить Zona, HDrezka, Happ, File Manager+, убрать тяжелую рекламу или переключиться на чистый FLauncher с возможностью отката в 1 клик.</p>
+    </header>
+
+    <!-- ШАГ 1: ТВ -->
+    <div class="card">
+      <div class="card-title">
+        <div class="step-number">1</div>
+        <h2>Открытие доступа на телевизоре (Секретное меню CVTE)</h2>
+      </div>
+      
+      <p>В большинстве бюджетных телевизоров на Яндекс ТВ (Tuvio, Hartens, DEXP, Novex, Hi и др.) стандартный пункт «Отладка по USB» в настройках разработчика <strong>вырезан или скрыт</strong>. Но его можно включить через заводское сервисное меню платформы <strong>CVTE</strong>.</p>
+
+      <div class="alert alert-warning">
+        <div>⚠️</div>
+        <div>
+          <strong>Важное правило безопасности:</strong> В сервисном меню изменяйте <u>ТОЛЬКО</u> те пункты, которые указаны в инструкции! Не нажимайте <em>Shipping Init, Factory Reset, Panel Type</em> или калибровки матрицы.
+        </div>
+      </div>
+
+      <h3 style="margin: 15px 0 10px; color: #e2e8f0;">Как войти в сервисное меню с пульта:</h3>
+      <ol>
+        <li>Включите телевизор и возьмите пульт.</li>
+        <li>Зажмите кнопку <strong>Menu</strong> (кнопка с тремя полосками) примерно на 1-2 секунды.</li>
+        <li>Быстро и без больших пауз нажмите стрелки: 
+          <span class="key-combo">Влево ➔ Вверх ➔ Влево ➔ Вверх</span>
+        </li>
+        <li>Нажмите кнопку <strong>Назад</strong> (стрелка возврата).</li>
+        <li>Поверх экрана откроется синее меню с надписью <strong>Factory menu</strong> (плата CV9632H или аналогичная).</li>
+      </ol>
+
+      <h3 style="margin: 15px 0 10px; color: #e2e8f0;">Что нужно переключить:</h3>
+      <ul>
+        <li>Стрелкой вниз перейдите в пункт <strong>other options</strong> (или <em>Common options</em>) и нажмите кнопку <strong>OK</strong>.</li>
+        <li>Найдите пункт <strong>ADB</strong> (или <em>ADB Debug / USB Debug</em>).</li>
+        <li>Стрелкой вправо переключите его в положение <strong style="color: #4ade80;">ON</strong> (Включено).</li>
+        <li>Если есть пункт <strong>USB Mode</strong> — переведите его с <em>Host</em> на <strong>Device</strong>.</li>
+        <li>Нажмите кнопку <em>Назад</em> на пульте несколько раз, чтобы закрыть меню.</li>
+      </ul>
+
+      <div class="alert alert-success">
+        <div>✅</div>
+        <div>
+          <strong>Готово!</strong> Теперь сетевой порт <strong>5555</strong> на телевизоре открыт, и компьютер может свободно подключаться к нему по Wi-Fi.
+        </div>
+      </div>
+    </div>
+
+    <!-- ШАГ 2: БЫСТРЫЕ СКРИПТЫ -->
+    <div class="card">
+      <div class="card-title">
+        <div class="step-number">2</div>
+        <h2>Быстрый запуск с компьютера в 1 клик</h2>
+      </div>
+
+      <p>В папке <code>SmartTV_Toolbox</code> на вашем рабочем столе уже всё настроено: лежат готовые исполняемые файлы, официальный инструмент <code>adb</code> и все необходимые APK-файлы. Скрипт <strong>сам ищет телевизор в сети</strong>, поэтому вам даже не нужно знать его IP-адрес!</p>
+
+      <div class="btn-grid">
+        <div class="action-btn">
+          <div class="btn-header">📦 1_Install_Apps.bat</div>
+          <div class="btn-desc"><strong>Установка приложений:</strong> Закидывает на телевизор полный набор (Happ, HDrezka TV 1.4.0, Zona, File Manager+ и SmartTube). Родной лаунчер и настройки ТВ не меняются!</div>
+        </div>
+
+        <div class="action-btn">
+          <div class="btn-header">⚡ 2_Light_Debloat_Keep_Yandex.bat</div>
+          <div class="btn-desc"><strong>Очистка рекламы (Яндекс остается):</strong> Отключает рекламные трекеры (advid), сборщики отчетов и фоновый браузер. Родной лаунчер Яндекса и Алиса остаются на месте!</div>
+        </div>
+
+        <div class="action-btn success">
+          <div class="btn-header">🚀 3_Full_Debloat_FLauncher.bat</div>
+          <div class="btn-desc"><strong>Максимальная скорость:</strong> Устанавливает все приложения + переводит телевизор на чистый, легкий лаунчер FLauncher. Телевизор больше не зависает!</div>
+        </div>
+
+        <div class="action-btn danger">
+          <div class="btn-header">🔄 4_Restore_Original_Yandex.bat</div>
+          <div class="btn-desc"><strong>Откат в 1 клик:</strong> Мгновенно восстанавливает все заводские службы Яндекса и возвращает оригинальный домашний экран, как из магазина.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning" style="margin-top: 25px;">
+        <div>📺</div>
+        <div>
+          <strong>Внимание при первом запуске:</strong> При первом подключении с компьютера на экране ТВ появится системное окно: <em>«Разрешить отладку по USB с этого компьютера?»</em>. Обязательно поставьте галочку <strong>«Всегда разрешать»</strong> и нажмите <strong>ОК</strong> пультом!
+        </div>
+      </div>
+    </div>
+
+    <!-- ШАГ 3: ПРИЛОЖЕНИЯ В КОМПЛЕКТЕ -->
+    <div class="card">
+      <div class="card-title">
+        <div class="step-number">3</div>
+        <h2>Приложения в комплекте (папка apps)</h2>
+      </div>
+
+      <div class="apps-preview">
+        <div class="app-item">
+          <strong>📱 Happ (Proxy Utility)</strong>
+          <span>Приложение и прокси-утилита для стабильной работы и быстрой синхронизации со смартфоном через QR-код.</span>
+        </div>
+        <div class="app-item">
+          <strong>🎬 HDrezka TV (v1.4.0)</strong>
+          <span>Огромный каталог фильмов и сериалов со всеми популярными озвучками и плеером под пульт.</span>
+        </div>
+        <div class="app-item">
+          <strong>⚡ Zona</strong>
+          <span>Бесплатные фильмы и сериалы в отличном качестве с быстрой загрузкой без зависаний.</span>
+        </div>
+        <div class="app-item">
+          <strong>📂 File Manager +</strong>
+          <span>Удобный файловый менеджер для флешек, сети и APK-файлов с оптимизацией под ТВ.</span>
+        </div>
+        <div class="app-item">
+          <strong>📺 SmartTube</strong>
+          <span>YouTube для ТВ без назойливой рекламы, с пропуском спонсорских вставок и поддержкой 4K.</span>
+        </div>
+        <div class="app-item">
+          <strong>🚀 FLauncher</strong>
+          <span>Сверхбыстрый минималистичный лаунчер с открытым исходным кодом. Без рекламы и баннеров.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- РЕЗУЛЬТАТ -->
+    <div class="card">
+      <div class="card-title">
+        <div class="step-number">4</div>
+        <h2>Как выглядит телевизор после настройки</h2>
+      </div>
+
+      <div class="img-grid">
+        <div class="img-box">
+          <h4>Домашний экран после очистки (FLauncher)</h4>
+          <img src="img/flauncher_screen.png" alt="Скриншот FLauncher" class="screen-img">
+        </div>
+
+        <div class="img-box">
+          <h4>Запуск Happ (Синхронизация по QR-коду)</h4>
+          <img src="img/happ_screen.png" alt="Скриншот Happ" class="screen-img">
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h4 style="color: var(--accent); margin-bottom: 8px;">Обновленная HDrezka TV 1.4.0:</h4>
+        <img src="img/hdrezka_screen.png" alt="Скриншот HDrezka" class="screen-img">
+      </div>
+    </div>
+
+    <!-- ЧАСТЫЕ ВОПРОСЫ -->
+    <div class="card">
+      <div class="card-title">
+        <div class="step-number">5</div>
+        <h2>Частые вопросы и решение проблем</h2>
+      </div>
+
+      <ul>
+        <li><strong>Скрипт пишет «Не удалось автоматически обнаружить IP»:</strong> Убедитесь, что компьютер и телевизор подключены к одной Wi-Fi сети (или одному роутеру). Если сеть изолирована, скрипт предложит ввести IP вручную (его можно посмотреть в <em>Настройки ТВ ➔ Сеть и интернет ➔ Ваша сеть</em>).</li>
+        <li><strong>Пропадет ли доступ к настройкам телевизора?</strong> Нет! Приложение <code>com.yandex.tv.settings</code> и экранная клавиатура намеренно не трогаются. Вы всегда можете зайти в настройки через значок шестеренки в верхнем правом углу.</li>
+        <li><strong>Как подключить телефон к Happ?</strong> Просто запустите Happ на телевизоре, откройте приложение Happ на смартфоне и наведите камеру на QR-код на экране телевизора.</li>
+        <li><strong>Можно ли устанавливать свои APK?</strong> Да! Вы можете просто положить любой <code>.apk</code> файл в папку <code>apps</code> и установить его через <code>adb install</code> или через установленный на ТВ <em>File Manager +</em>.</li>
+      </ul>
+    </div>
+
+    <footer>
+      Smart TV Toolbox • Создано специально для моделей Tuvio / CVTE / Яндекс ТВ • 2026
+    </footer>
+  </div>
+
+</body>
+</html>
