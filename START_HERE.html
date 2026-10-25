@@ -322,6 +322,21 @@
           <strong>Готово!</strong> Теперь сетевой порт <strong>5555</strong> на телевизоре открыт, и компьютер может свободно подключаться к нему по Wi-Fi.
         </div>
       </div>
+
+      <div style="margin-top: 20px; padding: 18px; background: #151e2e; border: 1px solid #38bdf8; border-radius: 12px;">
+        <h3 style="color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          🔍 Проверка: всё ли получилось настроить?
+        </h3>
+        <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 12px;">
+          Чтобы убедиться, что отладка успешно активировалась и компьютер видит телевизор, запустите проверочный файл в папке:
+        </p>
+        <div style="display: inline-block; background: #090d16; padding: 10px 16px; border-radius: 8px; border: 1px solid #334155; font-family: monospace; font-size: 1rem; color: #4ade80; font-weight: bold;">
+          ▶️ 0_Test_Connection.bat
+        </div>
+        <p style="color: #94a3b8; font-size: 0.88rem; margin-top: 10px;">
+          Скрипт сам найдет телевизор в сети, подключится и выведет зеленую плашку с моделью ТВ и версией Android. Если при этом на экране ТВ появится запрос — нажмите пультом «Всегда разрешать» и «ОК».
+        </p>
+      </div>
     </div>
 
     <!-- ШАГ 2: БЫСТРЫЕ СКРИПТЫ -->
@@ -334,6 +349,10 @@
       <p>В папке <code>SmartTV_Toolbox</code> на вашем рабочем столе уже всё настроено: лежат готовые исполняемые файлы, официальный инструмент <code>adb</code> и все необходимые APK-файлы. Скрипт <strong>сам ищет телевизор в сети</strong>, поэтому вам даже не нужно знать его IP-адрес!</p>
 
       <div class="btn-grid">
+        <div class="action-btn" style="border-color: #38bdf8; background: #1e293b;">
+          <div class="btn-header" style="color: #38bdf8;">🔍 0_Test_Connection.bat</div>
+          <div class="btn-desc"><strong>Проверка связи:</strong> Автоматически ищет телевизор в сети и проверяет, включен ли ADB. Показывает модель ТВ, Android и статус готовности!</div>
+        </div>
         <div class="action-btn">
           <div class="btn-header">📦 1_Install_Apps.bat</div>
           <div class="btn-desc"><strong>Установка приложений:</strong> Закидывает на телевизор полный набор (Happ, HDrezka TV 1.4.0, Zona, File Manager+ и SmartTube). Родной лаунчер и настройки ТВ не меняются!</div>

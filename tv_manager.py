@@ -5,6 +5,14 @@ import socket
 import subprocess
 import time
 
+# Ensure UTF-8 output on Windows console
+if sys.stdout.encoding != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ADB = os.path.join(SCRIPT_DIR, "platform-tools", "adb.exe")
 APPS_DIR = os.path.join(SCRIPT_DIR, "apps")
@@ -15,7 +23,7 @@ def log(msg):
 def find_tv_ip():
     log("Поиск телевизора в локальной сети...")
     
-    # 1. Сначала пробуем mDNS быстрый опрос YandexIO
+    # 1. mDNS опрос YandexIO
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -23,7 +31,6 @@ def find_tv_ip():
         sock.settimeout(2.0)
         sock.bind(('', 0))
         
-        # DNS query for _yandexio._tcp.local
         header = b'\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00'
         q = b'\x09_yandexio\x04_tcp\x05local\x00\x00\x0c\x00\x01'
         sock.sendto(header + q, ('224.0.0.251', 5353))
@@ -35,7 +42,7 @@ def find_tv_ip():
                 ip = addr[0]
                 if b'yandex' in buf.lower():
                     sock.close()
-                    log(f"Найдено устройство Яндекс ТВ через mDNS: {ip}")
+                    log(f"Найдено устройство в сети: {ip}")
                     return ip
             except socket.timeout:
                 break
@@ -43,7 +50,7 @@ def find_tv_ip():
     except Exception:
         pass
 
-    # 2. Если mDNS не ответил, смотрим кэш ARP и пробуем порт 5555
+    # 2. Сканирование ARP-кэша на порт 5555
     try:
         arp_out = subprocess.check_output("arp -a", shell=True).decode('cp866', errors='ignore')
         ips = []
@@ -70,7 +77,7 @@ def connect_adb(ip=None):
         ip = find_tv_ip()
     if not ip:
         print("\n[!] Не удалось автоматически обнаружить IP телевизора.")
-        ip = input("Пожалуйста, введите IP-адрес телевизора вручную (например, 192.168.3.54): ").strip()
+        ip = input("Пожалуйста, введите IP-адрес телевизора вручную (например, 192.168.1.50): ").strip()
     
     log(f"Подключение к телевизору {ip}:5555 ...")
     subprocess.run([ADB, "connect", f"{ip}:5555"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -82,20 +89,51 @@ def connect_adb(ip=None):
         return ip
     elif "unauthorized" in devs:
         log("\n[ВНИМАНИЕ] На экране телевизора появилось окно «Разрешить отладку».")
-        log("Поставьте галочку «Всегда разрешать» и нажмите ОК пультом!")
+        log("Поставьте галочку «Всегда разрешать с этого компьютера» и нажмите ОК пультом!")
         input("После нажатия ОК нажмите Enter для продолжения...")
         return connect_adb(ip)
     else:
         log("\n[ОШИБКА] Не удалось подключиться к порту 5555.")
-        log("Убедитесь, что телевизор включен и в сервисном меню включен ADB (ON).")
+        log("Убедитесь, что:")
+        log(" 1. Телевизор и ПК подключены к одному Wi-Fi / роутеру.")
+        log(" 2. В сервисном меню включен пункт ADB -> ON.")
+        log(" 3. Если есть пункт USB Mode, он переведен в Device.")
         return None
 
 def adb_shell(ip, cmd):
     res = subprocess.run([ADB, "-s", f"{ip}:5555", "shell", cmd], capture_output=True, text=True)
     return res.stdout.strip()
 
+def action_test_connection():
+    log("=== ПРОВЕРКА ВОЗМОЖНОСТИ СОЕДИНЕНИЯ С ТЕЛЕВИЗОРОМ ===")
+    ip = connect_adb()
+    if not ip:
+        print("\n[ОШИБКА] СВЯЗЬ НЕ УСТАНОВЛЕНА!")
+        print("Телевизор не отвечает по порту 5555.")
+        print("Проверьте шаги из Инструкции: вы точно включили ADB в сервисном меню?")
+        return
+    
+    try:
+        model = adb_shell(ip, "getprop ro.product.model")
+        brand = adb_shell(ip, "getprop ro.product.brand")
+        android_v = adb_shell(ip, "getprop ro.build.version.release")
+        launcher = adb_shell(ip, "cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME")
+        
+        print("\n" + "="*55)
+        print("[УСПЕХ] ВСЕ НАСТРОЕНО ОТЛИЧНО! ТЕЛЕВИЗОР НА СВЯЗИ!")
+        print("="*55)
+        print(f" • IP-адрес:         {ip}:5555")
+        print(f" • Модель ТВ:        {brand} {model}")
+        print(f" • Версия Android:   {android_v}")
+        print(f" • Текущий лаунчер:  {launcher.splitlines()[-1] if launcher else 'Unknown'}")
+        print(" • Статус отладки:   РАЗРЕШЕНО (Полный доступ к управлению)")
+        print("="*55)
+        print("\nВы успешно включили отладку! Теперь можно запускать установку приложений или оптимизацию.")
+    except Exception as e:
+        print(f"[!] Ошибка чтения свойств: {e}")
+
 def action_install_apps(ip):
-    log("\n--- УСТАНОВКА ПРИЛОЖЕНИЙ (Zona, HDrezka, File Manager+, SmartTube) ---")
+    log("\n--- УСТАНОВКА ПРИЛОЖЕНИЙ (Happ, HDrezka, Zona, File Manager+, SmartTube) ---")
     apks = ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
     for apk_name in apks:
         p = os.path.join(APPS_DIR, apk_name)
@@ -113,11 +151,11 @@ def action_light_debloat(ip):
     log("\n--- ЛЕГКАЯ ОПТИМИЗАЦИЯ (Отключение рекламы и тяжелых фоновых служб) ---")
     log("Лаунчер Яндекса остается активным, сохраняются все базовые функции!")
     pkgs = [
-        "com.yandex.android.advid",       # Рекламный трекер
-        "com.yandex.tv.bugreportsender",  # Фоновый сборщик отчетов и логов
-        "com.yandex.launcher.updaterapp", # Фоновый автообновлятор рекламы
-        "com.yandex.tv.daydream",         # Заставка
-        "com.yandex.browser.tv"           # Встроенный фоновый браузер
+        "com.yandex.android.advid",
+        "com.yandex.tv.bugreportsender",
+        "com.yandex.launcher.updaterapp",
+        "com.yandex.tv.daydream",
+        "com.yandex.browser.tv"
     ]
     for pkg in pkgs:
         un = adb_shell(ip, f"pm uninstall --user 0 {pkg}")
@@ -188,10 +226,21 @@ def action_restore(ip):
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else None
     
+    if mode == "test":
+        action_test_connection()
+        try:
+            input("\nНажмите Enter для выхода...")
+        except EOFError:
+            pass
+        return
+    
     ip = connect_adb()
     if not ip:
         print("\nЗавершение работы: нет связи с ТВ.")
-        input("\nНажмите Enter для выхода...")
+        try:
+            input("\nНажмите Enter для выхода...")
+        except EOFError:
+            pass
         return
 
     if mode == "install":
@@ -208,14 +257,17 @@ def main():
             print("\n" + "="*55)
             print(f" МЕНЕДЖЕР ТЕЛЕВИЗОРА (IP: {ip})")
             print("="*55)
-            print(" 1. Установить приложения (HDrezka, Zona, File Manager+, SmartTube)")
+            print(" 0. Проверить соединение с телевизором")
+            print(" 1. Установить приложения (Happ, HDrezka, Zona, File Manager+, SmartTube)")
             print(" 2. Легкая оптимизация (Отключить рекламу, ЯНДЕКС ЛАУНЧЕР ОСТАЕТСЯ)")
             print(" 3. Полная оптимизация (Установить всё + чистый FLauncher)")
             print(" 4. Восстановить всё как было (Заводской Яндекс ТВ)")
-            print(" 0. Выход")
+            print(" 9. Выход")
             print("="*55)
-            choice = input("Выберите вариант (0-4): ").strip()
-            if choice == "1":
+            choice = input("Выберите вариант: ").strip()
+            if choice == "0":
+                action_test_connection()
+            elif choice == "1":
                 action_install_apps(ip)
             elif choice == "2":
                 action_light_debloat(ip)
@@ -223,12 +275,15 @@ def main():
                 action_full_debloat(ip)
             elif choice == "4":
                 action_restore(ip)
-            elif choice == "0":
+            elif choice in ["9", "q", "exit"]:
                 break
             else:
                 print("Неверный выбор.")
 
-    input("\nГотово! Нажмите Enter для выхода...")
+    try:
+        input("\nГотово! Нажмите Enter для выхода...")
+    except EOFError:
+        pass
 
 if __name__ == "__main__":
     main()
