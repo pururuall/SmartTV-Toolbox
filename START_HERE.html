@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Полное руководство: Настройка, деблоат и установка приложений на Smart TV (Яндекс ТВ / Android TV)</title>
+  <title>Smart TV Toolbox — Панель управления</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -25,15 +25,16 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
-      padding: 30px 20px;
+      padding: 30px 24px;
+      user-select: none;
     }
 
-    .container { max-width: 1000px; margin: 0 auto; }
+    .container { max-width: 960px; margin: 0 auto; }
 
     header {
       text-align: center;
-      margin-bottom: 40px;
-      padding-bottom: 30px;
+      margin-bottom: 35px;
+      padding-bottom: 25px;
       border-bottom: 1px solid var(--card-border);
     }
 
@@ -44,22 +45,22 @@
       background: rgba(56, 189, 248, 0.1);
       color: var(--accent);
       font-size: 0.85rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.5px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       border: 1px solid rgba(56, 189, 248, 0.3);
     }
 
-    h1 { font-size: 2.2rem; color: #fff; margin-bottom: 12px; line-height: 1.3; }
+    h1 { font-size: 2.1rem; color: #fff; margin-bottom: 10px; line-height: 1.3; font-weight: 800; }
 
-    .lead { font-size: 1.1rem; color: var(--text-muted); max-width: 800px; margin: 0 auto; }
+    .lead { font-size: 1.05rem; color: var(--text-muted); max-width: 780px; margin: 0 auto; }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 28px;
-      margin-bottom: 30px;
+      padding: 26px;
+      margin-bottom: 26px;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
 
@@ -67,7 +68,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       margin-bottom: 18px;
       color: #fff;
     }
@@ -81,7 +82,7 @@
       border-radius: 10px;
       background: var(--accent);
       color: #0f172a;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1.1rem;
     }
 
@@ -145,11 +146,35 @@
     }
 
     .test-box {
-      margin-top: 25px;
-      padding: 24px;
+      margin-top: 22px;
+      padding: 22px;
       background: #111a2e;
       border: 1px solid #293854;
       border-radius: 14px;
+    }
+
+    .test-input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .test-input {
+      background: #090d16;
+      border: 1px solid #334155;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      width: 200px;
+      font-family: inherit;
+    }
+
+    .test-input:focus {
+      border-color: var(--accent);
     }
 
     .test-result-box {
@@ -157,7 +182,6 @@
       padding: 16px 20px;
       border-radius: 10px;
       display: none;
-      font-family: inherit;
       animation: fadeIn 0.3s ease;
     }
 
@@ -180,7 +204,6 @@
       border: 1px solid #3b4d6b;
       padding: 18px;
       border-radius: 12px;
-      text-decoration: none;
       color: #fff;
       transition: all 0.2s ease;
       cursor: pointer;
@@ -210,7 +233,7 @@
 
     .apps-preview {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 14px;
       margin-top: 15px;
     }
@@ -270,6 +293,73 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    .custom-apk-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .custom-apk-input {
+      flex: 1;
+      min-width: 280px;
+      background: #090d16;
+      border: 1px solid #334155;
+      color: #ffffff;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { background: #475569; }
+
+    .btn-primary-action {
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
+    }
+
+    .btn-primary-action:hover {
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+      transform: translateY(-2px);
+    }
+
+    /* Live Log Console in app */
+    .console-log {
+      background: #090d16;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 14px;
+      font-family: "Consolas", monospace;
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      height: 140px;
+      overflow-y: auto;
+      margin-top: 15px;
+      user-select: text;
+    }
+
     footer {
       text-align: center;
       color: var(--text-muted);
@@ -284,9 +374,9 @@
 
   <div class="container">
     <header>
-      <div class="badge">ПРОГРАММА SmartTV_Control.exe + РУКОВОДСТВО</div>
+      <div class="badge">SMART TV TOOLBOX — ПАНЕЛЬ УПРАВЛЕНИЯ</div>
       <h1>Прокачка и Очистка Smart TV (Tuvio / Яндекс ТВ)</h1>
-      <p class="lead">Пошаговое руководство: как открыть скрытый доступ к отладке (ADB), проверить связь прямо с этой страницы, установить Happ, Zona, HDrezka, убрать рекламу или переключиться на чистый лаунчер.</p>
+      <p class="lead">Пошаговое руководство: как открыть скрытый доступ к отладке (ADB), проверить связь прямо отсюда, установить Happ, Zona, HDrezka, убрать рекламу или переключиться на чистый FLauncher.</p>
     </header>
 
     <!-- ШАГ 1: ТВ + ИНТЕРАКТИВНАЯ КНОПКА ПРОВЕРКИ -->
@@ -331,12 +421,16 @@
           🔍 Проверка: всё ли получилось настроить?
         </h3>
         <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 16px;">
-          Нажмите кнопку ниже, чтобы проверить связь с телевизором прямо с этой страницы:
+          Нажмите кнопку ниже, чтобы программа сама нашла телевизор в сети и проверила подключение:
         </p>
 
-        <button id="btnCheckConnection" class="btn-test" onclick="runConnectionTest()">
-          <span>📡 Проверить соединение с телевизором</span>
-        </button>
+        <div class="test-input-row">
+          <label style="color: #cbd5e1; font-size: 0.95rem;">IP телевизора:</label>
+          <input type="text" id="manualIpInput" class="test-input" placeholder="Автопоиск" value="Автопоиск">
+          <button id="btnCheckConnection" class="btn-test" onclick="runConnectionTest()">
+            <span>📡 Проверить соединение с телевизором</span>
+          </button>
+        </div>
 
         <div id="testResult" class="test-result-box"></div>
       </div>
@@ -346,10 +440,10 @@
     <div class="card">
       <div class="card-title">
         <div class="step-number">2</div>
-        <h2>Запуск оптимизации и установки приложений</h2>
+        <h2>Запуск оптимизации и пакетная установка приложений</h2>
       </div>
 
-      <p>Вы можете запустить любое действие прямо с этой страницы кликом по карточке или через файлы <code>.bat</code> в папке <code>SmartTV_Toolbox</code>:</p>
+      <p>Выберите нужное действие кликом по карточке ниже:</p>
 
       <div class="btn-grid">
         <div class="action-btn" onclick="runAction('install')">
@@ -373,7 +467,7 @@
         </div>
       </div>
 
-      <div id="actionStatus" style="margin-top: 15px; display: none;" class="alert alert-info"></div>
+      <div id="actionStatus" style="margin-top: 16px; display: none;" class="alert alert-info"></div>
 
       <div class="alert alert-warning" style="margin-top: 25px;">
         <div>📺</div>
@@ -383,10 +477,38 @@
       </div>
     </div>
 
-    <!-- ШАГ 3: ПРИЛОЖЕНИЯ В КОМПЛЕКТЕ -->
+    <!-- ШАГ 3: УСТАНОВКА СВОЕГО APK -->
     <div class="card">
       <div class="card-title">
         <div class="step-number">3</div>
+        <h2>Установка любого своего APK-файла</h2>
+      </div>
+
+      <p>Хотите установить любое другое стороннее приложение? Выберите <code>.apk</code> файл с компьютера и нажмите кнопку установки:</p>
+
+      <div class="custom-apk-row">
+        <input type="text" id="customApkPath" class="custom-apk-input" placeholder="Выберите .apk файл на компьютере...">
+        <button class="btn-secondary" onclick="browseCustomApk()">📁 Обзор...</button>
+        <button id="btnInstallCustom" class="btn-primary-action" onclick="installCustomApk()">🚀 Установить на ТВ</button>
+      </div>
+
+      <div id="customApkStatus" style="margin-top: 15px; display: none;" class="alert alert-info"></div>
+    </div>
+
+    <!-- ЛОГ ВЫПОЛНЕНИЯ ОПЕРАЦИЙ -->
+    <div class="card">
+      <div class="card-title">
+        <div class="step-number">4</div>
+        <h2>Лог выполнения операций</h2>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Здесь в реальном времени отображаются шаги и ответы от телевизора:</p>
+      <div id="consoleLog" class="console-log">[*] Программа запущена. Нажмите «Проверить соединение с телевизором»...</div>
+    </div>
+
+    <!-- ШАГ 5: ПРИЛОЖЕНИЯ В КОМПЛЕКТЕ -->
+    <div class="card">
+      <div class="card-title">
+        <div class="step-number">5</div>
         <h2>Приложения в комплекте (папка apps)</h2>
       </div>
 
@@ -421,7 +543,7 @@
     <!-- РЕЗУЛЬТАТ -->
     <div class="card">
       <div class="card-title">
-        <div class="step-number">4</div>
+        <div class="step-number">6</div>
         <h2>Как выглядит телевизор после настройки</h2>
       </div>
 
@@ -446,15 +568,14 @@
     <!-- ЧАСТЫЕ ВОПРОСЫ -->
     <div class="card">
       <div class="card-title">
-        <div class="step-number">5</div>
+        <div class="step-number">7</div>
         <h2>Частые вопросы и решение проблем</h2>
       </div>
 
       <ul>
-        <li><strong>Кнопка не нажимается при открытии файла напрямую (file:///):</strong> Для работы кнопок прямо из браузера запустите файл <code>Open_Web_Panel.bat</code> в папке (он открывает страницу с локальным сервером). Если страница открыта как обычный HTML, вы всегда можете запустить <code>0_Test_Connection.bat</code> двойным кликом.</li>
+        <li><strong>Программа пишет «Не удалось автоматически обнаружить IP»:</strong> Убедитесь, что компьютер и телевизор подключены к одной Wi-Fi сети (или одному роутеру). Если сеть изолирована, введите IP телевизора вручную в поле (его можно посмотреть в <em>Настройки ТВ ➔ Сеть и интернет ➔ Ваша сеть</em>).</li>
         <li><strong>Пропадет ли доступ к настройкам телевизора?</strong> Нет! Приложение <code>com.yandex.tv.settings</code> и экранная клавиатура намеренно не трогаются. Вы всегда можете зайти в настройки через значок шестеренки в верхнем правом углу.</li>
         <li><strong>Как подключить телефон к Happ?</strong> Просто запустите Happ на телевизоре, откройте приложение Happ на смартфоне и наведите камеру на QR-код на экране телевизора.</li>
-        <li><strong>Можно ли устанавливать свои APK?</strong> Да! Вы можете просто положить любой <code>.apk</code> файл в папку <code>apps</code> и установить его через <code>adb install</code> или через установленный на ТВ <em>File Manager +</em>.</li>
       </ul>
     </div>
 
@@ -464,66 +585,115 @@
   </div>
 
   <script>
+    function addLog(msg) {
+      const box = document.getElementById('consoleLog');
+      box.innerHTML += '<br>' + msg;
+      box.scrollTop = box.scrollHeight;
+    }
+
     async function runConnectionTest() {
       const btn = document.getElementById('btnCheckConnection');
       const res = document.getElementById('testResult');
+      let manualIp = document.getElementById('manualIpInput').value.trim();
+      if (manualIp.toLowerCase() === 'автопоиск' || manualIp === '') {
+        manualIp = null;
+      }
       
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> <span>Поиск телевизора в сети и проверка ADB...</span>';
-      res.style.display = 'none';
+      
+      // Показываем статус прямо в пункте 1 сразу при нажатии!
+      res.style.display = 'block';
+      res.style.background = 'rgba(56, 189, 248, 0.12)';
+      res.style.border = '1px solid rgba(56, 189, 248, 0.35)';
+      res.style.color = '#bae6fd';
+      res.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="spinner"></span>
+          <div>
+            <div style="font-weight: bold; font-size: 1.05rem; color: #38bdf8;">⏳ Идет проверка подключения к телевизору...</div>
+            <div style="font-size: 0.9rem; color: #94a3b8; margin-top: 4px;">
+              Поиск устройства в локальной сети, подключение по ADB (порт 5555)... Пожалуйста, подождите.
+            </div>
+          </div>
+        </div>
+      `;
+      res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      addLog('[>] Поиск телевизора в локальной сети...');
 
-      // Check if running on web server
-      if (window.location.protocol.startsWith('http')) {
-        try {
-          const response = await fetch('/api/test_connection', { method: 'POST' });
-          const data = await response.json();
-          
-          res.style.display = 'block';
-          if (data.success) {
-            res.style.background = 'rgba(34, 197, 94, 0.15)';
-            res.style.border = '1px solid rgba(34, 197, 94, 0.4)';
-            res.style.color = '#bbf7d0';
-            res.innerHTML = `
-              <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px;">🎉 ВСЁ НАСТРОЕНО ОТЛИЧНО! ТЕЛЕВИЗОР НА СВЯЗИ!</div>
-              <div style="font-size: 0.95rem; line-height: 1.6;">
-                • <strong>IP-адрес:</strong> ${data.ip}:5555<br>
-                • <strong>Модель:</strong> ${data.brand} ${data.model}<br>
-                • <strong>Версия Android:</strong> ${data.android}<br>
-                • <strong>Текущий лаунчер:</strong> ${data.launcher}<br>
-                • <strong>Статус отладки:</strong> <span style="color: #4ade80; font-weight: bold;">РАЗРЕШЕНО</span>
-              </div>
-              <div style="margin-top: 10px; font-size: 0.9rem; color: #86efac;">
-                Вы можете переходить к установке приложений или очистке в Шаге 2 ниже.
-              </div>
-            `;
-          } else {
-            res.style.background = 'rgba(239, 68, 68, 0.15)';
-            res.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-            res.style.color = '#fecaca';
-            res.innerHTML = `
-              <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 6px;">❌ СВЯЗЬ НЕ УСТАНОВЛЕНА</div>
-              <div>${data.message}</div>
-              <div style="margin-top: 6px; font-size: 0.88rem; color: #fca5a5;">${data.details || ''}</div>
-            `;
-          }
-        } catch (e) {
-          showFallbackError(res);
+      try {
+        let data;
+        if (window.pywebview && window.pywebview.api) {
+          data = await window.pywebview.api.test_connection(manualIp);
+        } else {
+          // fallback fetch if running on server
+          const response = await fetch('/api/test_connection', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ ip: manualIp })
+          });
+          data = await response.json();
         }
-      } else {
-        // Opened as local file:///
+        
         res.style.display = 'block';
-        res.style.background = 'rgba(56, 189, 248, 0.15)';
-        res.style.border = '1px solid rgba(56, 189, 248, 0.4)';
-        res.style.color = '#bae6fd';
+        if (data && data.success) {
+          addLog(`[✓] Успешно подключено к ${data.ip}:5555 (${data.brand} ${data.model})`);
+          if (data.ip) {
+            document.getElementById('manualIpInput').value = data.ip;
+          }
+          res.style.background = 'rgba(34, 197, 94, 0.18)';
+          res.style.border = '1px solid rgba(34, 197, 94, 0.5)';
+          res.style.color = '#bbf7d0';
+          res.innerHTML = `
+            <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; color: #4ade80; display: flex; align-items: center; gap: 8px;">
+              <span>✅</span> <span>СВЯЗЬ С ТЕЛЕВИЗОРОМ УСПЕШНО УСТАНОВЛЕНА!</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 12px 16px; font-size: 0.95rem; line-height: 1.7; margin-bottom: 10px;">
+              • <strong>IP-адрес:</strong> <code style="color: #67e8f9; background: #0b1120; padding: 2px 6px; border-radius: 4px;">${data.ip}:5555</code><br>
+              • <strong>Модель:</strong> ${data.brand} ${data.model}<br>
+              • <strong>Версия Android:</strong> ${data.android}<br>
+              • <strong>Текущий лаунчер:</strong> ${data.launcher}<br>
+              • <strong>Статус отладки:</strong> <span style="color: #4ade80; font-weight: bold;">РАЗРЕШЕНО (Полный доступ)</span>
+            </div>
+            <div style="font-size: 0.92rem; color: #86efac;">
+              🎉 Отладка успешно активирована! Теперь можно переходить к установке приложений или очистке в Шаге 2 ниже.
+            </div>
+          `;
+          res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          const errMsg = data ? data.message : 'Неизвестная ошибка';
+          const errDetails = data ? (data.details || '') : '';
+          addLog(`[✗] Ошибка подключения: ${errMsg}`);
+          res.style.background = 'rgba(239, 68, 68, 0.18)';
+          res.style.border = '1px solid rgba(239, 68, 68, 0.5)';
+          res.style.color = '#fecaca';
+          res.innerHTML = `
+            <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; color: #f87171; display: flex; align-items: center; gap: 8px;">
+              <span>❌</span> <span>СВЯЗЬ НЕ УСТАНОВЛЕНА</span>
+            </div>
+            <div style="font-size: 0.98rem; font-weight: 500; margin-bottom: 6px;">${errMsg}</div>
+            <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; color: #fca5a5; line-height: 1.5;">
+              ${errDetails || 'Убедитесь, что телевизор включен, подключен к тому же Wi-Fi роутеру, и в Factory Menu включен пункт ADB -> ON.'}
+            </div>
+          `;
+          res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      } catch (e) {
+        addLog('[!] Ошибка вызова API: ' + e);
+        res.style.display = 'block';
+        res.style.background = 'rgba(239, 68, 68, 0.18)';
+        res.style.border = '1px solid rgba(239, 68, 68, 0.5)';
+        res.style.color = '#fecaca';
         res.innerHTML = `
-          <div style="font-size: 1.05rem; font-weight: bold; margin-bottom: 6px;">💡 Страница открыта как локальный файл</div>
-          <p style="font-size: 0.92rem; margin-bottom: 10px;">
-            Чтобы запускать проверку прямо нажатием этой кнопки в браузере, запустите в папке файл: <strong>Open_Web_Panel.bat</strong> (он включает интерактивный режим страницы).
-          </p>
-          <p style="font-size: 0.92rem;">
-            Либо просто запустите в папке файл <strong>0_Test_Connection.bat</strong> двойным кликом — он сразу проверит соединение в окне консоли!
-          </p>
+          <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; color: #f87171; display: flex; align-items: center; gap: 8px;">
+            <span>❌</span> <span>ОШИБКА ВЫПОЛНЕНИЯ ПРОВЕРКИ</span>
+          </div>
+          <div style="font-size: 0.95rem; margin-bottom: 6px;">${e}</div>
+          <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 0.88rem; color: #fca5a5;">
+            Проверьте наличие adb.exe и убедитесь, что приложение запущено с правами доступа.
+          </div>
         `;
+        res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
       btn.disabled = false;
@@ -533,30 +703,98 @@
     async function runAction(action) {
       const status = document.getElementById('actionStatus');
       status.style.display = 'block';
+      status.className = 'alert alert-info';
       status.innerHTML = '<span class="spinner"></span> <strong>Выполняется операция на телевизоре...</strong> Пожалуйста, подождите.';
 
-      if (window.location.protocol.startsWith('http')) {
-        try {
+      addLog(`[>] Запуск действия: ${action}...`);
+      try {
+        let data;
+        let manualIp = document.getElementById('manualIpInput').value.trim();
+        if (manualIp.toLowerCase() === 'автопоиск' || manualIp === '') {
+          manualIp = null;
+        }
+
+        if (window.pywebview && window.pywebview.api) {
+          data = await window.pywebview.api.run_action(action, manualIp);
+        } else {
           const res = await fetch('/api/run_action', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: action })
+            body: JSON.stringify({ action: action, ip: manualIp })
           });
-          const data = await res.json();
-          if (data.success) {
-            status.className = 'alert alert-success';
-            status.innerHTML = '✅ ' + data.message;
-          } else {
-            status.className = 'alert alert-danger';
-            status.innerHTML = '❌ ' + data.message;
-          }
-        } catch (e) {
-          status.className = 'alert alert-warning';
-          status.innerHTML = '⚠️ Ошибка запроса к локальному серверу. Запустите действие через соответствующий .bat файл в папке.';
+          data = await res.json();
         }
-      } else {
+
+        if (data.success) {
+          status.className = 'alert alert-success';
+          status.innerHTML = '✅ ' + data.message;
+          addLog(`[✓] Действие ${action} успешно завершено!`);
+        } else {
+          status.className = 'alert alert-danger';
+          status.innerHTML = '❌ ' + data.message;
+          addLog(`[✗] Ошибка выполнения ${action}: ${data.message}`);
+        }
+      } catch (e) {
         status.className = 'alert alert-warning';
-        status.innerHTML = '💡 Чтобы действия выполнялись по клику на странице, запустите <strong>Open_Web_Panel.bat</strong> в папке. Либо запустите соответствующий <strong>.bat</strong> файл двойным кликом.';
+        status.innerHTML = '⚠️ Ошибка запроса: ' + e;
+        addLog(`[!] Исключение: ${e}`);
+      }
+    }
+
+    async function browseCustomApk() {
+      try {
+        if (window.pywebview && window.pywebview.api) {
+          const path = await window.pywebview.api.browse_file();
+          if (path) {
+            document.getElementById('customApkPath').value = path;
+          }
+        } else {
+          alert('Функция обзора файлов доступна в приложении SmartTV_Control.exe');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function installCustomApk() {
+      const apkPath = document.getElementById('customApkPath').value.trim();
+      const status = document.getElementById('customApkStatus');
+      
+      if (!apkPath || apkPath.includes('Выберите .apk')) {
+        alert('Пожалуйста, сначала выберите APK файл через кнопку «Обзор...»');
+        return;
+      }
+
+      status.style.display = 'block';
+      status.className = 'alert alert-info';
+      status.innerHTML = `<span class="spinner"></span> <strong>Установка ${apkPath.split(/[\\\\/]/).pop()} на телевизор...</strong>`;
+      addLog(`[>] Установка APK: ${apkPath}...`);
+
+      try {
+        let manualIp = document.getElementById('manualIpInput').value.trim();
+        if (manualIp.toLowerCase() === 'автопоиск' || manualIp === '') {
+          manualIp = null;
+        }
+
+        let data;
+        if (window.pywebview && window.pywebview.api) {
+          data = await window.pywebview.api.install_custom_apk(apkPath, manualIp);
+        } else {
+          data = { success: false, message: "Функция установки доступна в приложении SmartTV_Control.exe" };
+        }
+
+        if (data.success) {
+          status.className = 'alert alert-success';
+          status.innerHTML = '✅ ' + data.message;
+          addLog(`[✓] Успешно установлено: ${apkPath}`);
+        } else {
+          status.className = 'alert alert-danger';
+          status.innerHTML = '❌ ' + data.message;
+          addLog(`[✗] Ошибка установки: ${data.message}`);
+        }
+      } catch (e) {
+        status.className = 'alert alert-danger';
+        status.innerHTML = '❌ Ошибка: ' + e;
       }
     }
   </script>

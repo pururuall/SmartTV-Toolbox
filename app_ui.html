@@ -601,7 +601,24 @@
       
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> <span>Поиск телевизора в сети и проверка ADB...</span>';
-      res.style.display = 'none';
+      
+      // Показываем статус прямо в пункте 1 сразу при нажатии!
+      res.style.display = 'block';
+      res.style.background = 'rgba(56, 189, 248, 0.12)';
+      res.style.border = '1px solid rgba(56, 189, 248, 0.35)';
+      res.style.color = '#bae6fd';
+      res.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="spinner"></span>
+          <div>
+            <div style="font-weight: bold; font-size: 1.05rem; color: #38bdf8;">⏳ Идет проверка подключения к телевизору...</div>
+            <div style="font-size: 0.9rem; color: #94a3b8; margin-top: 4px;">
+              Поиск устройства в локальной сети, подключение по ADB (порт 5555)... Пожалуйста, подождите.
+            </div>
+          </div>
+        </div>
+      `;
+      res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       addLog('[>] Поиск телевизора в локальной сети...');
 
       try {
@@ -619,40 +636,64 @@
         }
         
         res.style.display = 'block';
-        if (data.success) {
+        if (data && data.success) {
           addLog(`[✓] Успешно подключено к ${data.ip}:5555 (${data.brand} ${data.model})`);
           if (data.ip) {
             document.getElementById('manualIpInput').value = data.ip;
           }
-          res.style.background = 'rgba(34, 197, 94, 0.15)';
-          res.style.border = '1px solid rgba(34, 197, 94, 0.4)';
+          res.style.background = 'rgba(34, 197, 94, 0.18)';
+          res.style.border = '1px solid rgba(34, 197, 94, 0.5)';
           res.style.color = '#bbf7d0';
           res.innerHTML = `
-            <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px;">🎉 ВСЁ НАСТРОЕНО ОТЛИЧНО! ТЕЛЕВИЗОР НА СВЯЗИ!</div>
-            <div style="font-size: 0.95rem; line-height: 1.6;">
-              • <strong>IP-адрес:</strong> ${data.ip}:5555<br>
+            <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; color: #4ade80; display: flex; align-items: center; gap: 8px;">
+              <span>✅</span> <span>СВЯЗЬ С ТЕЛЕВИЗОРОМ УСПЕШНО УСТАНОВЛЕНА!</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 12px 16px; font-size: 0.95rem; line-height: 1.7; margin-bottom: 10px;">
+              • <strong>IP-адрес:</strong> <code style="color: #67e8f9; background: #0b1120; padding: 2px 6px; border-radius: 4px;">${data.ip}:5555</code><br>
               • <strong>Модель:</strong> ${data.brand} ${data.model}<br>
               • <strong>Версия Android:</strong> ${data.android}<br>
               • <strong>Текущий лаунчер:</strong> ${data.launcher}<br>
               • <strong>Статус отладки:</strong> <span style="color: #4ade80; font-weight: bold;">РАЗРЕШЕНО (Полный доступ)</span>
             </div>
-            <div style="margin-top: 10px; font-size: 0.9rem; color: #86efac;">
-              Отладка успешно активирована! Вы можете переходить к установке приложений или очистке в Шаге 2 ниже.
+            <div style="font-size: 0.92rem; color: #86efac;">
+              🎉 Отладка успешно активирована! Теперь можно переходить к установке приложений или очистке в Шаге 2 ниже.
             </div>
           `;
+          res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else {
-          addLog(`[✗] Ошибка подключения: ${data.message}`);
-          res.style.background = 'rgba(239, 68, 68, 0.15)';
-          res.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          const errMsg = data ? data.message : 'Неизвестная ошибка';
+          const errDetails = data ? (data.details || '') : '';
+          addLog(`[✗] Ошибка подключения: ${errMsg}`);
+          res.style.background = 'rgba(239, 68, 68, 0.18)';
+          res.style.border = '1px solid rgba(239, 68, 68, 0.5)';
           res.style.color = '#fecaca';
           res.innerHTML = `
-            <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 6px;">❌ СВЯЗЬ НЕ УСТАНОВЛЕНА</div>
-            <div>${data.message}</div>
-            <div style="margin-top: 6px; font-size: 0.88rem; color: #fca5a5;">${data.details || 'Убедитесь, что телевизор включен и в Factory Menu включен ADB -> ON.'}</div>
+            <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; color: #f87171; display: flex; align-items: center; gap: 8px;">
+              <span>❌</span> <span>СВЯЗЬ НЕ УСТАНОВЛЕНА</span>
+            </div>
+            <div style="font-size: 0.98rem; font-weight: 500; margin-bottom: 6px;">${errMsg}</div>
+            <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; color: #fca5a5; line-height: 1.5;">
+              ${errDetails || 'Убедитесь, что телевизор включен, подключен к тому же Wi-Fi роутеру, и в Factory Menu включен пункт ADB -> ON.'}
+            </div>
           `;
+          res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       } catch (e) {
         addLog('[!] Ошибка вызова API: ' + e);
+        res.style.display = 'block';
+        res.style.background = 'rgba(239, 68, 68, 0.18)';
+        res.style.border = '1px solid rgba(239, 68, 68, 0.5)';
+        res.style.color = '#fecaca';
+        res.innerHTML = `
+          <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; color: #f87171; display: flex; align-items: center; gap: 8px;">
+            <span>❌</span> <span>ОШИБКА ВЫПОЛНЕНИЯ ПРОВЕРКИ</span>
+          </div>
+          <div style="font-size: 0.95rem; margin-bottom: 6px;">${e}</div>
+          <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 0.88rem; color: #fca5a5;">
+            Проверьте наличие adb.exe и убедитесь, что приложение запущено с правами доступа.
+          </div>
+        `;
+        res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
       btn.disabled = false;
