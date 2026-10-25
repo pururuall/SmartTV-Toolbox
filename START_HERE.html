@@ -10,7 +10,7 @@
       --card-bg: #1e293b;
       --card-border: #334155;
       --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.2);
+      --accent-glow: rgba(56, 189, 248, 0.25);
       --success: #22c55e;
       --warning: #f59e0b;
       --danger: #ef4444;
@@ -18,11 +18,7 @@
       --text-muted: #94a3b8;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -32,10 +28,7 @@
       padding: 30px 20px;
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
+    .container { max-width: 1000px; margin: 0 auto; }
 
     header {
       text-align: center;
@@ -57,19 +50,9 @@
       border: 1px solid rgba(56, 189, 248, 0.3);
     }
 
-    h1 {
-      font-size: 2.2rem;
-      color: #fff;
-      margin-bottom: 12px;
-      line-height: 1.3;
-    }
+    h1 { font-size: 2.2rem; color: #fff; margin-bottom: 12px; line-height: 1.3; }
 
-    .lead {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      max-width: 800px;
-      margin: 0 auto;
-    }
+    .lead { font-size: 1.1rem; color: var(--text-muted); max-width: 800px; margin: 0 auto; }
 
     .card {
       background: var(--card-bg);
@@ -111,17 +94,9 @@
       align-items: flex-start;
     }
 
-    .alert-warning {
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      color: #fde68a;
-    }
-
-    .alert-success {
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      color: #bbf7d0;
-    }
+    .alert-warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: #fde68a; }
+    .alert-success { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #bbf7d0; }
+    .alert-info { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #bae6fd; }
 
     .key-combo {
       display: inline-flex;
@@ -137,14 +112,58 @@
       font-weight: bold;
     }
 
-    ul, ol {
-      margin-left: 24px;
-      margin-bottom: 16px;
-      color: #cbd5e1;
+    ul, ol { margin-left: 24px; margin-bottom: 16px; color: #cbd5e1; }
+    li { margin-bottom: 8px; }
+
+    /* Interactive Button Styling */
+    .btn-test {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
     }
 
-    li {
-      margin-bottom: 8px;
+    .btn-test:hover {
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+    }
+
+    .btn-test:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .test-box {
+      margin-top: 25px;
+      padding: 24px;
+      background: #111a2e;
+      border: 1px solid #293854;
+      border-radius: 14px;
+    }
+
+    .test-result-box {
+      margin-top: 18px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      display: none;
+      font-family: inherit;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .btn-grid {
@@ -165,6 +184,7 @@
       color: #fff;
       transition: all 0.2s ease;
       cursor: pointer;
+      text-align: left;
     }
 
     .action-btn:hover {
@@ -184,19 +204,9 @@
       color: var(--accent);
     }
 
-    .action-btn .btn-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    .action-btn.danger .btn-header {
-      color: #f87171;
-    }
-
-    .action-btn.success .btn-header {
-      color: #4ade80;
-    }
+    .action-btn .btn-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.4; }
+    .action-btn.danger .btn-header { color: #f87171; }
+    .action-btn.success .btn-header { color: #4ade80; }
 
     .apps-preview {
       display: grid;
@@ -212,17 +222,8 @@
       padding: 14px;
     }
 
-    .app-item strong {
-      display: block;
-      color: #fff;
-      margin-bottom: 4px;
-      font-size: 1rem;
-    }
-
-    .app-item span {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
+    .app-item strong { display: block; color: #fff; margin-bottom: 4px; font-size: 1rem; }
+    .app-item span { font-size: 0.88rem; color: var(--text-muted); }
 
     .screen-img {
       width: 100%;
@@ -246,11 +247,7 @@
       border: 1px solid var(--card-border);
     }
 
-    .img-box h4 {
-      margin-bottom: 8px;
-      color: var(--accent);
-      font-size: 0.95rem;
-    }
+    .img-box h4 { margin-bottom: 8px; color: var(--accent); font-size: 0.95rem; }
 
     code {
       background: #090d16;
@@ -260,6 +257,18 @@
       font-size: 0.9em;
       color: #38bdf8;
     }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s ease-in-out infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     footer {
       text-align: center;
@@ -275,12 +284,12 @@
 
   <div class="container">
     <header>
-      <div class="badge">ИНСТРУКЦИЯ ДЛЯ ЛЮБОГО ПОЛЬЗОВАТЕЛЯ</div>
+      <div class="badge">ИНТЕРАКТИВНОЕ РУКОВОДСТВО</div>
       <h1>Прокачка и Очистка Smart TV (Tuvio / Яндекс ТВ)</h1>
-      <p class="lead">Пошаговое руководство: как открыть скрытый доступ к отладке (ADB), установить Zona, HDrezka, Happ, File Manager+, убрать тяжелую рекламу или переключиться на чистый FLauncher с возможностью отката в 1 клик.</p>
+      <p class="lead">Пошаговое руководство: как открыть скрытый доступ к отладке (ADB), проверить связь прямо с этой страницы, установить Happ, Zona, HDrezka, убрать рекламу или переключиться на чистый лаунчер.</p>
     </header>
 
-    <!-- ШАГ 1: ТВ -->
+    <!-- ШАГ 1: ТВ + ИНТЕРАКТИВНАЯ КНОПКА ПРОВЕРКИ -->
     <div class="card">
       <div class="card-title">
         <div class="step-number">1</div>
@@ -316,68 +325,60 @@
         <li>Нажмите кнопку <em>Назад</em> на пульте несколько раз, чтобы закрыть меню.</li>
       </ul>
 
-      <div class="alert alert-success">
-        <div>✅</div>
-        <div>
-          <strong>Готово!</strong> Теперь сетевой порт <strong>5555</strong> на телевизоре открыт, и компьютер может свободно подключаться к нему по Wi-Fi.
-        </div>
-      </div>
-
-      <div style="margin-top: 20px; padding: 18px; background: #151e2e; border: 1px solid #38bdf8; border-radius: 12px;">
-        <h3 style="color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+      <!-- БЛОК ПРОВЕРКИ СОЕДИНЕНИЯ С КНОПКОЙ -->
+      <div class="test-box">
+        <h3 style="color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
           🔍 Проверка: всё ли получилось настроить?
         </h3>
-        <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 12px;">
-          Чтобы убедиться, что отладка успешно активировалась и компьютер видит телевизор, запустите проверочный файл в папке:
+        <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 16px;">
+          Нажмите кнопку ниже, чтобы проверить связь с телевизором прямо с этой страницы:
         </p>
-        <div style="display: inline-block; background: #090d16; padding: 10px 16px; border-radius: 8px; border: 1px solid #334155; font-family: monospace; font-size: 1rem; color: #4ade80; font-weight: bold;">
-          ▶️ 0_Test_Connection.bat
-        </div>
-        <p style="color: #94a3b8; font-size: 0.88rem; margin-top: 10px;">
-          Скрипт сам найдет телевизор в сети, подключится и выведет зеленую плашку с моделью ТВ и версией Android. Если при этом на экране ТВ появится запрос — нажмите пультом «Всегда разрешать» и «ОК».
-        </p>
+
+        <button id="btnCheckConnection" class="btn-test" onclick="runConnectionTest()">
+          <span>📡 Проверить соединение с телевизором</span>
+        </button>
+
+        <div id="testResult" class="test-result-box"></div>
       </div>
     </div>
 
-    <!-- ШАГ 2: БЫСТРЫЕ СКРИПТЫ -->
+    <!-- ШАГ 2: БЫСТРЫЕ ДЕЙСТВИЯ -->
     <div class="card">
       <div class="card-title">
         <div class="step-number">2</div>
-        <h2>Быстрый запуск с компьютера в 1 клик</h2>
+        <h2>Запуск оптимизации и установки приложений</h2>
       </div>
 
-      <p>В папке <code>SmartTV_Toolbox</code> на вашем рабочем столе уже всё настроено: лежат готовые исполняемые файлы, официальный инструмент <code>adb</code> и все необходимые APK-файлы. Скрипт <strong>сам ищет телевизор в сети</strong>, поэтому вам даже не нужно знать его IP-адрес!</p>
+      <p>Вы можете запустить любое действие прямо с этой страницы кликом по карточке или через файлы <code>.bat</code> в папке <code>SmartTV_Toolbox</code>:</p>
 
       <div class="btn-grid">
-        <div class="action-btn" style="border-color: #38bdf8; background: #1e293b;">
-          <div class="btn-header" style="color: #38bdf8;">🔍 0_Test_Connection.bat</div>
-          <div class="btn-desc"><strong>Проверка связи:</strong> Автоматически ищет телевизор в сети и проверяет, включен ли ADB. Показывает модель ТВ, Android и статус готовности!</div>
-        </div>
-        <div class="action-btn">
-          <div class="btn-header">📦 1_Install_Apps.bat</div>
-          <div class="btn-desc"><strong>Установка приложений:</strong> Закидывает на телевизор полный набор (Happ, HDrezka TV 1.4.0, Zona, File Manager+ и SmartTube). Родной лаунчер и настройки ТВ не меняются!</div>
+        <div class="action-btn" onclick="runAction('install')">
+          <div class="btn-header">📦 1. Установить приложения</div>
+          <div class="btn-desc">Закидывает на телевизор полный набор (Happ, HDrezka TV 1.4.0, Zona, File Manager+ и SmartTube). Родной лаунчер и настройки ТВ не меняются!</div>
         </div>
 
-        <div class="action-btn">
-          <div class="btn-header">⚡ 2_Light_Debloat_Keep_Yandex.bat</div>
-          <div class="btn-desc"><strong>Очистка рекламы (Яндекс остается):</strong> Отключает рекламные трекеры (advid), сборщики отчетов и фоновый браузер. Родной лаунчер Яндекса и Алиса остаются на месте!</div>
+        <div class="action-btn" onclick="runAction('light_debloat')">
+          <div class="btn-header">⚡ 2. Очистить рекламу (Яндекс остается)</div>
+          <div class="btn-desc">Отключает рекламные трекеры (advid), сборщики отчетов и фоновый браузер. Родной лаунчер Яндекса и Алиса остаются на месте!</div>
         </div>
 
-        <div class="action-btn success">
-          <div class="btn-header">🚀 3_Full_Debloat_FLauncher.bat</div>
-          <div class="btn-desc"><strong>Максимальная скорость:</strong> Устанавливает все приложения + переводит телевизор на чистый, легкий лаунчер FLauncher. Телевизор больше не зависает!</div>
+        <div class="action-btn success" onclick="runAction('full_debloat')">
+          <div class="btn-header">🚀 3. Полный деблоат + FLauncher</div>
+          <div class="btn-desc">Максимальная скорость: ставит приложения + переводит телевизор на чистый, легкий лаунчер FLauncher. Телевизор больше не зависает!</div>
         </div>
 
-        <div class="action-btn danger">
-          <div class="btn-header">🔄 4_Restore_Original_Yandex.bat</div>
-          <div class="btn-desc"><strong>Откат в 1 клик:</strong> Мгновенно восстанавливает все заводские службы Яндекса и возвращает оригинальный домашний экран, как из магазина.</div>
+        <div class="action-btn danger" onclick="runAction('restore')">
+          <div class="btn-header">🔄 4. Откат: Вернуть Яндекс ТВ</div>
+          <div class="btn-desc">Мгновенно восстанавливает все заводские службы Яндекса и возвращает оригинальный домашний экран, как из магазина.</div>
         </div>
       </div>
+
+      <div id="actionStatus" style="margin-top: 15px; display: none;" class="alert alert-info"></div>
 
       <div class="alert alert-warning" style="margin-top: 25px;">
         <div>📺</div>
         <div>
-          <strong>Внимание при первом запуске:</strong> При первом подключении с компьютера на экране ТВ появится системное окно: <em>«Разрешить отладку по USB с этого компьютера?»</em>. Обязательно поставьте галочку <strong>«Всегда разрешать»</strong> и нажмите <strong>ОК</strong> пультом!
+          <strong>Внимание при первом подключении:</strong> На экране ТВ появится системное окно: <em>«Разрешить отладку по USB с этого компьютера?»</em>. Обязательно поставьте галочку <strong>«Всегда разрешать»</strong> и нажмите <strong>ОК</strong> пультом!
         </div>
       </div>
     </div>
@@ -450,7 +451,7 @@
       </div>
 
       <ul>
-        <li><strong>Скрипт пишет «Не удалось автоматически обнаружить IP»:</strong> Убедитесь, что компьютер и телевизор подключены к одной Wi-Fi сети (или одному роутеру). Если сеть изолирована, скрипт предложит ввести IP вручную (его можно посмотреть в <em>Настройки ТВ ➔ Сеть и интернет ➔ Ваша сеть</em>).</li>
+        <li><strong>Кнопка не нажимается при открытии файла напрямую (file:///):</strong> Для работы кнопок прямо из браузера запустите файл <code>Open_Web_Panel.bat</code> в папке (он открывает страницу с локальным сервером). Если страница открыта как обычный HTML, вы всегда можете запустить <code>0_Test_Connection.bat</code> двойным кликом.</li>
         <li><strong>Пропадет ли доступ к настройкам телевизора?</strong> Нет! Приложение <code>com.yandex.tv.settings</code> и экранная клавиатура намеренно не трогаются. Вы всегда можете зайти в настройки через значок шестеренки в верхнем правом углу.</li>
         <li><strong>Как подключить телефон к Happ?</strong> Просто запустите Happ на телевизоре, откройте приложение Happ на смартфоне и наведите камеру на QR-код на экране телевизора.</li>
         <li><strong>Можно ли устанавливать свои APK?</strong> Да! Вы можете просто положить любой <code>.apk</code> файл в папку <code>apps</code> и установить его через <code>adb install</code> или через установленный на ТВ <em>File Manager +</em>.</li>
@@ -461,6 +462,104 @@
       Smart TV Toolbox • Создано специально для моделей Tuvio / CVTE / Яндекс ТВ • 2026
     </footer>
   </div>
+
+  <script>
+    async function runConnectionTest() {
+      const btn = document.getElementById('btnCheckConnection');
+      const res = document.getElementById('testResult');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> <span>Поиск телевизора в сети и проверка ADB...</span>';
+      res.style.display = 'none';
+
+      // Check if running on web server
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          const response = await fetch('/api/test_connection', { method: 'POST' });
+          const data = await response.json();
+          
+          res.style.display = 'block';
+          if (data.success) {
+            res.style.background = 'rgba(34, 197, 94, 0.15)';
+            res.style.border = '1px solid rgba(34, 197, 94, 0.4)';
+            res.style.color = '#bbf7d0';
+            res.innerHTML = `
+              <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px;">🎉 ВСЁ НАСТРОЕНО ОТЛИЧНО! ТЕЛЕВИЗОР НА СВЯЗИ!</div>
+              <div style="font-size: 0.95rem; line-height: 1.6;">
+                • <strong>IP-адрес:</strong> ${data.ip}:5555<br>
+                • <strong>Модель:</strong> ${data.brand} ${data.model}<br>
+                • <strong>Версия Android:</strong> ${data.android}<br>
+                • <strong>Текущий лаунчер:</strong> ${data.launcher}<br>
+                • <strong>Статус отладки:</strong> <span style="color: #4ade80; font-weight: bold;">РАЗРЕШЕНО</span>
+              </div>
+              <div style="margin-top: 10px; font-size: 0.9rem; color: #86efac;">
+                Вы можете переходить к установке приложений или очистке в Шаге 2 ниже.
+              </div>
+            `;
+          } else {
+            res.style.background = 'rgba(239, 68, 68, 0.15)';
+            res.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+            res.style.color = '#fecaca';
+            res.innerHTML = `
+              <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 6px;">❌ СВЯЗЬ НЕ УСТАНОВЛЕНА</div>
+              <div>${data.message}</div>
+              <div style="margin-top: 6px; font-size: 0.88rem; color: #fca5a5;">${data.details || ''}</div>
+            `;
+          }
+        } catch (e) {
+          showFallbackError(res);
+        }
+      } else {
+        // Opened as local file:///
+        res.style.display = 'block';
+        res.style.background = 'rgba(56, 189, 248, 0.15)';
+        res.style.border = '1px solid rgba(56, 189, 248, 0.4)';
+        res.style.color = '#bae6fd';
+        res.innerHTML = `
+          <div style="font-size: 1.05rem; font-weight: bold; margin-bottom: 6px;">💡 Страница открыта как локальный файл</div>
+          <p style="font-size: 0.92rem; margin-bottom: 10px;">
+            Чтобы запускать проверку прямо нажатием этой кнопки в браузере, запустите в папке файл: <strong>Open_Web_Panel.bat</strong> (он включает интерактивный режим страницы).
+          </p>
+          <p style="font-size: 0.92rem;">
+            Либо просто запустите в папке файл <strong>0_Test_Connection.bat</strong> двойным кликом — он сразу проверит соединение в окне консоли!
+          </p>
+        `;
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<span>📡 Проверить соединение с телевизором</span>';
+    }
+
+    async function runAction(action) {
+      const status = document.getElementById('actionStatus');
+      status.style.display = 'block';
+      status.innerHTML = '<span class="spinner"></span> <strong>Выполняется операция на телевизоре...</strong> Пожалуйста, подождите.';
+
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          const res = await fetch('/api/run_action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: action })
+          });
+          const data = await res.json();
+          if (data.success) {
+            status.className = 'alert alert-success';
+            status.innerHTML = '✅ ' + data.message;
+          } else {
+            status.className = 'alert alert-danger';
+            status.innerHTML = '❌ ' + data.message;
+          }
+        } catch (e) {
+          status.className = 'alert alert-warning';
+          status.innerHTML = '⚠️ Ошибка запроса к локальному серверу. Запустите действие через соответствующий .bat файл в папке.';
+        }
+      } else {
+        status.className = 'alert alert-warning';
+        status.innerHTML = '💡 Чтобы действия выполнялись по клику на странице, запустите <strong>Open_Web_Panel.bat</strong> в папке. Либо запустите соответствующий <strong>.bat</strong> файл двойным кликом.';
+      }
+    }
+  </script>
 
 </body>
 </html>
