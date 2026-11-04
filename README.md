@@ -2,9 +2,13 @@
 
 <div align="center">
 
+<img src="img/banner.png" alt="Smart TV Toolbox v2.0 Banner" width="100%">
+
+<br/><br/>
+
 [![Версия](https://img.shields.io/badge/Версия-v2.0.0-0284c7?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest)
-[![Скачать последнюю версию](https://img.shields.io/badge/СКАЧАТЬ_ПОСЛЕДНЮЮ_ВЕРСИЮ-SmartTV_Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest/download/SmartTV_Control.exe)
-[![Скачать весь репозиторий ZIP](https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_ПАКЕТ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip)
+[![Скачать SmartTV_Control.exe](https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest/download/SmartTV_Control.exe)
+[![Скачать весь ZIP](https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_РЕПОЗИТОРИЙ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip)
 
 <br/>
 
@@ -16,7 +20,27 @@
 
 ---
 
-Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **2.0.0**) для ускорения, очистки от рекламы, безопасного деблоата и прокачки любых Smart TV на базе Android 9–14: как с оболочкой **Яндекс ТВ (YaOS)** (Tuvio, Hartens, DEXP, Novex, Hi и др.), так и стандартных **Android TV / Google TV** (Xiaomi, TCL, Sony Bravia, Hisense, realme, Chromecast).
+Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **2.0.0**) для ускорения, очистки от рекламы, безопасного деблоата и прокачки любых Smart TV на базе Android 9–14: как с оболочкой **Яндекс ТВ (YaOS)** (Tuvio, Hartens, DEXP, Novex, Hi и др.), так и стандартных **Android TV / Google TV** (Haier, Xiaomi, TCL, Sony Bravia, Hisense, realme, Chromecast).
+
+---
+
+## 📸 Скриншоты и демонстрация работы
+
+<div align="center">
+
+### 🖥️ Интерфейс приложения Smart TV Toolbox v2.0
+*(Светло-сланцевая тема, вкладки под разные ТВ, интерактивный выбор брендов и живой лог)*
+
+<img src="img/app_showcase.png" alt="Интерфейс программы Smart TV Toolbox v2.0" width="92%">
+
+<br/><br/>
+
+### 📺 Телевизор после оптимизации и установки лаунчера CleanYourTV
+*(Ультралегкий домашний экран в стиле Apple TV с настроенным доком Топ-6 приложений и нулевой рекламой)*
+
+<img src="img/tv_home_clean.png" alt="Чистый экран телевизора после настройки" width="92%">
+
+</div>
 
 ---
 
@@ -29,7 +53,7 @@
 - 🏢 **Полная поддержка телевизоров Haier (MatrixTV / Smart TV BX / H-серия):**
   - Подробная инструкция вызова настроек разработчика на пультах Haier.
   - Очистка вендорских промо-служб Haier: `com.haierubic.usmartdevice` (IoT), `com.haier.oemtabprovider` (рекламная вкладка), `com.haier.tvhousekeeper` (телеметрия) и промо-лаунчера `haiermatrix`.
-- 🍎 **Динамический редактор дока CleanYourTV (3–8 слотов):**
+- 🍎 **Динамический редактор дока CleanYourTV (4–8 слотов):**
   - При выборе количества колонок (4, 5, 6, 7, 8) список слотов автоматически добавляет или убирает строки в реальном времени.
   - Возможность назначать в каждый слот приложения из каталога, либо загружать список установленных на ТВ приложений в 1 клик, либо вводить свои имена пакетов.
 - 🛡️ **Системная блокировка рекламы (AdGuard Private DNS в 1 клик):**
@@ -37,7 +61,7 @@
   - Не требует установки сторонних фоновых VPN-приложений, не расходует оперативную память ТВ и не режет скорость интернета.
 - 🍎 **Ультралегкий лаунчер CleanYourTV (Apple TV Style):**
   - Размер APK всего ~500 КБ. Запускается мгновенно, работает плавно даже на самых слабых процессорах (1 ГБ ОЗУ).
-  - **Визуальный редактор дока:** возможность менять порядок приложений нижней панели (Zona, HDrezka, Lampa, Spotify, Happ, File Manager+) кнопками ▲ / ▼ и настраивать количество колонок (6–8).
+  - **Визуальный редактор дока:** возможность менять порядок приложений нижней панели (Zona, HDrezka, Lampa, Spotify, Happ, File Manager+) кнопками ▲ / ▼ и настраивать количество колонок (4–8).
 - 📥 **Подгрузка Топ-6 приложений для ТВ:**
   - Быстрая установка проверенного набора: Zona, HDrezka TV, LAMPA, Spotify TV, Happ (прокси-утилита) и File Manager+.
 - 🔄 **100% обратимость и безопасность:**
@@ -50,14 +74,16 @@
 
 | Файл / Папка | Назначение |
 |---|---|
-| **`SmartTV_Control.exe`** | 🚀 **Главное приложение (v2.0.0):** графическая панель со вкладками, редактором дока, переключателем DNS и логом |
+| **`SmartTV_Control.exe`** | 🚀 **Главное приложение (v2.0.0):** графическая панель со вкладками, логотипом, редактором дока, переключателем DNS и логом |
 | `START_HERE.html` | 📖 Интерактивное руководство с веб-интерфейсом и шпаргалкой |
+| `Instruction.html` | 📖 Автономная копия интерактивной панели |
 | `tv_manager.py` | ⚙️ Универсальный Python-модуль управления ТВ по ADB |
 | `main_webview.py` | 🖥️ Исходный код графического интерфейса WebView2 |
 | `server.py` | 🌐 Локальный HTTP-сервер для работы через любой браузер |
 | `gui_app.py` | 🪟 Альтернативный легковесный интерфейс на Tkinter |
 | `apps/` | APK-пакеты проверенных приложений под Android TV (отслеживаются через Git LFS) |
 | `platform-tools/` | Официальные утилиты ADB от Google под Windows |
+| `img/` | Баннер и скриншоты приложения и настроенного ТВ |
 
 ---
 
@@ -70,7 +96,7 @@
 4. В синем меню **Factory menu** перейдите в `other options`.
 5. Переключите пункт **`ADB`** в положение **`ON`**. Если есть `USB Mode` — переведите в **`Device`**.
 
-### Вариант 2. Телевизоры на Android TV и Google TV (Xiaomi, TCL, Sony, Hisense, Chromecast):
+### Вариант 2. Телевизоры на Android TV и Google TV (Haier, Xiaomi, TCL, Sony, Hisense, Chromecast):
 1. Откройте `Настройки` ➔ `Настройки устройства` (или `Система`) ➔ `Об устройстве`.
 2. Найдите строку **«Номер сборки»** (или «Сборка ОС Android TV») и быстро нажмите кнопку **OK на пульте 7 раз подряд** до появления сообщения *«Вы стали разработчиком!»*.
 3. Вернитесь назад в меню `Для разработчиков` и включите **«Отладка по USB»** (USB debugging).
