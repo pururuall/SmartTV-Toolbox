@@ -6,12 +6,14 @@ import webview
 import subprocess
 import time
 import socket
+import json
+
+import tv_manager
 
 # Path resolution for PyInstaller
 if getattr(sys, 'frozen', False):
     BASE_DIR = os.path.dirname(sys.executable)
     MEIPASS_DIR = getattr(sys, '_MEIPASS', BASE_DIR)
-    # Check if updated app_ui.html exists next to executable
     if os.path.exists(os.path.join(BASE_DIR, "app_ui.html")):
         HTML_FILE = os.path.join(BASE_DIR, "app_ui.html")
     else:
@@ -20,47 +22,11 @@ else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     HTML_FILE = os.path.join(BASE_DIR, "app_ui.html")
 
-def get_adb_path():
-    candidates = []
-    # 1. Bundled inside PyInstaller onefile
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        candidates.append(os.path.join(sys._MEIPASS, "platform-tools", "adb.exe"))
-    # 2. In same folder as executable
-    candidates.append(os.path.join(BASE_DIR, "platform-tools", "adb.exe"))
-    # 3. In Desktop SmartTV_Toolbox
-    candidates.append(os.path.join(os.path.expanduser('~/Desktop'), "SmartTV_Toolbox", "platform-tools", "adb.exe"))
-    # 4. In current working directory
-    candidates.append(os.path.join(os.getcwd(), "platform-tools", "adb.exe"))
-    
-    for c in candidates:
-        if c and os.path.exists(c):
-            return c
-    
-    sh = shutil.which("adb")
-    if sh:
-        return sh
-    return None
-
-def get_apps_dir():
-    candidates = [
-        os.path.join(BASE_DIR, "apps"),
-        os.path.join(os.path.expanduser('~/Desktop'), "SmartTV_Toolbox", "apps"),
-        os.path.join(os.getcwd(), "apps")
-    ]
-    for c in candidates:
-        if c and os.path.exists(c):
-            return c
-    return os.path.join(BASE_DIR, "apps")
-
-PRESETS = {
-    "top6": ["zona.apk", "hdrezka.apk", "lampa.apk", "spotify.apk", "filemanager_plus.apk", "Happ.apk"],
-    "basic": ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
-}
-
 class SmartTV_API:
     def __init__(self):
         self._window = None
         self.cached_ip = None
+        tv_manager.set_logger(self._log_js)
 
     def set_window(self, window):
         self._window = window
@@ -74,129 +40,34 @@ class SmartTV_API:
                 pass
 
     def connect_tv(self, manual_ip=None):
-        adb = get_adb_path()
-        if not adb:
-            self._log_js("❌ Ошибка: adb.exe не найден!")
-            return None, "Файл adb.exe не найден. Проверьте папку platform-tools."
-
-        ip = manual_ip.strip() if manual_ip else self.cached_ip
-
-        # 0. Проверяем, если устройство уже подключено в ADB
-        try:
-            devs = subprocess.check_output([adb, "devices"], timeout=3).decode('utf-8', errors='ignore')
-            for line in devs.splitlines():
-                if ":5555\tdevice" in line:
-                    ip = line.split(":5555")[0].strip()
-                    self._log_js(f"Устройство уже активно в ADB: {ip}")
-                    self.cached_ip = ip
-                    return ip, None
-        except Exception:
-            pass
-
-        if not ip:
-            self._log_js("Поиск устройства в сети через mDNS...")
-            try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
-                sock.settimeout(1.5)
-                sock.bind(('', 0))
-                header = b'\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00'
-                q = b'\x09_yandexio\x04_tcp\x05local\x00\x00\x0c\x00\x01'
-                sock.sendto(header + q, ('224.0.0.251', 5353))
-                start = time.time()
-                while time.time() - start < 2.0:
-                    try:
-                        buf, addr = sock.recvfrom(2048)
-                        if b'yandex' in buf.lower():
-                            ip = addr[0]
-                            self._log_js(f"Найдено через mDNS: {ip}")
-                            break
-                    except socket.timeout:
-                        break
-                sock.close()
-            except Exception as e:
-                self._log_js(f"mDNS исключение: {e}")
-
-        if not ip:
-            self._log_js("Сканирование кэша ARP на порт 5555...")
-            try:
-                arp_out = subprocess.check_output("arp -a", shell=True).decode('cp866', errors='ignore')
-                for line in arp_out.splitlines():
-                    p = line.strip().split()
-                    if len(p) >= 2 and p[0].count('.') == 3 and not p[0].startswith('224.') and not p[0].startswith('239.'):
-                        s = socket.socket()
-                        s.settimeout(0.2)
-                        if s.connect_ex((p[0], 5555)) == 0:
-                            ip = p[0]
-                            s.close()
-                            self._log_js(f"Найден открытый порт 5555 на: {ip}")
-                            break
-                        s.close()
-            except Exception as e:
-                self._log_js(f"ARP исключение: {e}")
-
-        if not ip:
-            return None, "Телевизор не обнаружен автоматически. Введите его IP вручную."
-
-        self._log_js(f"Подключение по ADB к {ip}:5555 ...")
-        try:
-            subprocess.run([adb, "connect", f"{ip}:5555"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
-            time.sleep(1)
-            devs = subprocess.check_output([adb, "devices"], timeout=5).decode('utf-8', errors='ignore')
-            if "device\n" in devs or "device\r" in devs or f"{ip}:5555\tdevice" in devs:
-                self.cached_ip = ip
-                return ip, None
-            elif "unauthorized" in devs:
-                return ip, "UNAUTHORIZED"
-            else:
-                return None, f"Порт 5555 закрыт или отклонил подключение (ADB devices: {devs.strip()})"
-        except Exception as e:
-            return None, f"Ошибка выполнения команды adb connect: {e}"
-
-    def adb_shell(self, ip, cmd):
-        adb = get_adb_path()
-        if not adb:
-            return ""
-        try:
-            res = subprocess.run([adb, "-s", f"{ip}:5555", "shell", cmd], capture_output=True, text=True, timeout=5)
-            return res.stdout.strip()
-        except Exception:
-            return ""
+        clean_ip = manual_ip.strip() if (manual_ip and manual_ip.strip() and manual_ip.strip().lower() != 'автопоиск') else None
+        ip = tv_manager.connect_adb(clean_ip)
+        if ip:
+            self.cached_ip = ip
+            return ip, None
+        return None, "Не удалось подключиться к телевизору. Проверьте сеть и включение отладки на ТВ."
 
     def test_connection(self, manual_ip=None):
         try:
             self._log_js("Запуск проверки соединения...")
-            ip, err = self.connect_tv(manual_ip)
-            
-            if err == "UNAUTHORIZED":
-                return {
-                    "success": False,
-                    "message": "Требуется подтверждение на экране ТВ!",
-                    "details": "На экране телевизора появилось системное окно «Разрешить отладку». Поставьте галочку «Всегда разрешать с этого компьютера» и нажмите ОК пультом, затем нажмите кнопку проверки снова."
-                }
-            
-            if not ip:
+            clean_ip = manual_ip.strip() if (manual_ip and manual_ip.strip() and manual_ip.strip().lower() != 'автопоиск') else None
+            data = tv_manager.action_test_connection(clean_ip)
+            if not data:
                 return {
                     "success": False,
                     "message": "Не удалось подключиться к телевизору.",
-                    "details": err or "Убедитесь, что ТВ включен, подключен к тому же Wi-Fi, и в Factory Menu включен пункт ADB -> ON."
+                    "details": "Убедитесь, что телевизор включен, подключен к тому же Wi-Fi и на нем разрешена сетевая отладка (ADB)."
                 }
-
-            model = self.adb_shell(ip, "getprop ro.product.model") or "Smart TV"
-            brand = self.adb_shell(ip, "getprop ro.product.brand") or ""
-            android_v = self.adb_shell(ip, "getprop ro.build.version.release") or "11"
-            launcher = self.adb_shell(ip, "cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME")
-            cur_launcher = launcher.splitlines()[-1] if launcher else "Стандартный"
-            
-            self._log_js(f"Успех! Подключено: {brand} {model} (Android {android_v})")
+            self.cached_ip = data.get("ip")
             return {
                 "success": True,
-                "ip": ip,
-                "brand": brand,
-                "model": model,
-                "android": android_v,
-                "launcher": cur_launcher
+                "ip": data.get("ip"),
+                "brand": data.get("brand"),
+                "model": data.get("model"),
+                "android": data.get("android"),
+                "launcher": data.get("launcher"),
+                "dns_mode": data.get("dns_mode"),
+                "dns_specifier": data.get("dns_specifier")
             }
         except Exception as e:
             self._log_js(f"Критическая ошибка: {e}")
@@ -206,8 +77,41 @@ class SmartTV_API:
                 "details": str(e)
             }
 
+    def get_dns_status(self, manual_ip=None):
+        ip, err = self.connect_tv(manual_ip)
+        if not ip:
+            return {"success": False, "message": err}
+        dns = tv_manager.action_get_dns(ip)
+        return {"success": True, "ip": ip, **dns}
+
+    def set_dns(self, enable=True, manual_ip=None):
+        ip, err = self.connect_tv(manual_ip)
+        if not ip:
+            return {"success": False, "message": err}
+        res = tv_manager.action_set_dns(ip, enable)
+        dns = tv_manager.action_get_dns(ip)
+        return {
+            "success": True,
+            "enabled": dns["enabled"],
+            "message": "AdGuard Private DNS активирован! Реклама блокируется системно." if dns["enabled"] else "Private DNS отключен. Восстановлен стандартный DNS."
+        }
+
+    def set_dock_config(self, dock_apps=None, columns=6, manual_ip=None):
+        ip, err = self.connect_tv(manual_ip)
+        if not ip:
+            return {"success": False, "message": err}
+        tv_manager.action_set_dock(ip, dock_apps, int(columns))
+        return {"success": True, "message": "Конфигурация дока успешно обновлена на телевизоре!"}
+
+    def switch_launcher(self, launcher_name="cleanyourtv", manual_ip=None):
+        ip, err = self.connect_tv(manual_ip)
+        if not ip:
+            return {"success": False, "message": err}
+        tv_manager.action_switch_launcher(ip, launcher_name)
+        return {"success": True, "message": f"Домашний экран переключен на {launcher_name.upper()}!"}
+
     def get_available_apps(self):
-        apps_dir = get_apps_dir()
+        apps_dir = tv_manager.APPS_DIR
         apps_list = []
         if os.path.exists(apps_dir):
             for f in sorted(os.listdir(apps_dir)):
@@ -217,91 +121,41 @@ class SmartTV_API:
                     apps_list.append({"filename": f, "size_mb": size_mb})
         return apps_list
 
-    def run_action(self, action, manual_ip=None, apps_list=None, *args, **kwargs):
-        adb = get_adb_path()
-        apps_dir = get_apps_dir()
-        
+    def run_action(self, action, manual_ip=None, apps_list=None, tv_type="yaos", launcher_choice="cleanyourtv", *args, **kwargs):
         ip, err = self.connect_tv(manual_ip)
         if not ip:
             return {"success": False, "message": f"Нет связи с телевизором по ADB ({err})"}
 
         try:
             if action == "install":
-                if apps_list and isinstance(apps_list, list) and len(apps_list) > 0:
-                    apks = apps_list
-                elif apps_list == "basic":
-                    apks = PRESETS["basic"]
-                else:
-                    apks = PRESETS["top6"]
-
-                self._log_js(f"Подгрузка приложений ({len(apks)} шт.)...")
-                installed_count = 0
-                for apk in apks:
-                    p = os.path.join(apps_dir, apk)
-                    if os.path.exists(p):
-                        self._log_js(f" • Установка {apk}...")
-                        res = subprocess.run([adb, "-s", f"{ip}:5555", "install", "-r", p], capture_output=True, text=True, timeout=90)
-                        if "Success" in res.stdout or "Success" in res.stderr:
-                            self._log_js(f"   ✓ {apk} успешно установлено!")
-                            installed_count += 1
-                        else:
-                            self._log_js(f"   ! {apk}: {res.stdout.strip()} {res.stderr.strip()}")
-                    else:
-                        self._log_js(f"   ! Файл не найден: {apk}")
-                return {"success": True, "message": f"Подгрузка завершена! Успешно установлено: {installed_count} из {len(apks)}."}
+                installed = tv_manager.action_install_apps(ip, apps_list or "top6")
+                return {"success": True, "message": f"Подгрузка приложений завершена! Успешно: {installed} шт."}
 
             elif action == "light_debloat":
-                self._log_js("Очистка рекламы (Яндекс остается)...")
-                pkgs = [
-                    "com.yandex.android.advid", "com.yandex.tv.bugreportsender",
-                    "com.yandex.launcher.updaterapp", "com.yandex.tv.daydream", "com.yandex.browser.tv"
-                ]
-                for pkg in pkgs:
-                    self.adb_shell(ip, f"pm uninstall --user 0 {pkg}")
-                    self.adb_shell(ip, f"am force-stop {pkg}")
-                    self._log_js(f" • Отключено: {pkg}")
-                return {"success": True, "message": "Реклама и трекеры отключены! Родной лаунчер Яндекса сохранен."}
+                tv_manager.action_light_debloat(ip, tv_type)
+                desc = "Яндекс ТВ" if tv_type == "yaos" else "Android TV / Google TV"
+                return {"success": True, "message": f"Легкая очистка рекламы и фоновых служб ({desc}) выполнена успешно!"}
 
             elif action == "full_debloat":
-                self._log_js("Полный деблоат и переключение на FLauncher...")
-                fl_apk = os.path.join(apps_dir, "flauncher.apk")
-                if os.path.exists(fl_apk):
-                    subprocess.run([adb, "-s", f"{ip}:5555", "install", "-r", fl_apk], capture_output=True, timeout=60)
-                self.adb_shell(ip, "cmd package set-home-activity me.efesser.flauncher/.MainActivity")
-
-                pkgs = [
-                    "com.yandex.tv.alice", "com.yandex.tv.home", "com.yandex.tv.music",
-                    "com.yandex.browser.tv", "com.yandex.tv.live", "com.yandex.tv.input.efir",
-                    "com.yandex.tv.daydream", "com.yandex.tv.bugreportsender",
-                    "com.yandex.android.advid", "com.yandex.tv.ytplayer",
-                    "com.yandex.tv.webplayer", "com.yandex.tv.videoplayer",
-                    "com.yandex.launcher.updaterapp"
-                ]
-                for pkg in pkgs:
-                    self.adb_shell(ip, f"pm uninstall --user 0 {pkg}")
-                    self.adb_shell(ip, f"am force-stop {pkg}")
-                    self._log_js(f" • Отключено: {pkg}")
-                self.adb_shell(ip, "am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-                return {"success": True, "message": "Полный деблоат завершен! Домашний экран теперь FLauncher."}
+                tv_manager.action_full_debloat(ip, tv_type, launcher_choice)
+                desc = "Яндекс ТВ" if tv_type == "yaos" else "Android TV / Google TV"
+                return {"success": True, "message": f"Полный деблоат ({desc}) выполнен! Домашний экран переведен на {launcher_choice.upper()}."}
 
             elif action == "restore":
-                self._log_js("Восстановление всех заводских служб...")
-                pkgs = [
-                    "com.yandex.tv.alice", "com.yandex.tv.home", "com.yandex.tv.music",
-                    "com.yandex.browser.tv", "com.yandex.tv.live", "com.yandex.tv.input.efir",
-                    "com.yandex.tv.daydream", "com.yandex.tv.bugreportsender",
-                    "com.yandex.android.advid", "com.yandex.tv.ytplayer",
-                    "com.yandex.tv.webplayer", "com.yandex.tv.videoplayer",
-                    "com.yandex.launcher.updaterapp"
-                ]
-                for pkg in pkgs:
-                    self.adb_shell(ip, f"cmd package install-existing {pkg}")
-                    self._log_js(f" • Восстановлено: {pkg}")
-                self.adb_shell(ip, "cmd package set-home-activity com.yandex.tv.home/.HomeActivity")
-                self.adb_shell(ip, "am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-                return {"success": True, "message": "Все заводские службы восстановлены!"}
+                tv_manager.action_restore(ip, tv_type)
+                desc = "Яндекс ТВ" if tv_type == "yaos" else "Google TV / Android TV"
+                return {"success": True, "message": f"Все заводские службы ({desc}) успешно восстановлены!"}
 
-            return {"success": False, "message": "Неизвестное действие"}
+            elif action == "set_dns":
+                enable = kwargs.get("enable", True)
+                tv_manager.action_set_dns(ip, enable)
+                return {"success": True, "message": "Настройки DNS успешно обновлены!"}
+
+            elif action == "switch_launcher":
+                tv_manager.action_switch_launcher(ip, launcher_choice)
+                return {"success": True, "message": f"Лаунчер успешно переключен на {launcher_choice}!"}
+
+            return {"success": False, "message": f"Неизвестное действие: {action}"}
         except Exception as e:
             return {"success": False, "message": f"Ошибка выполнения действия: {e}"}
 
@@ -320,10 +174,6 @@ class SmartTV_API:
         return ""
 
     def install_custom_apk(self, filepath, manual_ip=None):
-        adb = get_adb_path()
-        if not adb:
-            return {"success": False, "message": "adb.exe не найден"}
-            
         if not filepath or not os.path.exists(filepath):
             return {"success": False, "message": f"Файл не найден: {filepath}"}
         
@@ -333,7 +183,7 @@ class SmartTV_API:
 
         self._log_js(f"Загрузка и установка {os.path.basename(filepath)}...")
         try:
-            res = subprocess.run([adb, "-s", f"{ip}:5555", "install", "-r", filepath], capture_output=True, text=True, timeout=120)
+            res = subprocess.run([tv_manager.ADB, "-s", f"{ip}:5555", "install", "-r", filepath], capture_output=True, text=True, timeout=120)
             if "Success" in res.stdout or "Success" in res.stderr:
                 return {"success": True, "message": f"Приложение {os.path.basename(filepath)} успешно установлено на телевизор!"}
             else:
@@ -343,16 +193,15 @@ class SmartTV_API:
 
 def main():
     api = SmartTV_API()
-    
     url = HTML_FILE if os.path.exists(HTML_FILE) else os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_ui.html")
     
     window = webview.create_window(
-        title="Smart TV Toolbox — Панель управления",
+        title="Smart TV Toolbox v2.0 — Панель управления",
         url=url,
         js_api=api,
-        width=1020,
-        height=860,
-        min_size=(840, 680),
+        width=1040,
+        height=880,
+        min_size=(860, 700),
         background_color="#0f172a"
     )
     api.set_window(window)

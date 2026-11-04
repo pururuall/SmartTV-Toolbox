@@ -8,119 +8,131 @@ import sys
 import socket
 import time
 
+import tv_manager
+
 if getattr(sys, 'frozen', False):
     BASE_DIR = os.path.dirname(sys.executable)
 else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-ADB = os.path.join(BASE_DIR, "platform-tools", "adb.exe")
-APPS_DIR = os.path.join(BASE_DIR, "apps")
+ADB = tv_manager.ADB
+APPS_DIR = tv_manager.APPS_DIR
 ICON_ICO = os.path.join(BASE_DIR, "app_icon.ico")
 
-PRESETS = {
-    "top6": ["zona.apk", "hdrezka.apk", "lampa.apk", "spotify.apk", "filemanager_plus.apk", "Happ.apk"],
-    "basic": ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
-}
+PRESETS = tv_manager.PRESETS
 
 class SmartTVApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Smart TV Toolbox — Панель управления")
-        self.geometry("920x840")
-        self.minsize(840, 720)
+        self.title("Smart TV Toolbox v2.0 — Панель управления")
+        self.geometry("960x860")
+        self.minsize(860, 720)
         
-        # Set Capybara window icon if available
         if os.path.exists(ICON_ICO):
             try:
                 self.iconbitmap(ICON_ICO)
             except Exception:
                 pass
 
-        # HTML Design System Palette
-        self.c_bg = "#0f172a"          # slate-900 (главный фон)
-        self.c_card = "#1e293b"        # slate-800 (фон карточек)
-        self.c_border = "#334155"      # slate-700 (рамки)
-        self.c_input_bg = "#090d16"    # темные поля ввода
-        self.c_accent = "#38bdf8"      # sky-400 (акцентный голубой)
-        self.c_text = "#f8fafc"        # белый текст
-        self.c_muted = "#94a3b8"       # серый текст
-        self.c_success = "#22c55e"     # зеленый
-        self.c_success_bg = "#14532d"
-        self.c_danger = "#ef4444"      # красный
-        self.c_danger_bg = "#7f1d1d"
+        self.c_bg = "#0f172a"
+        self.c_card = "#1e293b"
+        self.c_border = "#334155"
+        self.c_input_bg = "#090d16"
+        self.c_accent = "#38bdf8"
+        self.c_text = "#f8fafc"
+        self.c_muted = "#94a3b8"
+        self.c_success = "#22c55e"
+        self.c_danger = "#ef4444"
         
         self.configure(bg=self.c_bg)
         self.current_ip = None
+        self.current_platform = tk.StringVar(value="yaos")
+        
+        # Connect tv_manager logger to GUI
+        tv_manager.set_logger(self.log)
         
         self.build_ui()
 
     def build_ui(self):
-        # Header (как в HTML)
-        header = tk.Frame(self, bg=self.c_bg, padx=25, pady=16)
+        # Header
+        header = tk.Frame(self, bg=self.c_bg, padx=20, pady=12)
         header.pack(fill="x")
         
         f_badge = tk.Frame(header, bg=self.c_bg)
         f_badge.pack(anchor="w")
         
-        lbl_badge = tk.Label(f_badge, text="ИНТЕРАКТИВНОЕ РУКОВОДСТВО + УПРАВЛЕНИЕ", font=("Segoe UI", 8, "bold"),
-                             fg=self.c_accent, bg="#1e293b", padx=12, pady=4, relief="solid", bd=1)
+        lbl_badge = tk.Label(f_badge, text="SMART TV TOOLBOX v2.0 — MULTI-PLATFORM", font=("Segoe UI", 8, "bold"),
+                             fg=self.c_accent, bg="#1e293b", padx=10, pady=3, relief="solid", bd=1)
         lbl_badge.pack(side="left")
         
-        lbl_title = tk.Label(header, text="Прокачка и Очистка Smart TV (Tuvio / Яндекс ТВ)",
-                             font=("Segoe UI", 18, "bold"), fg="#ffffff", bg=self.c_bg)
-        lbl_title.pack(anchor="w", pady=(8, 2))
+        lbl_title = tk.Label(header, text="Универсальный центр оптимизации Smart TV",
+                             font=("Segoe UI", 16, "bold"), fg="#ffffff", bg=self.c_bg)
+        lbl_title.pack(anchor="w", pady=(6, 2))
         
-        lbl_desc = tk.Label(header, text="Проверка соединения по сети, подгрузка приложений (Zona, HDrezka, Lampa, Spotify, File Manager+, Happ), деблоат",
+        lbl_desc = tk.Label(header, text="Поддержка Яндекс ТВ (Tuvio), Android TV, Google TV (Xiaomi, TCL, Sony, Hisense). AdGuard DNS и CleanYourTV.",
                             font=("Segoe UI", 9), fg=self.c_muted, bg=self.c_bg)
         lbl_desc.pack(anchor="w")
 
-        # Main Scrollable / Frame Container
-        content = tk.Frame(self, bg=self.c_bg, padx=25)
+        # Content
+        content = tk.Frame(self, bg=self.c_bg, padx=20)
         content.pack(fill="both", expand=True)
 
-        # ----------------- КАРТОЧКА 1: ПРОВЕРКА СОЕДИНЕНИЯ -----------------
-        c1 = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, padx=18, pady=14)
-        c1.pack(fill="x", pady=(0, 12))
+        # ----------------- КАРТОЧКА 1: ВЫБОР ПЛАТФОРМЫ И СОЕДИНЕНИЕ -----------------
+        c1 = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, padx=16, pady=12)
+        c1.pack(fill="x", pady=(0, 10))
 
-        # Заголовок карточки
         c1_head = tk.Frame(c1, bg=self.c_card)
-        c1_head.pack(fill="x", pady=(0, 10))
+        c1_head.pack(fill="x", pady=(0, 8))
         
         tk.Label(c1_head, text="1", font=("Segoe UI", 10, "bold"), fg="#0f172a", bg=self.c_accent,
                  width=3, height=1).pack(side="left", padx=(0, 10))
-        tk.Label(c1_head, text="Проверка связи и доступ к отладке (ADB)", font=("Segoe UI", 12, "bold"),
+        tk.Label(c1_head, text="Платформа и проверка соединения с ТВ", font=("Segoe UI", 11, "bold"),
                  fg="#ffffff", bg=self.c_card).pack(side="left")
 
-        # Поле ввода IP и кнопка
-        f_ip = tk.Frame(c1, bg=self.c_card)
-        f_ip.pack(fill="x", pady=(0, 8))
+        # Platform selector
+        f_plat = tk.Frame(c1, bg=self.c_card)
+        f_plat.pack(fill="x", pady=(0, 8))
+        tk.Label(f_plat, text="Ваша система:", font=("Segoe UI", 9, "bold"), fg=self.c_text, bg=self.c_card).pack(side="left", padx=(0, 10))
         
-        tk.Label(f_ip, text="IP телевизора:", font=("Segoe UI", 10), fg=self.c_text, bg=self.c_card).pack(side="left")
-        self.ent_ip = tk.Entry(f_ip, font=("Segoe UI", 10), width=18, bg=self.c_input_bg, fg="#ffffff",
+        r1 = tk.Radiobutton(f_plat, text="Яндекс ТВ / YaOS (Tuvio, Hartens, DEXP)", variable=self.current_platform,
+                            value="yaos", font=("Segoe UI", 9), bg=self.c_card, fg="#fff", selectcolor="#0f172a",
+                            activebackground=self.c_card, activeforeground=self.c_accent)
+        r1.pack(side="left", padx=(0, 15))
+        
+        r2 = tk.Radiobutton(f_plat, text="Android TV / Google TV (Xiaomi, TCL, Sony, Hisense)", variable=self.current_platform,
+                            value="generic", font=("Segoe UI", 9), bg=self.c_card, fg="#fff", selectcolor="#0f172a",
+                            activebackground=self.c_card, activeforeground=self.c_accent)
+        r2.pack(side="left")
+
+        # IP input and test button
+        f_ip = tk.Frame(c1, bg=self.c_card)
+        f_ip.pack(fill="x", pady=(0, 6))
+        
+        tk.Label(f_ip, text="IP телевизора:", font=("Segoe UI", 9), fg=self.c_text, bg=self.c_card).pack(side="left")
+        self.ent_ip = tk.Entry(f_ip, font=("Segoe UI", 9), width=18, bg=self.c_input_bg, fg="#ffffff",
                                insertbackground="#fff", bd=1, relief="solid")
-        self.ent_ip.pack(side="left", padx=10)
+        self.ent_ip.pack(side="left", padx=8)
         self.ent_ip.insert(0, "Автопоиск")
 
-        self.btn_test = tk.Button(f_ip, text="📡 Проверить соединение с телевизором", font=("Segoe UI", 10, "bold"),
+        self.btn_test = tk.Button(f_ip, text="📡 Проверить соединение с ТВ", font=("Segoe UI", 9, "bold"),
                                   bg="#0284c7", fg="#ffffff", activebackground="#0369a1", activeforeground="#ffffff",
-                                  bd=0, padx=18, pady=6, cursor="hand2", command=self.on_test_connection)
-        self.btn_test.pack(side="left", padx=5)
+                                  bd=0, padx=14, pady=5, cursor="hand2", command=self.on_test_connection)
+        self.btn_test.pack(side="left", padx=4)
 
-        # Информационная плашка статуса
-        self.lbl_status = tk.Label(c1, text="Статус: нажмите «Проверить соединение» для автопоиска ТВ в локальной сети",
-                                   font=("Segoe UI", 9), fg=self.c_muted, bg=self.c_card, anchor="w", justify="left")
+        self.lbl_status = tk.Label(c1, text="Статус: готов к подключению (Яндекс ТВ: Menu -> Влево -> Вверх -> Влево -> Вверх -> Назад | Android TV: Сборка 7 кликов -> Отладка)",
+                                   font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card, anchor="w", justify="left")
         self.lbl_status.pack(fill="x")
 
-        # ----------------- КАРТОЧКА 2: БЫСТРЫЕ ДЕЙСТВИЯ -----------------
-        c2 = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, padx=18, pady=14)
-        c2.pack(fill="x", pady=(0, 12))
+        # ----------------- КАРТОЧКА 2: ДЕЙСТВИЯ ОПТИМИЗАЦИИ -----------------
+        c2 = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, padx=16, pady=12)
+        c2.pack(fill="x", pady=(0, 10))
 
         c2_head = tk.Frame(c2, bg=self.c_card)
-        c2_head.pack(fill="x", pady=(0, 10))
+        c2_head.pack(fill="x", pady=(0, 8))
         
         tk.Label(c2_head, text="2", font=("Segoe UI", 10, "bold"), fg="#0f172a", bg=self.c_accent,
                  width=3, height=1).pack(side="left", padx=(0, 10))
-        tk.Label(c2_head, text="Оптимизация и пакетная подгрузка приложений", font=("Segoe UI", 12, "bold"),
+        tk.Label(c2_head, text="Оптимизация, деблоат и приложения", font=("Segoe UI", 11, "bold"),
                  fg="#ffffff", bg=self.c_card).pack(side="left")
 
         btn_grid = tk.Frame(c2, bg=self.c_card)
@@ -128,93 +140,120 @@ class SmartTVApp(tk.Tk):
 
         self.btn_install = self.create_card_btn(
             btn_grid, "📥 1. Подгрузка приложений",
-            "Выбор набора: Топ 6 в 1 клик (Zona, HDrezka, Lampa, Spotify, File Manager+, Happ), базовый набор или свои APK.",
+            "Установка Топ-6: Zona, HDrezka TV, Lampa, Spotify, Happ, File Manager+ в 1 клик",
             "#1e3a5f", "#38bdf8", self.open_install_dialog
         )
-        self.btn_install.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+        self.btn_install.grid(row=0, column=0, padx=4, pady=4, sticky="nsew")
 
         self.btn_light = self.create_card_btn(
             btn_grid, "⚡ 2. Очистить рекламу",
-            "Отключить рекламу и трекеры. Родной лаунчер Яндекса и Алиса остаются!",
+            "Заморозка рекламных служб и аналитики. Родной лаунчер сохранен!",
             "#1e3a5f", "#38bdf8", lambda: self.run_bg_action("light_debloat")
         )
-        self.btn_light.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+        self.btn_light.grid(row=0, column=1, padx=4, pady=4, sticky="nsew")
 
         self.btn_full = self.create_card_btn(
-            btn_grid, "🚀 3. Полный деблоат + FLauncher",
-            "Ставит приложения + чистый быстрый плиточный лаунчер FLauncher без тормозов",
+            btn_grid, "🚀 3. Полный деблоат + CleanYourTV",
+            "Ультралегкий лаунчер CleanYourTV (Apple TV Style) + заморозка тормозящей оболочки",
             "#14532d", "#4ade80", lambda: self.run_bg_action("full_debloat")
         )
-        self.btn_full.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+        self.btn_full.grid(row=1, column=0, padx=4, pady=4, sticky="nsew")
 
         self.btn_restore = self.create_card_btn(
-            btn_grid, "🔄 4. Вернуть как было (Откат)",
-            "Мгновенное восстановление всех заводских сервисов и домашнего экрана Яндекса",
+            btn_grid, "🔄 4. Заводской откат",
+            "Разморозка всех служб и возврат стандартного лаунчера системы",
             "#7f1d1d", "#f87171", lambda: self.run_bg_action("restore")
         )
-        self.btn_restore.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
+        self.btn_restore.grid(row=1, column=1, padx=4, pady=4, sticky="nsew")
 
         btn_grid.columnconfigure(0, weight=1)
         btn_grid.columnconfigure(1, weight=1)
 
-        # ----------------- КАРТОЧКА 3: УСТАНОВКА СВОЕГО APK -----------------
-        c3 = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, padx=18, pady=14)
-        c3.pack(fill="x", pady=(0, 12))
+        # ----------------- КАРТОЧКА 3: ИНСТРУМЕНТЫ 2.0 (DNS, ЛАУНЧЕР, APK) -----------------
+        c3 = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, padx=16, pady=10)
+        c3.pack(fill="x", pady=(0, 10))
 
         c3_head = tk.Frame(c3, bg=self.c_card)
-        c3_head.pack(fill="x", pady=(0, 10))
+        c3_head.pack(fill="x", pady=(0, 6))
         
         tk.Label(c3_head, text="3", font=("Segoe UI", 10, "bold"), fg="#0f172a", bg=self.c_accent,
                  width=3, height=1).pack(side="left", padx=(0, 10))
-        tk.Label(c3_head, text="Установка любого своего APK-приложения", font=("Segoe UI", 12, "bold"),
+        tk.Label(c3_head, text="Инструменты: AdGuard Private DNS, CleanYourTV и сторонний APK", font=("Segoe UI", 11, "bold"),
                  fg="#ffffff", bg=self.c_card).pack(side="left")
 
+        # Row 1: DNS and Launcher tools
+        f_tools = tk.Frame(c3, bg=self.c_card)
+        f_tools.pack(fill="x", pady=(0, 6))
+
+        tk.Button(f_tools, text="🛡️ Вкл AdGuard DNS", font=("Segoe UI", 8, "bold"), bg="#1e3a5f", fg="#38bdf8",
+                  bd=0, padx=10, pady=4, cursor="hand2", command=lambda: self.run_bg_action("dns_on")).pack(side="left", padx=(0, 6))
+        tk.Button(f_tools, text="⚪ Выкл DNS", font=("Segoe UI", 8), bg="#334155", fg="#cbd5e1",
+                  bd=0, padx=10, pady=4, cursor="hand2", command=lambda: self.run_bg_action("dns_off")).pack(side="left", padx=(0, 12))
+        tk.Button(f_tools, text="🍎 Активировать CleanYourTV", font=("Segoe UI", 8, "bold"), bg="#14532d", fg="#4ade80",
+                  bd=0, padx=10, pady=4, cursor="hand2", command=lambda: self.run_bg_action("switch_cleanyourtv")).pack(side="left", padx=(0, 6))
+        tk.Button(f_tools, text="💾 Обновить док (Топ-6)", font=("Segoe UI", 8), bg="#334155", fg="#cbd5e1",
+                  bd=0, padx=10, pady=4, cursor="hand2", command=lambda: self.run_bg_action("set_dock")).pack(side="left")
+
+        # Row 2: Custom APK
         f_apk = tk.Frame(c3, bg=self.c_card)
         f_apk.pack(fill="x")
 
-        self.ent_custom_apk = tk.Entry(f_apk, font=("Segoe UI", 10), bg=self.c_input_bg, fg="#ffffff",
+        self.ent_custom_apk = tk.Entry(f_apk, font=("Segoe UI", 9), bg=self.c_input_bg, fg="#ffffff",
                                        insertbackground="#fff", bd=1, relief="solid")
-        self.ent_custom_apk.pack(side="left", fill="x", expand=True, padx=(0, 8))
+        self.ent_custom_apk.pack(side="left", fill="x", expand=True, padx=(0, 6))
         self.ent_custom_apk.insert(0, "Выберите файл APK на компьютере...")
 
-        btn_browse = tk.Button(f_apk, text="📁 Обзор...", font=("Segoe UI", 9, "bold"),
+        btn_browse = tk.Button(f_apk, text="📁 Обзор...", font=("Segoe UI", 8, "bold"),
                                bg="#334155", fg="#ffffff", activebackground="#475569", activeforeground="#ffffff",
-                               bd=0, padx=14, pady=5, cursor="hand2", command=self.on_browse_apk)
-        btn_browse.pack(side="left", padx=(0, 8))
+                               bd=0, padx=12, pady=4, cursor="hand2", command=self.on_browse_apk)
+        btn_browse.pack(side="left", padx=(0, 6))
 
-        self.btn_install_custom = tk.Button(f_apk, text="🚀 Установить на ТВ", font=("Segoe UI", 9, "bold"),
+        self.btn_install_custom = tk.Button(f_apk, text="🚀 Установить APK", font=("Segoe UI", 8, "bold"),
                                             bg="#0284c7", fg="#ffffff", activebackground="#0369a1", activeforeground="#ffffff",
-                                            bd=0, padx=16, pady=5, cursor="hand2", command=self.on_install_custom_apk)
+                                            bd=0, padx=14, pady=4, cursor="hand2", command=self.on_install_custom_apk)
         self.btn_install_custom.pack(side="left")
 
         # ----------------- КАРТОЧКА 4: ЖИВОЙ ЛОГ ВЫПОЛНЕНИЯ -----------------
-        c4 = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=10)
-        c4.pack(fill="both", expand=True, pady=(0, 10))
+        c4 = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, padx=12, pady=8)
+        c4.pack(fill="both", expand=True, pady=(0, 8))
 
-        tk.Label(c4, text="📝 Лог выполнения операций", font=("Segoe UI", 10, "bold"),
-                 fg=self.c_muted, bg=self.c_card).pack(anchor="w", pady=(0, 6))
+        f_log_head = tk.Frame(c4, bg=self.c_card)
+        f_log_head.pack(fill="x", pady=(0, 4))
+        tk.Label(f_log_head, text="📝 Лог выполнения операций", font=("Segoe UI", 9, "bold"),
+                 fg=self.c_muted, bg=self.c_card).pack(side="left")
+        tk.Button(f_log_head, text="Очистить", font=("Segoe UI", 7), bg="#334155", fg="#cbd5e1",
+                  bd=0, padx=8, pady=1, command=self.clear_log).pack(side="right")
 
         self.txt_log = scrolledtext.ScrolledText(c4, bg="#090d16", fg="#cbd5e1", insertbackground="#fff",
-                                                 font=("Consolas", 9), bd=0, padx=8, pady=8)
+                                                 font=("Consolas", 8), bd=0, padx=6, pady=6)
         self.txt_log.pack(fill="both", expand=True)
-        self.log("Программа готова к работе. Нажмите «Проверить соединение с телевизором».")
+        self.log("Smart TV Toolbox v2.0 готов к работе. Нажмите «Проверить соединение с ТВ».")
+
+    def log(self, msg):
+        try:
+            self.txt_log.insert(tk.END, f"{msg}\n")
+            self.txt_log.see(tk.END)
+        except Exception:
+            pass
+
+    def clear_log(self):
+        try:
+            self.txt_log.delete('1.0', tk.END)
+        except Exception:
+            pass
 
     def create_card_btn(self, parent, title, desc, bg_color, fg_color, cmd):
-        f = tk.Frame(parent, bg=bg_color, highlightbackground=self.c_border, highlightthickness=1, padx=12, pady=10)
-        
-        lbl_t = tk.Label(f, text=title, font=("Segoe UI", 10, "bold"), fg=fg_color, bg=bg_color, anchor="w", justify="left")
+        f = tk.Frame(parent, bg=bg_color, highlightbackground=self.c_border, highlightthickness=1, padx=10, pady=8)
+        lbl_t = tk.Label(f, text=title, font=("Segoe UI", 9, "bold"), fg=fg_color, bg=bg_color, anchor="w", justify="left")
         lbl_t.pack(fill="x")
-        
-        lbl_d = tk.Label(f, text=desc, font=("Segoe UI", 8), fg="#cbd5e1", bg=bg_color, anchor="w", justify="left", wraplength=360)
-        lbl_d.pack(fill="x", pady=(4, 0))
+        lbl_d = tk.Label(f, text=desc, font=("Segoe UI", 8), fg="#cbd5e1", bg=bg_color, anchor="w", justify="left", wraplength=380)
+        lbl_d.pack(fill="x", pady=(2, 0))
 
-        # Make entire frame clickable
         for widget in [f, lbl_t, lbl_d]:
             widget.bind("<Button-1>", lambda e: cmd())
             widget.config(cursor="hand2")
             widget.bind("<Enter>", lambda e, frame=f: frame.config(highlightbackground=self.c_accent))
             widget.bind("<Leave>", lambda e, frame=f: frame.config(highlightbackground=self.c_border))
-        
         return f
 
     def open_install_dialog(self):
@@ -228,38 +267,25 @@ class SmartTVApp(tk.Tk):
         tk.Label(win, text="📥 Выберите набор приложений для установки", font=("Segoe UI", 12, "bold"),
                  fg="#ffffff", bg=self.c_bg, padx=15, pady=12).pack(anchor="w")
 
-        # Опция 1: Топ 6
         f_top6 = tk.Frame(win, bg="#111a2e", highlightbackground=self.c_accent, highlightthickness=1, padx=14, pady=12)
         f_top6.pack(fill="x", padx=15, pady=6)
         tk.Label(f_top6, text="⭐ Топ-набор: Кино, Музыка и Файлы (6 шт.)", font=("Segoe UI", 10, "bold"),
                  fg="#38bdf8", bg="#111a2e").pack(anchor="w")
-        tk.Label(f_top6, text="Zona, HDrezka TV (с ТВ), LAMPA (с ТВ), Spotify (с ТВ), File Manager+, Happ",
+        tk.Label(f_top6, text="Zona, HDrezka TV, LAMPA, Spotify TV, Happ, File Manager+",
                  font=("Segoe UI", 8), fg="#cbd5e1", bg="#111a2e").pack(anchor="w", pady=(2, 8))
-        tk.Button(f_top6, text="🚀 Установить этот набор (6 приложений) в 1 клик", font=("Segoe UI", 9, "bold"),
+        tk.Button(f_top6, text="🚀 Установить Топ-6 в 1 клик", font=("Segoe UI", 9, "bold"),
                   bg="#0284c7", fg="#fff", activebackground="#0369a1", activeforeground="#fff", bd=0, padx=12, pady=6,
                   cursor="hand2", command=lambda: [win.destroy(), self.run_bg_action("install", PRESETS["top6"])]).pack(anchor="w")
 
-        # Опция 2: Базовый набор
         f_base = tk.Frame(win, bg="#111a2e", highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
         f_base.pack(fill="x", padx=15, pady=6)
-        tk.Label(f_base, text="📦 Базовый стартовый комплект (5 шт.)", font=("Segoe UI", 10, "bold"),
+        tk.Label(f_base, text="📦 Базовый комплект (5 шт.)", font=("Segoe UI", 10, "bold"),
                  fg="#e2e8f0", bg="#111a2e").pack(anchor="w")
         tk.Label(f_base, text="Happ, HDrezka TV, Zona, File Manager+, SmartTube",
                  font=("Segoe UI", 8), fg="#cbd5e1", bg="#111a2e").pack(anchor="w", pady=(2, 8))
         tk.Button(f_base, text="📦 Установить базовый набор", font=("Segoe UI", 9, "bold"),
                   bg="#334155", fg="#fff", activebackground="#475569", activeforeground="#fff", bd=0, padx=12, pady=6,
                   cursor="hand2", command=lambda: [win.destroy(), self.run_bg_action("install", PRESETS["basic"])]).pack(anchor="w")
-
-        # Опция 3: Все приложения из папки apps
-        f_all = tk.Frame(win, bg="#111a2e", highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
-        f_all.pack(fill="x", padx=15, pady=6)
-        tk.Label(f_all, text="📁 Все APK-файлы из папки apps", font=("Segoe UI", 10, "bold"),
-                 fg="#e2e8f0", bg="#111a2e").pack(anchor="w")
-        tk.Label(f_all, text="Установит все .apk файлы, которые находятся в папке apps",
-                 font=("Segoe UI", 8), fg="#cbd5e1", bg="#111a2e").pack(anchor="w", pady=(2, 8))
-        tk.Button(f_all, text="📲 Установить все APK из apps", font=("Segoe UI", 9, "bold"),
-                  bg="#334155", fg="#fff", activebackground="#475569", activeforeground="#fff", bd=0, padx=12, pady=6,
-                  cursor="hand2", command=lambda: [win.destroy(), self.run_bg_action("install", "all")]).pack(anchor="w")
 
         tk.Button(win, text="Закрыть", font=("Segoe UI", 9), bg="#1e293b", fg="#94a3b8", bd=0, padx=14, pady=4,
                   command=win.destroy).pack(anchor="e", padx=15, pady=10)
@@ -281,11 +307,8 @@ class SmartTVApp(tk.Tk):
         
         def worker():
             self.set_busy(True, f"⏳ Установка {os.path.basename(apk_path)} на ТВ...")
-            ip = self.ent_ip.get().strip()
-            if ip.lower() in ["автопоиск", "auto", ""]:
-                ip = self.current_ip
-            
-            connected_ip = self.connect_tv(ip)
+            ip = self.get_target_ip()
+            connected_ip = tv_manager.connect_adb(ip)
             if not connected_ip:
                 self.log("❌ Ошибка: нет связи с телевизором по ADB!")
                 self.lbl_status.config(text="❌ Ошибка: телевизор не отвечает.", fg=self.c_danger)
@@ -295,14 +318,20 @@ class SmartTVApp(tk.Tk):
             self.log(f"\n[>] Загрузка и установка {os.path.basename(apk_path)}...")
             res = subprocess.run([ADB, "-s", f"{connected_ip}:5555", "install", "-r", apk_path], capture_output=True, text=True)
             if "Success" in res.stdout or "Success" in res.stderr:
-                self.log(f"✅ УСПЕХ! Приложение {os.path.basename(apk_path)} успешно установлено на телевизор!")
-                self.lbl_status.config(text=f"✅ {os.path.basename(apk_path)} успешно установлено!", fg=self.c_success)
+                self.log(f"✅ УСПЕХ! Приложение {os.path.basename(apk_path)} установлено!")
+                self.lbl_status.config(text=f"✅ {os.path.basename(apk_path)} установлено!", fg=self.c_success)
             else:
                 self.log(f"❌ Ошибка установки: {res.stdout.strip()} {res.stderr.strip()}")
                 self.lbl_status.config(text=f"❌ Ошибка установки {os.path.basename(apk_path)}", fg=self.c_danger)
             self.set_busy(False)
 
         threading.Thread(target=worker, daemon=True).start()
+
+    def get_target_ip(self):
+        ip = self.ent_ip.get().strip()
+        if ip.lower() in ["автопоиск", "auto", ""]:
+            return self.current_ip
+        return ip
 
     def set_busy(self, is_busy, msg=""):
         state = tk.DISABLED if is_busy else tk.NORMAL
@@ -315,224 +344,81 @@ class SmartTVApp(tk.Tk):
         def worker():
             self.set_busy(True, "⏳ Поиск телевизора в сети и проверка ADB...")
             self.log("\n[>] Запуск проверки соединения...")
-            
-            ip = self.ent_ip.get().strip()
-            if ip.lower() in ["автопоиск", "auto", ""]:
-                ip = None
-            
-            found_ip = self.connect_tv(ip)
-            if not found_ip:
+            ip = self.get_target_ip()
+            data = tv_manager.action_test_connection(ip)
+            if not data:
                 self.log("❌ Не удалось найти телевизор или порт 5555 закрыт.")
-                self.lbl_status.config(text="❌ Ошибка: нет связи с ТВ. Убедитесь, что в Factory Menu включен ADB -> ON.", fg=self.c_danger)
+                self.lbl_status.config(text="❌ Ошибка: нет связи с ТВ. Включите отладку ADB.", fg=self.c_danger)
                 self.set_busy(False)
                 return
 
-            self.current_ip = found_ip
+            self.current_ip = data.get("ip")
             self.ent_ip.delete(0, tk.END)
-            self.ent_ip.insert(0, found_ip)
+            self.ent_ip.insert(0, data.get("ip"))
 
-            model = self.adb_shell("getprop ro.product.model")
-            brand = self.adb_shell("getprop ro.product.brand")
-            android_v = self.adb_shell("getprop ro.build.version.release")
-            launcher = self.adb_shell("cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME")
-            cur_launcher = launcher.splitlines()[-1] if launcher else "Стандартный"
-
-            self.log(f"✅ УСПЕХ! Подключено к {found_ip}:5555")
-            self.log(f"   Модель: {brand} {model} | Android: {android_v} | Лаунчер: {cur_launcher}")
-            
-            status_text = f"✅ Телевизор на связи! ({brand} {model}, Android {android_v}) — Готов к операциям"
-            self.lbl_status.config(text=status_text, fg=self.c_success)
+            dns_msg = "AdGuard DNS: ВКЛ" if (data.get("dns_mode") == "hostname" and "adguard" in str(data.get("dns_specifier")).lower()) else "Стандартный DNS"
+            self.log(f"✅ УСПЕХ! Подключено к {data.get('ip')}:5555 ({data.get('brand')} {data.get('model')}, Android {data.get('android')})")
+            self.lbl_status.config(
+                text=f"✅ НА СВЯЗИ: {data.get('brand')} {data.get('model')} (Android {data.get('android')}) | {dns_msg}",
+                fg=self.c_success
+            )
             self.set_busy(False)
 
         threading.Thread(target=worker, daemon=True).start()
 
-    def run_bg_action(self, action_name, apks_list=None):
+    def run_bg_action(self, action_name, param=None):
         def worker():
-            self.set_busy(True, f"⏳ Выполняется операция '{action_name}'...")
-            ip = self.ent_ip.get().strip()
-            if ip.lower() in ["автопоиск", "auto", ""]:
-                ip = self.current_ip
-            
-            connected_ip = self.connect_tv(ip)
+            self.set_busy(True, "⏳ Выполнение операции на телевизоре...")
+            ip = self.get_target_ip()
+            connected_ip = tv_manager.connect_adb(ip)
             if not connected_ip:
                 self.log("❌ Ошибка: нет связи с телевизором по ADB!")
                 self.lbl_status.config(text="❌ Ошибка: телевизор не отвечает.", fg=self.c_danger)
                 self.set_busy(False)
                 return
 
-            if action_name == "install":
-                if apks_list and isinstance(apks_list, list):
-                    apks = apks_list
-                elif apks_list == "basic":
-                    apks = PRESETS["basic"]
-                elif apks_list == "all":
-                    apks = [f for f in os.listdir(APPS_DIR) if f.lower().endswith(".apk")]
-                else:
-                    apks = PRESETS["top6"]
+            self.current_ip = connected_ip
+            tv_type = self.current_platform.get()
 
-                self.log(f"\n[>] Подгрузка приложений ({len(apks)} шт.)...")
-                installed_count = 0
-                for apk in apks:
-                    p = os.path.join(APPS_DIR, apk)
-                    if os.path.exists(p):
-                        self.log(f" • Установка {apk}...")
-                        res = subprocess.run([ADB, "-s", f"{connected_ip}:5555", "install", "-r", p], capture_output=True, text=True)
-                        if "Success" in res.stdout or "Success" in res.stderr:
-                            self.log(f"   ✓ {apk} успешно установлено!")
-                            installed_count += 1
-                        else:
-                            self.log(f"   ! {apk}: {res.stdout.strip()}")
-                    else:
-                        self.log(f"   ! Файл не найден: {apk}")
-                self.lbl_status.config(text=f"✅ Подгрузка завершена! Установлено: {installed_count} из {len(apks)}", fg=self.c_success)
+            if action_name == "install":
+                tv_manager.action_install_apps(connected_ip, param or "top6")
+                self.lbl_status.config(text="✅ Приложения успешно подгружены на ТВ!", fg=self.c_success)
 
             elif action_name == "light_debloat":
-                self.log("\n[>] Легкая очистка рекламы (Яндекс лаунчер и Алиса сохраняются)...")
-                pkgs = [
-                    "com.yandex.android.advid",
-                    "com.yandex.tv.bugreportsender",
-                    "com.yandex.launcher.updaterapp",
-                    "com.yandex.tv.daydream",
-                    "com.yandex.browser.tv"
-                ]
-                for pkg in pkgs:
-                    self.adb_shell(f"pm uninstall --user 0 {pkg}")
-                    self.adb_shell(f"am force-stop {pkg}")
-                    self.log(f" • Отключено: {pkg}")
-                self.log("✅ Реклама и трекеры отключены!")
-                self.lbl_status.config(text="✅ Легкая очистка выполнена! Реклама удалена.", fg=self.c_success)
+                tv_manager.action_light_debloat(connected_ip, tv_type)
+                self.lbl_status.config(text="✅ Реклама и фоновая аналитика отключены!", fg=self.c_success)
 
             elif action_name == "full_debloat":
-                self.log("\n[>] Полный деблоат и переключение на чистый FLauncher...")
-                fl_apk = os.path.join(APPS_DIR, "flauncher.apk")
-                if os.path.exists(fl_apk):
-                    self.log(" • Проверка/установка FLauncher...")
-                    subprocess.run([ADB, "-s", f"{connected_ip}:5555", "install", "-r", fl_apk], capture_output=True)
-                
-                self.log(" • Назначение FLauncher домашним экраном...")
-                self.adb_shell("cmd package set-home-activity me.efesser.flauncher/.MainActivity")
-
-                pkgs = [
-                    "com.yandex.tv.alice", "com.yandex.tv.home", "com.yandex.tv.music",
-                    "com.yandex.browser.tv", "com.yandex.tv.live", "com.yandex.tv.input.efir",
-                    "com.yandex.tv.daydream", "com.yandex.tv.bugreportsender",
-                    "com.yandex.android.advid", "com.yandex.tv.ytplayer",
-                    "com.yandex.tv.webplayer", "com.yandex.tv.videoplayer",
-                    "com.yandex.launcher.updaterapp"
-                ]
-                for pkg in pkgs:
-                    self.adb_shell(f"pm uninstall --user 0 {pkg}")
-                    self.adb_shell(f"am force-stop {pkg}")
-                    self.log(f" • Отключено: {pkg}")
-                self.adb_shell("am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-                self.log("✅ Полный деблоат завершен! Домашний экран переведен на FLauncher.")
-                self.lbl_status.config(text="✅ Полный деблоат завершен! FLauncher активен.", fg=self.c_success)
+                tv_manager.action_full_debloat(connected_ip, tv_type, "cleanyourtv")
+                self.lbl_status.config(text="✅ Полный деблоат завершен! CleanYourTV активен.", fg=self.c_success)
 
             elif action_name == "restore":
-                self.log("\n[>] Восстановление стандартного Яндекс ТВ...")
-                pkgs = [
-                    "com.yandex.tv.alice", "com.yandex.tv.home", "com.yandex.tv.music",
-                    "com.yandex.browser.tv", "com.yandex.tv.live", "com.yandex.tv.input.efir",
-                    "com.yandex.tv.daydream", "com.yandex.tv.bugreportsender",
-                    "com.yandex.android.advid", "com.yandex.tv.ytplayer",
-                    "com.yandex.tv.webplayer", "com.yandex.tv.videoplayer",
-                    "com.yandex.launcher.updaterapp"
-                ]
-                for pkg in pkgs:
-                    res = self.adb_shell(f"cmd package install-existing {pkg}")
-                    self.log(f" • Восстановлено: {pkg}")
-                self.adb_shell("cmd package set-home-activity com.yandex.tv.home/.HomeActivity")
-                self.adb_shell("am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-                self.log("✅ Все сервисы восстановлены! Домашний экран Яндекса возвращен.")
-                self.lbl_status.config(text="✅ Все службы восстановлены! Родной экран Яндекса возвращен.", fg=self.c_success)
+                tv_manager.action_restore(connected_ip, tv_type)
+                self.lbl_status.config(text="✅ Все службы восстановлены в заводское состояние!", fg=self.c_success)
+
+            elif action_name == "dns_on":
+                tv_manager.action_set_dns(connected_ip, True)
+                self.lbl_status.config(text="✅ AdGuard Private DNS включен!", fg=self.c_success)
+
+            elif action_name == "dns_off":
+                tv_manager.action_set_dns(connected_ip, False)
+                self.lbl_status.config(text="⚪ Private DNS отключен.", fg=self.c_text)
+
+            elif action_name == "switch_cleanyourtv":
+                tv_manager.action_switch_launcher(connected_ip, "cleanyourtv")
+                self.lbl_status.config(text="✅ CleanYourTV сделан основным лаунчером!", fg=self.c_success)
+
+            elif action_name == "set_dock":
+                tv_manager.action_set_dock(connected_ip)
+                self.lbl_status.config(text="✅ Док CleanYourTV настроен!", fg=self.c_success)
 
             self.set_busy(False)
 
         threading.Thread(target=worker, daemon=True).start()
 
-    def connect_tv(self, ip=None):
-        if not os.path.exists(ADB):
-            self.log(f"❌ adb.exe не найден по пути {ADB}")
-            return None
-
-        # 0. Проверяем уже подключенные
-        try:
-            devs = subprocess.check_output([ADB, "devices"]).decode('utf-8', errors='ignore')
-            for line in devs.splitlines():
-                if ":5555\tdevice" in line:
-                    active_ip = line.split(":5555")[0].strip()
-                    return active_ip
-        except Exception:
-            pass
-
-        # 1. mDNS опрос
-        if not ip:
-            self.log("[*] Поиск телевизора через mDNS (_yandexio)...")
-            try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
-                sock.settimeout(1.5)
-                sock.bind(('', 0))
-                header = b'\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00'
-                q = b'\x09_yandexio\x04_tcp\x05local\x00\x00\x0c\x00\x01'
-                sock.sendto(header + q, ('224.0.0.251', 5353))
-                start = time.time()
-                while time.time() - start < 2.0:
-                    try:
-                        buf, addr = sock.recvfrom(2048)
-                        if b'yandex' in buf.lower():
-                            ip = addr[0]
-                            self.log(f"[*] Найдено устройство: {ip}")
-                            break
-                    except socket.timeout:
-                        break
-                sock.close()
-            except Exception:
-                pass
-
-        # 2. ARP кэш
-        if not ip:
-            self.log("[*] Сканирование ARP-кэша...")
-            try:
-                arp_out = subprocess.check_output("arp -a", shell=True).decode('cp866', errors='ignore')
-                for line in arp_out.splitlines():
-                    p = line.strip().split()
-                    if len(p) >= 2 and p[0].count('.') == 3 and not p[0].startswith('224.') and not p[0].startswith('239.'):
-                        s = socket.socket()
-                        s.settimeout(0.2)
-                        if s.connect_ex((p[0], 5555)) == 0:
-                            ip = p[0]
-                            s.close()
-                            self.log(f"[*] Найден открытый порт 5555 на {ip}")
-                            break
-                        s.close()
-            except Exception:
-                pass
-
-        if not ip:
-            return None
-
-        self.log(f"[*] Подключение по ADB к {ip}:5555 ...")
-        subprocess.run([ADB, "connect", f"{ip}:5555"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(1)
-
-        devs = subprocess.check_output([ADB, "devices"]).decode('utf-8', errors='ignore')
-        if "device\n" in devs or "device\r" in devs or f"{ip}:5555\tdevice" in devs:
-            return ip
-        return None
-
-    def adb_shell(self, cmd):
-        ip = self.current_ip
-        if not ip:
-            return ""
-        res = subprocess.run([ADB, "-s", f"{ip}:5555", "shell", cmd], capture_output=True, text=True)
-        return res.stdout.strip()
-
-    def log(self, text):
-        self.txt_log.insert(tk.END, text + "\n")
-        self.txt_log.see(tk.END)
-
-if __name__ == "__main__":
+def main():
     app = SmartTVApp()
     app.mainloop()
+
+if __name__ == '__main__':
+    main()
