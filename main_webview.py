@@ -9,11 +9,13 @@ import socket
 
 # Path resolution for PyInstaller
 if getattr(sys, 'frozen', False):
-    MEIPASS_DIR = getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
     BASE_DIR = os.path.dirname(sys.executable)
-    HTML_FILE = os.path.join(MEIPASS_DIR, "app_ui.html")
-    if not os.path.exists(HTML_FILE):
+    MEIPASS_DIR = getattr(sys, '_MEIPASS', BASE_DIR)
+    # Check if updated app_ui.html exists next to executable
+    if os.path.exists(os.path.join(BASE_DIR, "app_ui.html")):
         HTML_FILE = os.path.join(BASE_DIR, "app_ui.html")
+    else:
+        HTML_FILE = os.path.join(MEIPASS_DIR, "app_ui.html")
 else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     HTML_FILE = os.path.join(BASE_DIR, "app_ui.html")
@@ -50,6 +52,11 @@ def get_apps_dir():
             return c
     return os.path.join(BASE_DIR, "apps")
 
+PRESETS = {
+    "top6": ["zona.apk", "hdrezka.apk", "lampa.apk", "spotify.apk", "filemanager_plus.apk", "Happ.apk"],
+    "basic": ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
+}
+
 class SmartTV_API:
     def __init__(self):
         self._window = None
@@ -85,21 +92,6 @@ class SmartTV_API:
                     return ip, None
         except Exception:
             pass
-
-        if not ip:
-            # Быстрая проверка известных адресов в подсети
-            for k_ip in ["192.168.3.54"]:
-                try:
-                    s = socket.socket()
-                    s.settimeout(0.3)
-                    if s.connect_ex((k_ip, 5555)) == 0:
-                        ip = k_ip
-                        s.close()
-                        self._log_js(f"Телевизор обнаружен по адресу: {ip}")
-                        break
-                    s.close()
-                except Exception:
-                    pass
 
         if not ip:
             self._log_js("Поиск устройства в сети через mDNS...")
@@ -214,7 +206,18 @@ class SmartTV_API:
                 "details": str(e)
             }
 
-    def run_action(self, action, manual_ip=None):
+    def get_available_apps(self):
+        apps_dir = get_apps_dir()
+        apps_list = []
+        if os.path.exists(apps_dir):
+            for f in sorted(os.listdir(apps_dir)):
+                if f.lower().endswith(".apk"):
+                    fp = os.path.join(apps_dir, f)
+                    size_mb = round(os.path.getsize(fp) / (1024 * 1024), 1)
+                    apps_list.append({"filename": f, "size_mb": size_mb})
+        return apps_list
+
+    def run_action(self, action, manual_ip=None, apps_list=None, *args, **kwargs):
         adb = get_adb_path()
         apps_dir = get_apps_dir()
         
@@ -224,14 +227,20 @@ class SmartTV_API:
 
         try:
             if action == "install":
-                self._log_js("Установка пакета приложений...")
-                apks = ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
+                if apps_list and isinstance(apps_list, list) and len(apps_list) > 0:
+                    apks = apps_list
+                elif apps_list == "basic":
+                    apks = PRESETS["basic"]
+                else:
+                    apks = PRESETS["top6"]
+
+                self._log_js(f"Подгрузка приложений ({len(apks)} шт.)...")
                 installed_count = 0
                 for apk in apks:
                     p = os.path.join(apps_dir, apk)
                     if os.path.exists(p):
                         self._log_js(f" • Установка {apk}...")
-                        res = subprocess.run([adb, "-s", f"{ip}:5555", "install", "-r", p], capture_output=True, text=True, timeout=60)
+                        res = subprocess.run([adb, "-s", f"{ip}:5555", "install", "-r", p], capture_output=True, text=True, timeout=90)
                         if "Success" in res.stdout or "Success" in res.stderr:
                             self._log_js(f"   ✓ {apk} успешно установлено!")
                             installed_count += 1
@@ -239,7 +248,7 @@ class SmartTV_API:
                             self._log_js(f"   ! {apk}: {res.stdout.strip()} {res.stderr.strip()}")
                     else:
                         self._log_js(f"   ! Файл не найден: {apk}")
-                return {"success": True, "message": f"Установка завершена! Успешно обработано: {installed_count} приложений."}
+                return {"success": True, "message": f"Подгрузка завершена! Успешно установлено: {installed_count} из {len(apks)}."}
 
             elif action == "light_debloat":
                 self._log_js("Очистка рекламы (Яндекс остается)...")
@@ -295,6 +304,9 @@ class SmartTV_API:
             return {"success": False, "message": "Неизвестное действие"}
         except Exception as e:
             return {"success": False, "message": f"Ошибка выполнения действия: {e}"}
+
+    def install_selected_apps(self, apps_list, manual_ip=None):
+        return self.run_action("install", manual_ip=manual_ip, apps_list=apps_list)
 
     def browse_file(self):
         if not self._window:

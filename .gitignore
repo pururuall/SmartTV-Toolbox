@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+*.spec
+home_screen.png
+*.log

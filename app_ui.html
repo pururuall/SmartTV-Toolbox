@@ -233,7 +233,7 @@
 
     .apps-preview {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 14px;
       margin-top: 15px;
     }
@@ -245,8 +245,8 @@
       padding: 14px;
     }
 
-    .app-item strong { display: block; color: #fff; margin-bottom: 4px; font-size: 1rem; }
-    .app-item span { font-size: 0.88rem; color: var(--text-muted); }
+    .app-item strong { display: block; color: #fff; margin-bottom: 4px; font-size: 0.98rem; }
+    .app-item span { font-size: 0.85rem; color: var(--text-muted); }
 
     .screen-img {
       width: 100%;
@@ -360,6 +360,178 @@
       user-select: text;
     }
 
+    /* Modal Dialog Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-dialog {
+      background: var(--card-bg);
+      border: 1px solid var(--accent);
+      border-radius: 18px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px var(--accent-glow);
+      padding: 26px;
+      animation: modalIn 0.25s ease-out;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .modal-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover { color: #fff; }
+
+    .preset-card {
+      background: #111a2e;
+      border: 1px solid #293854;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+
+    .preset-card.highlight {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.14), rgba(34, 197, 94, 0.12));
+      border: 1px solid rgba(56, 189, 248, 0.5);
+    }
+
+    .preset-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preset-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      background: #090d16;
+      border: 1px solid var(--card-border);
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      color: #bae6fd;
+      font-weight: 600;
+    }
+
+    .pill.from-tv {
+      border-color: #22c55e;
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .btn-preset-go {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+    }
+
+    .btn-preset-go:hover {
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+      transform: translateY(-1px);
+    }
+
+    .btn-preset-secondary {
+      background: #243047;
+      border: 1px solid #3b4d6b;
+      color: #cbd5e1;
+      box-shadow: none;
+    }
+
+    .btn-preset-secondary:hover {
+      background: #2d3d5a;
+      color: #fff;
+    }
+
+    .app-check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .app-check-item:hover {
+      background: #151e2e;
+    }
+
+    .app-check-item input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
     footer {
       text-align: center;
       color: var(--text-muted);
@@ -376,7 +548,7 @@
     <header>
       <div class="badge">SMART TV TOOLBOX — ПАНЕЛЬ УПРАВЛЕНИЯ</div>
       <h1>Прокачка и Очистка Smart TV (Tuvio / Яндекс ТВ)</h1>
-      <p class="lead">Пошаговое руководство: как открыть скрытый доступ к отладке (ADB), проверить связь прямо отсюда, установить Happ, Zona, HDrezka, убрать рекламу или переключиться на чистый FLauncher.</p>
+      <p class="lead">Пошаговое руководство: как открыть скрытый доступ к отладке (ADB), проверить связь прямо отсюда, подгрузить приложения (Zona, HDrezka, Lampa, Spotify, File Manager+, Happ), убрать рекламу или переключиться на чистый FLauncher.</p>
     </header>
 
     <!-- ШАГ 1: ТВ + ИНТЕРАКТИВНАЯ КНОПКА ПРОВЕРКИ -->
@@ -446,9 +618,10 @@
       <p>Выберите нужное действие кликом по карточке ниже:</p>
 
       <div class="btn-grid">
-        <div class="action-btn" onclick="runAction('install')">
-          <div class="btn-header">📦 1. Установить приложения</div>
-          <div class="btn-desc">Закидывает на телевизор полный набор (Happ, HDrezka TV 1.4.0, Zona, File Manager+ и SmartTube). Родной лаунчер и настройки ТВ не меняются!</div>
+        <!-- КНОПКА ПОДГРУЗКИ ПРИЛОЖЕНИЙ С ВЫБОРОМ НАБОРА -->
+        <div class="action-btn" onclick="openInstallModal()">
+          <div class="btn-header">📥 1. Подгрузка приложений</div>
+          <div class="btn-desc">Выбор набора: Топ 6 в 1 клик (Zona, HDrezka, Lampa, Spotify, File Manager+, Happ), базовый набор или выбор отдельных APK.</div>
         </div>
 
         <div class="action-btn" onclick="runAction('light_debloat')">
@@ -473,6 +646,87 @@
         <div>📺</div>
         <div>
           <strong>Внимание при первом подключении:</strong> На экране ТВ появится системное окно: <em>«Разрешить отладку по USB с этого компьютера?»</em>. Обязательно поставьте галочку <strong>«Всегда разрешать»</strong> и нажмите <strong>ОК</strong> пультом!
+        </div>
+      </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: ВЫБОР НАБОРА ПРИЛОЖЕНИЙ ДЛЯ ПОДГРУЗКИ -->
+    <div id="installModal" class="modal-overlay" onclick="closeInstallModalOnBackdrop(event)">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span>📥</span>
+            <span>Подгрузка приложений на телевизор</span>
+          </div>
+          <button class="modal-close" onclick="closeInstallModal()">&times;</button>
+        </div>
+
+        <!-- ВАРИАНТ 1: ОСНОВНОЙ ТОП-НАБОР В 1 КЛИК -->
+        <div class="preset-card highlight">
+          <div class="preset-title">
+            <span>⭐</span>
+            <span>Топ-набор: Кино, Музыка и Файлы (6 приложений)</span>
+          </div>
+          <div class="preset-desc">
+            Установка полного мультимедийного набора под пульт телевизора в одно нажатие:
+          </div>
+          <div class="pills-row">
+            <span class="pill">⚡ Zona</span>
+            <span class="pill from-tv">🎬 HDrezka TV (с ТВ)</span>
+            <span class="pill from-tv">🎥 LAMPA (с ТВ)</span>
+            <span class="pill from-tv">🎵 Spotify (с ТВ)</span>
+            <span class="pill">📂 File Manager +</span>
+            <span class="pill">📱 Happ</span>
+          </div>
+          <button class="btn-preset-go" onclick="runPresetInstall('top6')">
+            <span>🚀 Установить этот набор (6 приложений) в 1 клик</span>
+          </button>
+        </div>
+
+        <!-- ВАРИАНТ 2: БАЗОВЫЙ НАБОР -->
+        <div class="preset-card">
+          <div class="preset-title">
+            <span>📦</span>
+            <span>Базовый набор (5 приложений)</span>
+          </div>
+          <div class="preset-desc">
+            Прежний стартовый комплект: Happ, HDrezka TV, Zona, File Manager+ и SmartTube.
+          </div>
+          <div class="pills-row">
+            <span class="pill">📱 Happ</span>
+            <span class="pill from-tv">🎬 HDrezka TV</span>
+            <span class="pill">⚡ Zona</span>
+            <span class="pill">📂 File Manager +</span>
+            <span class="pill">📺 SmartTube</span>
+          </div>
+          <button class="btn-preset-go btn-preset-secondary" onclick="runPresetInstall('basic')">
+            <span>📦 Установить базовый набор</span>
+          </button>
+        </div>
+
+        <!-- ВАРИАНТ 3: РУЧНОЙ ВЫБОР ИЗ ПАПКИ APPS -->
+        <div class="preset-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div class="preset-title" style="margin-bottom: 0;">
+              <span>🛠</span>
+              <span>Выбор отдельных приложений из папки apps:</span>
+            </div>
+            <div style="font-size: 0.85rem; display: flex; gap: 8px;">
+              <a href="javascript:void(0)" onclick="toggleAllApps(true)" style="color: var(--accent); text-decoration: none;">Выбрать все</a>
+              <span style="color: var(--card-border);">|</span>
+              <a href="javascript:void(0)" onclick="toggleAllApps(false)" style="color: var(--text-muted); text-decoration: none;">Снять все</a>
+            </div>
+          </div>
+          <div id="appsCheckboxList" style="max-height: 180px; overflow-y: auto; margin: 10px 0;">
+            <!-- Будет заполнено JS динамически -->
+          </div>
+          <button class="btn-preset-go btn-preset-secondary" onclick="runCustomSelectionInstall()">
+            <span>📲 Установить выбранные галочками</span>
+          </button>
+        </div>
+
+        <div style="text-align: right; margin-top: 15px;">
+          <button class="btn-secondary" onclick="closeInstallModal()">Закрыть</button>
         </div>
       </div>
     </div>
@@ -514,20 +768,28 @@
 
       <div class="apps-preview">
         <div class="app-item">
-          <strong>📱 Happ (Proxy Utility)</strong>
-          <span>Приложение и прокси-утилита для стабильной работы и быстрой синхронизации со смартфоном через QR-код.</span>
-        </div>
-        <div class="app-item">
-          <strong>🎬 HDrezka TV (v1.4.0)</strong>
-          <span>Огромный каталог фильмов и сериалов со всеми популярными озвучками и плеером под пульт.</span>
-        </div>
-        <div class="app-item">
           <strong>⚡ Zona</strong>
           <span>Бесплатные фильмы и сериалы в отличном качестве с быстрой загрузкой без зависаний.</span>
         </div>
         <div class="app-item">
+          <strong>🎬 HDrezka TV (с ТВ)</strong>
+          <span>Огромный каталог фильмов и сериалов со всеми популярными озвучками и плеером под пульт.</span>
+        </div>
+        <div class="app-item">
+          <strong>🎥 LAMPA (с ТВ)</strong>
+          <span>Мощный мультимедийный плеер для онлайн-кинотеатров и просмотра торрентов прямо на ТВ.</span>
+        </div>
+        <div class="app-item">
+          <strong>🎵 Spotify TV (с ТВ)</strong>
+          <span>Музыкальный стриминг с интерфейсом под телевизор и управление с пульта или смартфона.</span>
+        </div>
+        <div class="app-item">
           <strong>📂 File Manager +</strong>
           <span>Удобный файловый менеджер для флешек, сети и APK-файлов с оптимизацией под ТВ.</span>
+        </div>
+        <div class="app-item">
+          <strong>📱 Happ (Proxy Utility)</strong>
+          <span>Приложение и прокси-утилита для стабильной работы и быстрой синхронизации со смартфоном через QR-код.</span>
         </div>
         <div class="app-item">
           <strong>📺 SmartTube</strong>
@@ -560,7 +822,7 @@
       </div>
 
       <div style="margin-top: 20px;">
-        <h4 style="color: var(--accent); margin-bottom: 8px;">Обновленная HDrezka TV 1.4.0:</h4>
+        <h4 style="color: var(--accent); margin-bottom: 8px;">Обновленная HDrezka TV:</h4>
         <img src="img/hdrezka_screen.png" alt="Скриншот HDrezka" class="screen-img">
       </div>
     </div>
@@ -585,10 +847,116 @@
   </div>
 
   <script>
+    // Список приложений по умолчанию для модального окна
+    const KNOWN_APPS = [
+      { filename: "zona.apk", name: "⚡ Zona", desc: "Онлайн-кинотеатр" },
+      { filename: "hdrezka.apk", name: "🎬 HDrezka TV", desc: "Фильмы и сериалы (с ТВ)" },
+      { filename: "lampa.apk", name: "🎥 LAMPA", desc: "Медиаплеер и торренты (с ТВ)" },
+      { filename: "spotify.apk", name: "🎵 Spotify TV", desc: "Музыка под пульт (с ТВ)" },
+      { filename: "filemanager_plus.apk", name: "📂 File Manager +", desc: "Файловый менеджер" },
+      { filename: "Happ.apk", name: "📱 Happ", desc: "Прокси-утилита" },
+      { filename: "smarttube.apk", name: "📺 SmartTube", desc: "YouTube без рекламы" },
+      { filename: "flauncher.apk", name: "🚀 FLauncher", desc: "Легкий домашний экран" }
+    ];
+
     function addLog(msg) {
       const box = document.getElementById('consoleLog');
       box.innerHTML += '<br>' + msg;
       box.scrollTop = box.scrollHeight;
+    }
+
+    // Управление модальным окном
+    function openInstallModal() {
+      populateAppsCheckboxes();
+      const modal = document.getElementById('installModal');
+      modal.style.display = 'flex';
+    }
+
+    function closeInstallModal() {
+      const modal = document.getElementById('installModal');
+      modal.style.display = 'none';
+    }
+
+    function closeInstallModalOnBackdrop(e) {
+      if (e.target && e.target.id === 'installModal') {
+        closeInstallModal();
+      }
+    }
+
+    async function populateAppsCheckboxes() {
+      const listEl = document.getElementById('appsCheckboxList');
+      if (listEl.children.length > 0) return; // уже заполнено
+
+      let apps = KNOWN_APPS;
+      try {
+        if (window.pywebview && window.pywebview.api && window.pywebview.api.get_available_apps) {
+          const remoteApps = await window.pywebview.api.get_available_apps();
+          if (remoteApps && remoteApps.length > 0) {
+            apps = remoteApps.map(r => {
+              const matched = KNOWN_APPS.find(k => k.filename.toLowerCase() === r.filename.toLowerCase());
+              return {
+                filename: r.filename,
+                name: matched ? matched.name : `📦 ${r.filename}`,
+                desc: matched ? matched.desc : `${r.size_mb} МБ`
+              };
+            });
+          }
+        } else {
+          const res = await fetch('/api/get_apps');
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.apps && data.apps.length > 0) {
+              apps = data.apps.map(r => {
+                const matched = KNOWN_APPS.find(k => k.filename.toLowerCase() === r.filename.toLowerCase());
+                return {
+                  filename: r.filename,
+                  name: matched ? matched.name : `📦 ${r.filename}`,
+                  desc: matched ? matched.desc : `${r.size_mb} МБ`
+                };
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.log('Используется локальный список приложений:', e);
+      }
+
+      listEl.innerHTML = apps.map((app, idx) => `
+        <label class="app-check-item">
+          <input type="checkbox" name="selectedApp" value="${app.filename}" checked>
+          <span style="font-weight: 600; color: #fff;">${app.name}</span>
+          <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: auto;">${app.desc}</span>
+        </label>
+      `).join('');
+    }
+
+    function toggleAllApps(checked) {
+      const checkboxes = document.querySelectorAll('#appsCheckboxList input[type="checkbox"]');
+      checkboxes.forEach(cb => cb.checked = checked);
+    }
+
+    function runPresetInstall(preset) {
+      closeInstallModal();
+      let apks;
+      if (preset === 'top6') {
+        apks = ["zona.apk", "hdrezka.apk", "lampa.apk", "spotify.apk", "filemanager_plus.apk", "Happ.apk"];
+      } else if (preset === 'basic') {
+        apks = ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"];
+      } else {
+        apks = preset;
+      }
+      runAction('install', apks);
+    }
+
+    function runCustomSelectionInstall() {
+      const checkedBoxes = document.querySelectorAll('#appsCheckboxList input[type="checkbox"]:checked');
+      const selected = Array.from(checkedBoxes).map(cb => cb.value);
+      if (selected.length === 0) {
+        alert('Пожалуйста, выберите хотя бы одно приложение галочкой!');
+        return;
+      }
+      closeInstallModal();
+      runAction('install', selected);
     }
 
     async function runConnectionTest() {
@@ -602,7 +970,6 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> <span>Поиск телевизора в сети и проверка ADB...</span>';
       
-      // Показываем статус прямо в пункте 1 сразу при нажатии!
       res.style.display = 'block';
       res.style.background = 'rgba(56, 189, 248, 0.12)';
       res.style.border = '1px solid rgba(56, 189, 248, 0.35)';
@@ -626,7 +993,6 @@
         if (window.pywebview && window.pywebview.api) {
           data = await window.pywebview.api.test_connection(manualIp);
         } else {
-          // fallback fetch if running on server
           const response = await fetch('/api/test_connection', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -656,7 +1022,7 @@
               • <strong>Статус отладки:</strong> <span style="color: #4ade80; font-weight: bold;">РАЗРЕШЕНО (Полный доступ)</span>
             </div>
             <div style="font-size: 0.92rem; color: #86efac;">
-              🎉 Отладка успешно активирована! Теперь можно переходить к установке приложений или очистке в Шаге 2 ниже.
+              🎉 Отладка успешно активирована! Теперь можно переходить к подгрузке приложений или очистке в Шаге 2 ниже.
             </div>
           `;
           res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -700,13 +1066,14 @@
       btn.innerHTML = '<span>📡 Проверить соединение с телевизором</span>';
     }
 
-    async function runAction(action) {
+    async function runAction(action, appsList = null) {
       const status = document.getElementById('actionStatus');
       status.style.display = 'block';
       status.className = 'alert alert-info';
       status.innerHTML = '<span class="spinner"></span> <strong>Выполняется операция на телевизоре...</strong> Пожалуйста, подождите.';
 
-      addLog(`[>] Запуск действия: ${action}...`);
+      const actionName = action === 'install' ? 'подгрузка приложений' : action;
+      addLog(`[>] Запуск действия: ${actionName}...`);
       try {
         let data;
         let manualIp = document.getElementById('manualIpInput').value.trim();
@@ -715,12 +1082,16 @@
         }
 
         if (window.pywebview && window.pywebview.api) {
-          data = await window.pywebview.api.run_action(action, manualIp);
+          if (action === 'install' && window.pywebview.api.install_selected_apps && appsList) {
+            data = await window.pywebview.api.install_selected_apps(appsList, manualIp);
+          } else {
+            data = await window.pywebview.api.run_action(action, manualIp, appsList);
+          }
         } else {
           const res = await fetch('/api/run_action', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: action, ip: manualIp })
+            body: JSON.stringify({ action: action, ip: manualIp, apks: appsList })
           });
           data = await res.json();
         }
@@ -728,11 +1099,11 @@
         if (data.success) {
           status.className = 'alert alert-success';
           status.innerHTML = '✅ ' + data.message;
-          addLog(`[✓] Действие ${action} успешно завершено!`);
+          addLog(`[✓] Действие успешно завершено! ${data.message}`);
         } else {
           status.className = 'alert alert-danger';
           status.innerHTML = '❌ ' + data.message;
-          addLog(`[✗] Ошибка выполнения ${action}: ${data.message}`);
+          addLog(`[✗] Ошибка: ${data.message}`);
         }
       } catch (e) {
         status.className = 'alert alert-warning';

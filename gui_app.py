@@ -17,6 +17,11 @@ ADB = os.path.join(BASE_DIR, "platform-tools", "adb.exe")
 APPS_DIR = os.path.join(BASE_DIR, "apps")
 ICON_ICO = os.path.join(BASE_DIR, "app_icon.ico")
 
+PRESETS = {
+    "top6": ["zona.apk", "hdrezka.apk", "lampa.apk", "spotify.apk", "filemanager_plus.apk", "Happ.apk"],
+    "basic": ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
+}
+
 class SmartTVApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -65,7 +70,7 @@ class SmartTVApp(tk.Tk):
                              font=("Segoe UI", 18, "bold"), fg="#ffffff", bg=self.c_bg)
         lbl_title.pack(anchor="w", pady=(8, 2))
         
-        lbl_desc = tk.Label(header, text="Проверка соединения по сети, пакетная установка, деблоат и установка любых своих APK",
+        lbl_desc = tk.Label(header, text="Проверка соединения по сети, подгрузка приложений (Zona, HDrezka, Lampa, Spotify, File Manager+, Happ), деблоат",
                             font=("Segoe UI", 9), fg=self.c_muted, bg=self.c_bg)
         lbl_desc.pack(anchor="w")
 
@@ -115,16 +120,16 @@ class SmartTVApp(tk.Tk):
         
         tk.Label(c2_head, text="2", font=("Segoe UI", 10, "bold"), fg="#0f172a", bg=self.c_accent,
                  width=3, height=1).pack(side="left", padx=(0, 10))
-        tk.Label(c2_head, text="Оптимизация и базовые приложения", font=("Segoe UI", 12, "bold"),
+        tk.Label(c2_head, text="Оптимизация и пакетная подгрузка приложений", font=("Segoe UI", 12, "bold"),
                  fg="#ffffff", bg=self.c_card).pack(side="left")
 
         btn_grid = tk.Frame(c2, bg=self.c_card)
         btn_grid.pack(fill="x")
 
         self.btn_install = self.create_card_btn(
-            btn_grid, "📦 1. Установить приложения",
-            "Happ, HDrezka TV 1.4.0, Zona, File Manager+, SmartTube. Лаунчер не меняется!",
-            "#1e3a5f", "#38bdf8", lambda: self.run_bg_action("install")
+            btn_grid, "📥 1. Подгрузка приложений",
+            "Выбор набора: Топ 6 в 1 клик (Zona, HDrezka, Lampa, Spotify, File Manager+, Happ), базовый набор или свои APK.",
+            "#1e3a5f", "#38bdf8", self.open_install_dialog
         )
         self.btn_install.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
@@ -212,6 +217,53 @@ class SmartTVApp(tk.Tk):
         
         return f
 
+    def open_install_dialog(self):
+        win = tk.Toplevel(self)
+        win.title("Подгрузка приложений на телевизор")
+        win.geometry("540x480")
+        win.configure(bg=self.c_bg)
+        win.transient(self)
+        win.grab_set()
+
+        tk.Label(win, text="📥 Выберите набор приложений для установки", font=("Segoe UI", 12, "bold"),
+                 fg="#ffffff", bg=self.c_bg, padx=15, pady=12).pack(anchor="w")
+
+        # Опция 1: Топ 6
+        f_top6 = tk.Frame(win, bg="#111a2e", highlightbackground=self.c_accent, highlightthickness=1, padx=14, pady=12)
+        f_top6.pack(fill="x", padx=15, pady=6)
+        tk.Label(f_top6, text="⭐ Топ-набор: Кино, Музыка и Файлы (6 шт.)", font=("Segoe UI", 10, "bold"),
+                 fg="#38bdf8", bg="#111a2e").pack(anchor="w")
+        tk.Label(f_top6, text="Zona, HDrezka TV (с ТВ), LAMPA (с ТВ), Spotify (с ТВ), File Manager+, Happ",
+                 font=("Segoe UI", 8), fg="#cbd5e1", bg="#111a2e").pack(anchor="w", pady=(2, 8))
+        tk.Button(f_top6, text="🚀 Установить этот набор (6 приложений) в 1 клик", font=("Segoe UI", 9, "bold"),
+                  bg="#0284c7", fg="#fff", activebackground="#0369a1", activeforeground="#fff", bd=0, padx=12, pady=6,
+                  cursor="hand2", command=lambda: [win.destroy(), self.run_bg_action("install", PRESETS["top6"])]).pack(anchor="w")
+
+        # Опция 2: Базовый набор
+        f_base = tk.Frame(win, bg="#111a2e", highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
+        f_base.pack(fill="x", padx=15, pady=6)
+        tk.Label(f_base, text="📦 Базовый стартовый комплект (5 шт.)", font=("Segoe UI", 10, "bold"),
+                 fg="#e2e8f0", bg="#111a2e").pack(anchor="w")
+        tk.Label(f_base, text="Happ, HDrezka TV, Zona, File Manager+, SmartTube",
+                 font=("Segoe UI", 8), fg="#cbd5e1", bg="#111a2e").pack(anchor="w", pady=(2, 8))
+        tk.Button(f_base, text="📦 Установить базовый набор", font=("Segoe UI", 9, "bold"),
+                  bg="#334155", fg="#fff", activebackground="#475569", activeforeground="#fff", bd=0, padx=12, pady=6,
+                  cursor="hand2", command=lambda: [win.destroy(), self.run_bg_action("install", PRESETS["basic"])]).pack(anchor="w")
+
+        # Опция 3: Все приложения из папки apps
+        f_all = tk.Frame(win, bg="#111a2e", highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
+        f_all.pack(fill="x", padx=15, pady=6)
+        tk.Label(f_all, text="📁 Все APK-файлы из папки apps", font=("Segoe UI", 10, "bold"),
+                 fg="#e2e8f0", bg="#111a2e").pack(anchor="w")
+        tk.Label(f_all, text="Установит все .apk файлы, которые находятся в папке apps",
+                 font=("Segoe UI", 8), fg="#cbd5e1", bg="#111a2e").pack(anchor="w", pady=(2, 8))
+        tk.Button(f_all, text="📲 Установить все APK из apps", font=("Segoe UI", 9, "bold"),
+                  bg="#334155", fg="#fff", activebackground="#475569", activeforeground="#fff", bd=0, padx=12, pady=6,
+                  cursor="hand2", command=lambda: [win.destroy(), self.run_bg_action("install", "all")]).pack(anchor="w")
+
+        tk.Button(win, text="Закрыть", font=("Segoe UI", 9), bg="#1e293b", fg="#94a3b8", bd=0, padx=14, pady=4,
+                  command=win.destroy).pack(anchor="e", padx=15, pady=10)
+
     def on_browse_apk(self):
         filename = filedialog.askopenfilename(
             title="Выберите APK-файл для установки на ТВ",
@@ -248,14 +300,9 @@ class SmartTVApp(tk.Tk):
             else:
                 self.log(f"❌ Ошибка установки: {res.stdout.strip()} {res.stderr.strip()}")
                 self.lbl_status.config(text=f"❌ Ошибка установки {os.path.basename(apk_path)}", fg=self.c_danger)
-
             self.set_busy(False)
 
         threading.Thread(target=worker, daemon=True).start()
-
-    def log(self, text):
-        self.txt_log.insert(tk.END, f"{text}\n")
-        self.txt_log.see(tk.END)
 
     def set_busy(self, is_busy, msg=""):
         state = tk.DISABLED if is_busy else tk.NORMAL
@@ -299,7 +346,7 @@ class SmartTVApp(tk.Tk):
 
         threading.Thread(target=worker, daemon=True).start()
 
-    def run_bg_action(self, action_name):
+    def run_bg_action(self, action_name, apks_list=None):
         def worker():
             self.set_busy(True, f"⏳ Выполняется операция '{action_name}'...")
             ip = self.ent_ip.get().strip()
@@ -314,8 +361,17 @@ class SmartTVApp(tk.Tk):
                 return
 
             if action_name == "install":
-                self.log("\n[>] Установка пакета приложений (Happ, HDrezka, Zona, File Manager+, SmartTube)...")
-                apks = ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
+                if apks_list and isinstance(apks_list, list):
+                    apks = apks_list
+                elif apks_list == "basic":
+                    apks = PRESETS["basic"]
+                elif apks_list == "all":
+                    apks = [f for f in os.listdir(APPS_DIR) if f.lower().endswith(".apk")]
+                else:
+                    apks = PRESETS["top6"]
+
+                self.log(f"\n[>] Подгрузка приложений ({len(apks)} шт.)...")
+                installed_count = 0
                 for apk in apks:
                     p = os.path.join(APPS_DIR, apk)
                     if os.path.exists(p):
@@ -323,9 +379,12 @@ class SmartTVApp(tk.Tk):
                         res = subprocess.run([ADB, "-s", f"{connected_ip}:5555", "install", "-r", p], capture_output=True, text=True)
                         if "Success" in res.stdout or "Success" in res.stderr:
                             self.log(f"   ✓ {apk} успешно установлено!")
+                            installed_count += 1
                         else:
                             self.log(f"   ! {apk}: {res.stdout.strip()}")
-                self.lbl_status.config(text="✅ Все приложения успешно установлены на ТВ!", fg=self.c_success)
+                    else:
+                        self.log(f"   ! Файл не найден: {apk}")
+                self.lbl_status.config(text=f"✅ Подгрузка завершена! Установлено: {installed_count} из {len(apks)}", fg=self.c_success)
 
             elif action_name == "light_debloat":
                 self.log("\n[>] Легкая очистка рекламы (Яндекс лаунчер и Алиса сохраняются)...")
@@ -365,13 +424,12 @@ class SmartTVApp(tk.Tk):
                     self.adb_shell(f"pm uninstall --user 0 {pkg}")
                     self.adb_shell(f"am force-stop {pkg}")
                     self.log(f" • Отключено: {pkg}")
-
                 self.adb_shell("am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-                self.log("✅ Полный деблоат завершен! Домашний экран теперь FLauncher.")
-                self.lbl_status.config(text="✅ Полная оптимизация завершена! Экран: FLauncher", fg=self.c_success)
+                self.log("✅ Полный деблоат завершен! Домашний экран переведен на FLauncher.")
+                self.lbl_status.config(text="✅ Полный деблоат завершен! FLauncher активен.", fg=self.c_success)
 
             elif action_name == "restore":
-                self.log("\n[>] Восстановление заводских сервисов Яндекс ТВ...")
+                self.log("\n[>] Восстановление стандартного Яндекс ТВ...")
                 pkgs = [
                     "com.yandex.tv.alice", "com.yandex.tv.home", "com.yandex.tv.music",
                     "com.yandex.browser.tv", "com.yandex.tv.live", "com.yandex.tv.input.efir",
@@ -381,25 +439,35 @@ class SmartTVApp(tk.Tk):
                     "com.yandex.launcher.updaterapp"
                 ]
                 for pkg in pkgs:
-                    self.adb_shell(f"cmd package install-existing {pkg}")
+                    res = self.adb_shell(f"cmd package install-existing {pkg}")
                     self.log(f" • Восстановлено: {pkg}")
-                
                 self.adb_shell("cmd package set-home-activity com.yandex.tv.home/.HomeActivity")
                 self.adb_shell("am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-                self.log("✅ Все сервисы восстановлены! Телевизор вернулся в исходное состояние.")
-                self.lbl_status.config(text="✅ Заводское состояние Яндекса успешно восстановлено!", fg=self.c_success)
+                self.log("✅ Все сервисы восстановлены! Домашний экран Яндекса возвращен.")
+                self.lbl_status.config(text="✅ Все службы восстановлены! Родной экран Яндекса возвращен.", fg=self.c_success)
 
             self.set_busy(False)
 
         threading.Thread(target=worker, daemon=True).start()
 
-    def connect_tv(self, manual_ip=None):
+    def connect_tv(self, ip=None):
         if not os.path.exists(ADB):
-            self.log(f"❌ Файл adb.exe не найден по пути: {ADB}")
+            self.log(f"❌ adb.exe не найден по пути {ADB}")
             return None
 
-        ip = manual_ip
+        # 0. Проверяем уже подключенные
+        try:
+            devs = subprocess.check_output([ADB, "devices"]).decode('utf-8', errors='ignore')
+            for line in devs.splitlines():
+                if ":5555\tdevice" in line:
+                    active_ip = line.split(":5555")[0].strip()
+                    return active_ip
+        except Exception:
+            pass
+
+        # 1. mDNS опрос
         if not ip:
+            self.log("[*] Поиск телевизора через mDNS (_yandexio)...")
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -415,6 +483,7 @@ class SmartTVApp(tk.Tk):
                         buf, addr = sock.recvfrom(2048)
                         if b'yandex' in buf.lower():
                             ip = addr[0]
+                            self.log(f"[*] Найдено устройство: {ip}")
                             break
                     except socket.timeout:
                         break
@@ -422,7 +491,9 @@ class SmartTVApp(tk.Tk):
             except Exception:
                 pass
 
+        # 2. ARP кэш
         if not ip:
+            self.log("[*] Сканирование ARP-кэша...")
             try:
                 arp_out = subprocess.check_output("arp -a", shell=True).decode('cp866', errors='ignore')
                 for line in arp_out.splitlines():
@@ -433,6 +504,7 @@ class SmartTVApp(tk.Tk):
                         if s.connect_ex((p[0], 5555)) == 0:
                             ip = p[0]
                             s.close()
+                            self.log(f"[*] Найден открытый порт 5555 на {ip}")
                             break
                         s.close()
             except Exception:
@@ -441,8 +513,10 @@ class SmartTVApp(tk.Tk):
         if not ip:
             return None
 
+        self.log(f"[*] Подключение по ADB к {ip}:5555 ...")
         subprocess.run([ADB, "connect", f"{ip}:5555"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(1)
+
         devs = subprocess.check_output([ADB, "devices"]).decode('utf-8', errors='ignore')
         if "device\n" in devs or "device\r" in devs or f"{ip}:5555\tdevice" in devs:
             return ip
@@ -454,6 +528,10 @@ class SmartTVApp(tk.Tk):
             return ""
         res = subprocess.run([ADB, "-s", f"{ip}:5555", "shell", cmd], capture_output=True, text=True)
         return res.stdout.strip()
+
+    def log(self, text):
+        self.txt_log.insert(tk.END, text + "\n")
+        self.txt_log.see(tk.END)
 
 if __name__ == "__main__":
     app = SmartTVApp()

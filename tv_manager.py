@@ -17,6 +17,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ADB = os.path.join(SCRIPT_DIR, "platform-tools", "adb.exe")
 APPS_DIR = os.path.join(SCRIPT_DIR, "apps")
 
+PRESETS = {
+    "top6": ["zona.apk", "hdrezka.apk", "lampa.apk", "spotify.apk", "filemanager_plus.apk", "Happ.apk"],
+    "basic": ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
+}
+
 def log(msg):
     print(f"[*] {msg}", flush=True)
 
@@ -132,9 +137,16 @@ def action_test_connection():
     except Exception as e:
         print(f"[!] Ошибка чтения свойств: {e}")
 
-def action_install_apps(ip):
-    log("\n--- УСТАНОВКА ПРИЛОЖЕНИЙ (Happ, HDrezka, Zona, File Manager+, SmartTube) ---")
-    apks = ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
+def action_install_apps(ip, apks=None):
+    if not apks:
+        apks = PRESETS["top6"]
+    elif isinstance(apks, str):
+        apks = PRESETS.get(apks, [apks])
+    elif apks == "all":
+        apks = [f for f in os.listdir(APPS_DIR) if f.lower().endswith(".apk")]
+
+    log(f"\n--- ПОДГРУЗКА ПРИЛОЖЕНИЙ ({len(apks)} шт.) ---")
+    installed_count = 0
     for apk_name in apks:
         p = os.path.join(APPS_DIR, apk_name)
         if os.path.exists(p):
@@ -142,10 +154,12 @@ def action_install_apps(ip):
             res = subprocess.run([ADB, "-s", f"{ip}:5555", "install", "-r", p], capture_output=True, text=True)
             if "Success" in res.stdout or "Success" in res.stderr:
                 log(f" -> {apk_name} успешно установлено!")
+                installed_count += 1
             else:
                 log(f" -> {apk_name}: {res.stdout.strip()} {res.stderr.strip()}")
         else:
             log(f"Файл {apk_name} не найден в папке apps.")
+    log(f"Подгрузка завершена! Успешно установлено: {installed_count} из {len(apks)}.")
 
 def action_light_debloat(ip):
     log("\n--- ЛЕГКАЯ ОПТИМИЗАЦИЯ (Отключение рекламы и тяжелых фоновых служб) ---")
@@ -244,11 +258,12 @@ def main():
         return
 
     if mode == "install":
-        action_install_apps(ip)
+        preset = sys.argv[2] if len(sys.argv) > 2 else "top6"
+        action_install_apps(ip, preset)
     elif mode == "light_debloat":
         action_light_debloat(ip)
     elif mode == "full_debloat":
-        action_install_apps(ip)
+        action_install_apps(ip, "top6")
         action_full_debloat(ip)
     elif mode == "restore":
         action_restore(ip)
@@ -258,7 +273,8 @@ def main():
             print(f" МЕНЕДЖЕР ТЕЛЕВИЗОРА (IP: {ip})")
             print("="*55)
             print(" 0. Проверить соединение с телевизором")
-            print(" 1. Установить приложения (Happ, HDrezka, Zona, File Manager+, SmartTube)")
+            print(" 1. Подгрузка приложений (Топ 6: Zona, HDrezka, Lampa, Spotify, File Manager+, Happ)")
+            print(" 1b. Базовый набор (Happ, HDrezka, Zona, File Manager+, SmartTube)")
             print(" 2. Легкая оптимизация (Отключить рекламу, ЯНДЕКС ЛАУНЧЕР ОСТАЕТСЯ)")
             print(" 3. Полная оптимизация (Установить всё + чистый FLauncher)")
             print(" 4. Восстановить всё как было (Заводской Яндекс ТВ)")
@@ -268,7 +284,9 @@ def main():
             if choice == "0":
                 action_test_connection()
             elif choice == "1":
-                action_install_apps(ip)
+                action_install_apps(ip, "top6")
+            elif choice.lower() in ["1b", "b"]:
+                action_install_apps(ip, "basic")
             elif choice == "2":
                 action_light_debloat(ip)
             elif choice == "3":
