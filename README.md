@@ -2,22 +2,23 @@
 
 <div align="center">
 
-[![Скачать Smart TV Toolbox](https://img.shields.io/badge/СКАЧАТЬ_ПРОГРАММУ-SmartTV_Control.exe-0284c7?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/download/v1.0.0/SmartTV_Control.exe)
-[![Скачать весь репозиторий ZIP](https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_ПАКЕТ-(ZIP)-22c55e?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip)
+[![Версия](https://img.shields.io/badge/Версия-v1.1.0-0284c7?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest)
+[![Скачать последнюю версию](https://img.shields.io/badge/СКАЧАТЬ_ПОСЛЕДНЮЮ_ВЕРСИЮ-SmartTV_Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest/download/SmartTV_Control.exe)
+[![Скачать весь репозиторий ZIP](https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_ПАКЕТ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip)
 
 <br/>
 
-### 🍊 [👉 НАЖМИТЕ ЗДЕСЬ, ЧТОБЫ СКАЧАТЬ SmartTV_Control.exe 👈](https://github.com/pururuall/SmartTV-Toolbox/releases/download/v1.0.0/SmartTV_Control.exe)
+### 🍊 [👉 НАЖМИТЕ ЗДЕСЬ, ЧТОБЫ СКАЧАТЬ ПОСЛЕДНЮЮ ВЕРСИЮ SmartTV_Control.exe (v1.1.0) 👈](https://github.com/pururuall/SmartTV-Toolbox/releases/latest/download/SmartTV_Control.exe)
 
-*(Автономная программа с нативным интерфейсом и иконкой капибары. Не требует установки Python или ADB)*
+*(Автономная программа с нативным интерфейсом и иконкой капибары. Не требует установки Python или ADB. Ссылка всегда загружает самый свежий релиз)*
 
 </div>
 
 ---
 
-Комплект скриптов, утилит и официальное графическое приложение **SmartTV_Control.exe** для очистки от рекламы, безопасного деблоата и прокачки Smart TV на базе Android 11 и оболочки Яндекс ТВ (включая телевизоры Tuvio, Hartens, DEXP, Novex, Hi и другие на материнских платах CVTE / MStar / MediaTek).
+Комплект скриптов, утилит и официальное графическое приложение **SmartTV_Control.exe** (версия **1.1.0**) для очистки от рекламы, безопасного деблоата и прокачки Smart TV на базе Android 11 и оболочки Яндекс ТВ (включая телевизоры Tuvio, Hartens, DEXP, Novex, Hi и другие на материнских платах CVTE / MStar / MediaTek).
 
-## 💡 Особенности
+## 💡 Особенности версии 1.1.0
 - **Дизайн приложения на 100% идентичен веб-странице** — темная тема, карточки шагов, микроанимации и живой лог на базе встроенного движка Chromium / WebView2.
 - **Встроенная проверка соединения в 1 клик** — мгновенно находит телевизор в сети, проверяет ADB и выводит характеристики ТВ.
 - **Подгрузка приложений в 1 клик** — готовый мультимедийный Топ-набор из 6 приложений (Zona, HDrezka TV с ТВ, LAMPA с ТВ, Spotify TV с ТВ, File Manager+, Happ), базовый набор или выбор любых отдельных APK.
@@ -33,7 +34,7 @@
 
 | Файл / Папка | Назначение |
 |---|---|
-| **`SmartTV_Control.exe`** | 🚀 **Главное приложение:** красивое графическое окно со 100% веб-дизайном, выбором наборов и всеми кнопками |
+| **`SmartTV_Control.exe`** | 🚀 **Главное приложение (v1.1.0):** красивое графическое окно со 100% веб-дизайном, выбором наборов и всеми кнопками |
 | `0_Test_Connection.bat` | 🔍 **Проверка связи:** находит ТВ в сети, тестирует ADB и выводит статус готовности в консоли |
 | `1_Install_Apps.bat` | 📥 **Подгрузка приложений:** устанавливает Топ-набор (Zona, HDrezka, Lampa, Spotify, File Manager+, Happ) |
 | `2_Light_Debloat_Keep_Yandex.bat` | ⚡ **Очистка рекламы:** отключает рекламные трекеры. Родной лаунчер Яндекса и Алиса остаются |
