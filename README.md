@@ -1,8 +1,6 @@
-# Smart TV Toolbox v2.0 (Яндекс ТВ / Android TV / Google TV) 📺🚀
-
 <div align="center">
 
-<img src="img/banner.png" alt="Smart TV Toolbox v2.0 Banner" width="100%">
+<img src="img/banner_header.png" alt="Smart TV Toolbox v2.0" width="100%">
 
 <br/><br/>
 
