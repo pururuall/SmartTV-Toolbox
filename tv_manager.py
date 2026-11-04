@@ -74,6 +74,34 @@ YAOS_PACKAGES_FULL = [
     "com.yandex.launcher.updaterapp"
 ]
 
+HAIER_PACKAGES_LIGHT = [
+    "com.haierubic.usmartdevice",
+    "com.haier.oemtabprovider",
+    "com.haier.apps",
+    "com.haier.launcher.haiermatrix",
+    "com.haier.tvhousekeeper",
+    "com.haier.emanual9603",
+    "tv.anoki.acr.anokiacroptin",
+    "fusion.android.tv.demo",
+    "com.mediatek.android.leanbacklauncher.partnercustomizer"
+]
+
+HAIER_PACKAGES_FULL = [
+    "com.google.android.apps.tv.launcherx",
+    "com.google.android.tungsten.setupwraith",
+    "com.google.android.feedback",
+    "com.google.android.tvrecommendations",
+    "com.haierubic.usmartdevice",
+    "com.haier.oemtabprovider",
+    "com.haier.apps",
+    "com.haier.launcher.haiermatrix",
+    "com.haier.tvhousekeeper",
+    "com.haier.emanual9603",
+    "tv.anoki.acr.anokiacroptin",
+    "fusion.android.tv.demo",
+    "com.mediatek.android.leanbacklauncher.partnercustomizer"
+]
+
 GENERIC_PACKAGES_LIGHT = [
     "com.google.android.tungsten.setupwraith",
     "com.google.android.feedback",
@@ -81,7 +109,16 @@ GENERIC_PACKAGES_LIGHT = [
     "com.xiaomi.mitv.advertise",
     "com.xiaomi.mitv.upgrade",
     "com.tcl.partnercustomizer",
-    "com.sony.dtv.bravialife"
+    "com.sony.dtv.bravialife",
+    "com.haierubic.usmartdevice",
+    "com.haier.oemtabprovider",
+    "com.haier.apps",
+    "com.haier.launcher.haiermatrix",
+    "com.haier.tvhousekeeper",
+    "com.haier.emanual9603",
+    "tv.anoki.acr.anokiacroptin",
+    "fusion.android.tv.demo",
+    "com.mediatek.android.leanbacklauncher.partnercustomizer"
 ]
 
 GENERIC_PACKAGES_FULL = [
@@ -97,7 +134,16 @@ GENERIC_PACKAGES_FULL = [
     "com.tcl.videoplayer",
     "com.tcl.tvmanager",
     "com.sony.dtv.bravialife",
-    "com.sony.dtv.smartmediaapp"
+    "com.sony.dtv.smartmediaapp",
+    "com.haierubic.usmartdevice",
+    "com.haier.oemtabprovider",
+    "com.haier.apps",
+    "com.haier.launcher.haiermatrix",
+    "com.haier.tvhousekeeper",
+    "com.haier.emanual9603",
+    "tv.anoki.acr.anokiacroptin",
+    "fusion.android.tv.demo",
+    "com.mediatek.android.leanbacklauncher.partnercustomizer"
 ]
 
 LOGGER = None
@@ -282,7 +328,18 @@ def action_get_dns(ip):
     enabled = (mode == "hostname" and "adguard" in spec.lower())
     return {"enabled": enabled, "mode": mode, "specifier": spec}
 
-def action_set_dock(ip, dock_apps=None, columns=6):
+def action_get_installed_packages(ip):
+    raw = adb_shell(ip, "pm list packages -3")
+    pkgs = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if line.startswith("package:"):
+            p = line.replace("package:", "").strip()
+            if p and p not in pkgs:
+                pkgs.append(p)
+    return pkgs
+
+def action_set_dock(ip, dock_apps=None, columns=None):
     if not dock_apps:
         dock_apps = [
             "mobi.zona",
@@ -292,8 +349,9 @@ def action_set_dock(ip, dock_apps=None, columns=6):
             "su.happ.proxyutility",
             "com.alphainventor.filemanager"
         ]
+    cols = int(columns) if columns is not None else len(dock_apps)
     cfg = {
-        "columns": columns,
+        "columns": cols,
         "dock_apps": dock_apps,
         "fill_dock": True,
         "reorder_button": True
@@ -333,7 +391,12 @@ def action_switch_launcher(ip, launcher_name="cleanyourtv"):
     return True
 
 def action_light_debloat(ip, tv_type="yaos"):
-    pkgs = YAOS_PACKAGES_LIGHT if tv_type == "yaos" else GENERIC_PACKAGES_LIGHT
+    if tv_type == "yaos":
+        pkgs = YAOS_PACKAGES_LIGHT
+    elif tv_type == "haier":
+        pkgs = HAIER_PACKAGES_LIGHT
+    else:
+        pkgs = GENERIC_PACKAGES_LIGHT
     log(f"\n--- ЛЕГКАЯ ОПТИМИЗАЦИЯ ({tv_type.upper()}) ---")
     log("Отключение рекламы и аналитики через pm disable-user...")
     count = 0
@@ -356,7 +419,12 @@ def action_full_debloat(ip, tv_type="yaos", launcher_choice="cleanyourtv"):
         action_set_dock(ip)
     
     # 2. Заморозка вендорских и рекламных служб
-    pkgs = YAOS_PACKAGES_FULL if tv_type == "yaos" else GENERIC_PACKAGES_FULL
+    if tv_type == "yaos":
+        pkgs = YAOS_PACKAGES_FULL
+    elif tv_type == "haier":
+        pkgs = HAIER_PACKAGES_FULL
+    else:
+        pkgs = GENERIC_PACKAGES_FULL
     for pkg in pkgs:
         un = adb_shell(ip, f"pm disable-user --user 0 {pkg}")
         adb_shell(ip, f"am force-stop {pkg}")

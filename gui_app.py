@@ -99,10 +99,15 @@ class SmartTVApp(tk.Tk):
                             activebackground=self.c_card, activeforeground=self.c_accent)
         r1.pack(side="left", padx=(0, 15))
         
-        r2 = tk.Radiobutton(f_plat, text="Android TV / Google TV (Xiaomi, TCL, Sony, Hisense)", variable=self.current_platform,
+        r2 = tk.Radiobutton(f_plat, text="Haier (Android TV / MatrixTV)", variable=self.current_platform,
+                            value="haier", font=("Segoe UI", 9), bg=self.c_card, fg="#fff", selectcolor="#0f172a",
+                            activebackground=self.c_card, activeforeground=self.c_accent)
+        r2.pack(side="left", padx=(0, 15))
+
+        r3 = tk.Radiobutton(f_plat, text="Android TV / Google TV (Xiaomi, TCL, Sony)", variable=self.current_platform,
                             value="generic", font=("Segoe UI", 9), bg=self.c_card, fg="#fff", selectcolor="#0f172a",
                             activebackground=self.c_card, activeforeground=self.c_accent)
-        r2.pack(side="left")
+        r3.pack(side="left")
 
         # IP input and test button
         f_ip = tk.Frame(c1, bg=self.c_card)

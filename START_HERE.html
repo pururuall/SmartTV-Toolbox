@@ -3,1018 +3,1096 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart TV Toolbox v2.0 — Панель управления</title>
+  <title>Smart TV Toolbox v2.0</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --card-border: #334155;
+      --bg: #090e17;
+      --panel: #111827;
+      --panel-hover: #162032;
+      --border: #1f2a3e;
+      --border-focus: #38bdf8;
+      --text: #f1f5f9;
+      --text-muted: #8493a8;
+      --text-dim: #4e5d73;
       --accent: #38bdf8;
-      --accent-hover: #0284c7;
-      --accent-glow: rgba(56, 189, 248, 0.25);
-      --success: #22c55e;
-      --success-glow: rgba(34, 197, 94, 0.25);
+      --accent-dim: rgba(56, 189, 248, 0.12);
+      --accent-border: rgba(56, 189, 248, 0.35);
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --success: #10b981;
+      --success-dim: rgba(16, 185, 129, 0.12);
+      --success-border: rgba(16, 185, 129, 0.35);
       --warning: #f59e0b;
+      --warning-dim: rgba(245, 158, 11, 0.12);
       --danger: #ef4444;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --danger-dim: rgba(239, 68, 68, 0.12);
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
-      padding: 24px 20px;
+      line-height: 1.5;
+      padding: 20px;
       user-select: none;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container { max-width: 980px; margin: 0 auto; }
 
+    /* Compact Unslop Header */
     header {
-      text-align: center;
-      margin-bottom: 25px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--card-border);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      background: rgba(56, 189, 248, 0.1);
-      color: var(--accent);
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      margin-bottom: 10px;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-    }
-
-    h1 { font-size: 2.1rem; color: #fff; margin-bottom: 8px; line-height: 1.25; font-weight: 800; }
-    .lead { font-size: 1.02rem; color: var(--text-muted); max-width: 820px; margin: 0 auto; }
-
-    /* Browser-like Tab Navigation */
-    .tab-bar {
       display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-      background: #131d31;
-      padding: 6px;
-      border-radius: 14px;
-      border: 1px solid var(--card-border);
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
       flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+      letter-spacing: 0.04em;
+    }
+
+    .header-desc {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      width: 100%;
+      margin-top: -4px;
+    }
+
+    /* Segmented Navigation Bar */
+    .tab-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: #0d131f;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
     }
 
     .tab-btn {
-      flex: 1;
-      min-width: 220px;
-      padding: 12px 18px;
       background: transparent;
-      border: 1px solid transparent;
-      border-radius: 10px;
+      border: none;
       color: var(--text-muted);
-      font-size: 0.98rem;
-      font-weight: 700;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 9px 14px;
+      border-radius: 7px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      transition: all 0.2s ease;
+      gap: 8px;
+      transition: all 0.15s ease;
     }
 
-    .tab-btn:hover {
-      background: #1e293b;
-      color: #fff;
-    }
+    .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.04); }
 
     .tab-btn.active {
-      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      background: #1c2638;
       color: #fff;
-      border-color: rgba(56, 189, 248, 0.4);
-      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Cards */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-    }
-
-    .card-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 1.3rem;
+    /* Card Panels */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
       margin-bottom: 16px;
-      color: #fff;
     }
 
-    .step-number {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #0f172a;
-      font-weight: 800;
-      font-size: 1.05rem;
-    }
-
-    .alert {
-      padding: 14px 18px;
-      border-radius: 12px;
-      margin: 16px 0;
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      font-size: 0.95rem;
-    }
-
-    .alert-warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: #fde68a; }
-    .alert-success { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #bbf7d0; }
-    .alert-info { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #bae6fd; }
-    .alert-danger { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
-
-    .key-combo {
-      display: inline-block;
-      background: #090d16;
-      border: 1px solid #38bdf8;
-      color: #38bdf8;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-    ol, ul { padding-left: 22px; margin: 12px 0; }
-    li { margin-bottom: 8px; }
-
-    /* Test Box */
-    .test-box {
-      background: #111a2e;
-      border: 1px solid #293854;
-      border-radius: 14px;
-      padding: 18px;
-      margin-top: 18px;
-    }
-
-    .test-input-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .test-input {
-      flex: 1;
-      min-width: 200px;
-      background: #090d16;
-      border: 1px solid #334155;
-      color: #ffffff;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .test-input:focus { border-color: var(--accent); }
-
-    .btn-test {
-      background: linear-gradient(135deg, #0284c7, #0ea5e9);
-      color: #ffffff;
-      font-size: 0.95rem;
-      font-weight: 700;
-      padding: 10px 22px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-test:hover {
-      background: linear-gradient(135deg, #0369a1, #0284c7);
-      transform: translateY(-1px);
-    }
-
-    .test-result-box {
-      display: none;
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 14px;
-      font-size: 0.95rem;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Grid of action buttons */
-    .btn-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 18px;
-    }
-
-    .action-btn {
-      background: #182234;
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 18px;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .action-btn:hover {
-      border-color: var(--accent);
-      background: #1e2c44;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    }
-
-    .action-btn.success:hover { border-color: var(--success); }
-    .action-btn.danger:hover { border-color: var(--danger); }
-
-    .btn-header { font-size: 1.05rem; font-weight: 700; color: #fff; }
-    .btn-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.4; }
-
-    /* Accordion / Cheat Sheet */
-    .cheat-box {
-      background: #131c2d;
-      border: 1px solid #2d3c56;
-      border-radius: 14px;
-      padding: 18px;
-      margin-bottom: 20px;
-    }
-
-    .brand-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .brand-card {
-      background: #090e1a;
-      border: 1px solid #1f2b42;
-      border-radius: 10px;
-      padding: 12px 14px;
-    }
-
-    .brand-card h4 {
-      font-size: 0.95rem;
-      color: var(--accent);
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .brand-card p {
-      font-size: 0.82rem;
-      color: #cbd5e1;
-      line-height: 1.4;
-    }
-
-    /* Tools Tab Styles: DNS & Dock Editor */
-    .tool-panel {
-      background: #131d31;
-      border: 1px solid #2d3d5a;
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-
-    .status-badge.on {
-      background: rgba(34, 197, 94, 0.15);
-      border: 1px solid rgba(34, 197, 94, 0.4);
-      color: #86efac;
-    }
-
-    .status-badge.off {
-      background: rgba(148, 163, 184, 0.15);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      color: #cbd5e1;
-    }
-
-    /* Dock App Order Editor */
-    .dock-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin: 16px 0;
-    }
-
-    .dock-item {
+    .panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #0b1120;
-      border: 1px solid #243047;
-      border-radius: 10px;
-      padding: 10px 14px;
-      transition: background 0.15s;
+      margin-bottom: 14px;
     }
 
-    .dock-item:hover { background: #131d31; }
-
-    .dock-info {
+    .panel-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      letter-spacing: -0.01em;
     }
 
-    .dock-idx {
+    .panel-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #1c2638;
+      color: var(--accent);
       width: 24px;
       height: 24px;
-      background: #1e293b;
-      color: var(--accent);
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      border: 1px solid var(--border);
+    }
+
+    /* Interactive Brand Switcher Pills */
+    .brand-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .brand-pill {
+      background: #0d131f;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .brand-pill:hover {
+      color: #fff;
+      border-color: #2e3c54;
+      background: #131b2c;
+    }
+
+    .brand-pill.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Breadcrumbs Path Box */
+    .path-flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      background: #090e17;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 12px 0;
       font-size: 0.85rem;
     }
 
-    .dock-controls {
+    .path-step {
+      background: #162030;
+      color: #e2e8f0;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-weight: 500;
+    }
+
+    .path-step.target {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      font-weight: 700;
+    }
+
+    .path-arrow { color: var(--text-dim); font-size: 0.75rem; }
+
+    /* Steps List */
+    .steps-list {
+      list-style: none;
+      counter-reset: custom-counter;
+      margin: 12px 0;
+    }
+
+    .steps-list li {
+      counter-increment: custom-counter;
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    .steps-list li::before {
+      content: counter(custom-counter);
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 18px;
+      height: 18px;
+      background: #1a2334;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent);
       display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Notice Banner */
+    .note-box {
+      background: #0d1422;
+      border: 1px solid #1c273c;
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+
+    .note-box.warn { border-left-color: var(--warning); background: #14131a; }
+
+    /* Connection Test Toolbar */
+    .conn-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: #090e17;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      margin-top: 14px;
+    }
+
+    .input-ip {
+      background: #111724;
+      border: 1px solid #233044;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      padding: 7px 12px;
+      border-radius: 6px;
+      outline: none;
+      min-width: 170px;
+      flex: 1;
+    }
+
+    .input-ip:focus { border-color: var(--accent); }
+
+    .btn {
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .btn-secondary {
+      background: #182234;
+      border-color: var(--border);
+      color: #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #202d44;
+      border-color: #2f3e58;
+    }
+
+    .btn-danger {
+      background: var(--danger-dim);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+    .btn-success {
+      background: var(--success-dim);
+      border-color: var(--success-border);
+      color: #6ee7b7;
+    }
+
+    .btn-success:hover { background: rgba(16, 185, 129, 0.2); }
+
+    /* Results */
+    .result-view {
+      display: none;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-top: 12px;
+      font-size: 0.86rem;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Action Tiles Grid */
+    .tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .tile-action {
+      background: #0d131f;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .tile-action:hover {
+      border-color: #2e3c54;
+      background: #131b2a;
+      transform: translateY(-1px);
+    }
+
+    .tile-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
       gap: 6px;
     }
 
-    .btn-icon {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #cbd5e1;
-      width: 32px;
-      height: 32px;
+    .tile-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Live Dock Editor (Tab 3) */
+    .dock-config-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #090e17;
+      border: 1px solid var(--border);
       border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+
+    .segmented-count {
+      display: inline-flex;
+      background: #121824;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .seg-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .seg-btn.active {
+      background: var(--accent);
+      color: #090e17;
+    }
+
+    .dock-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .dock-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #090e17;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      transition: border 0.15s;
+    }
+
+    .dock-row:hover { border-color: #2b3950; }
+
+    .slot-idx {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: #141c2c;
+      color: var(--accent);
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .slot-select {
+      flex: 1;
+      background: #111724;
+      border: 1px solid #233044;
+      color: #fff;
+      font-size: 0.85rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      outline: none;
+      min-width: 200px;
+    }
+
+    .slot-custom-input {
+      flex: 1;
+      display: none;
+      background: #111724;
+      border: 1px solid var(--accent);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    .btn-row-action {
+      background: #141c2c;
+      border: 1px solid #233044;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
-      transition: all 0.15s;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      transition: all 0.1s;
     }
 
-    .btn-icon:hover {
-      background: #0284c7;
+    .btn-row-action:hover {
+      background: #1e2a40;
       color: #fff;
-      border-color: #0284c7;
+      border-color: #384d6e;
     }
 
-    .btn-secondary {
-      background: #334155;
-      color: #ffffff;
-      font-size: 0.92rem;
-      font-weight: 700;
-      padding: 10px 18px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
+    .btn-row-action.delete:hover {
+      background: var(--danger-dim);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.4);
     }
 
-    .btn-secondary:hover { background: #475569; }
-
-    .btn-primary-action {
-      background: linear-gradient(135deg, #0284c7, #0ea5e9);
-      color: #ffffff;
-      font-size: 0.92rem;
-      font-weight: 700;
-      padding: 10px 22px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary-action:hover {
-      background: linear-gradient(135deg, #0369a1, #0284c7);
-      transform: translateY(-1px);
-    }
-
-    /* Live Log Console in app */
-    .console-log {
-      background: #090d16;
-      border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 14px;
-      font-family: "Consolas", monospace;
-      font-size: 0.88rem;
-      color: #cbd5e1;
-      height: 140px;
+    /* Terminal Console */
+    .console-box {
+      background: #06090f;
+      border: 1px solid #1a2232;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #94a3b8;
+      height: 120px;
       overflow-y: auto;
-      margin-top: 12px;
       user-select: text;
+      line-height: 1.5;
     }
 
-    /* Modal Dialog Styles */
+    /* Modal Overlay */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(6px);
+      background: rgba(9, 14, 23, 0.85);
+      backdrop-filter: blur(4px);
       z-index: 9999;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-dialog {
-      background: var(--card-bg);
-      border: 1px solid var(--accent);
-      border-radius: 18px;
-      max-width: 680px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px var(--accent-glow);
-      padding: 26px;
-      animation: modalIn 0.25s ease-out;
-    }
-
-    @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--card-border);
-    }
-
-    .modal-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .modal-close {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.8rem;
-      cursor: pointer;
-      line-height: 1;
-      transition: color 0.2s;
-    }
-
-    .modal-close:hover { color: #fff; }
-
-    .preset-card {
-      background: #111a2e;
-      border: 1px solid #293854;
-      border-radius: 14px;
       padding: 16px;
-      margin-bottom: 14px;
     }
 
-    .preset-card.highlight {
-      background: linear-gradient(135deg, rgba(14, 165, 233, 0.14), rgba(34, 197, 94, 0.12));
-      border: 1px solid rgba(56, 189, 248, 0.5);
-    }
-
-    .preset-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .pills-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 10px 0;
-    }
-
-    .pill {
-      background: #090d16;
-      border: 1px solid var(--card-border);
-      padding: 4px 9px;
-      border-radius: 7px;
-      font-size: 0.82rem;
-      color: #bae6fd;
-      font-weight: 600;
-    }
-
-    .pill.from-tv {
-      border-color: #22c55e;
-      color: #86efac;
-      background: rgba(34, 197, 94, 0.12);
+    .modal-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 20px;
     }
 
     .spinner {
       display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 3px solid rgba(255,255,255,0.3);
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(255,255,255,0.25);
       border-radius: 50%;
       border-top-color: #fff;
-      animation: spin 0.8s ease-in-out infinite;
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
     footer {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.88rem;
-      margin-top: 35px;
-      padding-top: 20px;
-      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-dim);
+      font-size: 0.76rem;
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
     }
   </style>
 </head>
 <body>
 
   <div class="container">
+    <!-- Top Header -->
     <header>
-      <div class="badge">SMART TV TOOLBOX v2.0.0 — МУЛЬТИ-ПЛАТФОРМЕННЫЙ ОПТИМИЗАТОР</div>
-      <h1>Универсальный центр настройки и очистки Smart TV</h1>
-      <p class="lead">Полная поддержка Яндекс ТВ (Tuvio, Hartens, DEXP) и классических Android TV / Google TV (Xiaomi, TCL, Sony, Hisense, Chromecast). Блокировка рекламы AdGuard DNS, подгрузка топ-приложений и ультралегкий лаунчер CleanYourTV.</p>
+      <div class="brand-title">
+        <h1>Smart TV Toolbox</h1>
+        <span class="tag">v2.0.0</span>
+      </div>
+      <div id="quickDnsStatus" class="tag" style="background: transparent; border-color: var(--border); color: var(--text-dim);">
+        DNS: не проверено
+      </div>
+      <div class="header-desc">
+        Мульти-платформенный центр очистки, системного блокировщика рекламы и лаунчера CleanYourTV.
+      </div>
     </header>
 
-    <!-- ТРЕХВКЛАДОЧНАЯ НАВИГАЦИЯ -->
-    <div class="tab-bar">
-      <button class="tab-btn active" onclick="switchTab('tab-yaos', this)">
-        <span>📺</span>
-        <span>1. Яндекс ТВ (YaOS / Tuvio)</span>
+    <!-- Navigation Tabs -->
+    <nav class="tab-bar">
+      <button class="tab-btn active" onclick="switchMainTab('tab-yaos', this)">
+        <span>📺</span> <span>1. Яндекс ТВ (YaOS)</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('tab-generic', this)">
-        <span>🌐</span>
-        <span>2. Android TV & Google TV</span>
+      <button class="tab-btn" onclick="switchMainTab('tab-generic', this)">
+        <span>🌐</span> <span>2. Android TV / Google TV</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('tab-tools', this)">
-        <span>🛠️</span>
-        <span>3. Инструменты 2.0 (DNS, Док, APK)</span>
+      <button class="tab-btn" onclick="switchMainTab('tab-tools', this)">
+        <span>🛠️</span> <span>3. Инструменты 2.0</span>
       </button>
-    </div>
+    </nav>
 
-    <!-- ==================== ВКЛАДКА 1: ЯНДЕКС ТВ (YAOS) ==================== -->
+    <!-- ==================== TAB 1: YAOS ==================== -->
     <div id="tab-yaos" class="tab-content active">
-      <div class="card">
-        <div class="card-title">
-          <div class="step-number">1</div>
-          <h2>Секретное меню CVTE для включения ADB</h2>
-        </div>
-        
-        <p>В бюджетных смарт-ТВ на платформе Яндекс (Tuvio, DEXP, Hartens, Novex, Hi) пункт «Отладка по USB» спрятан от пользователя. Его легко активировать через сервисное меню CVTE:</p>
-
-        <div class="alert alert-warning">
-          <div>⚠️</div>
-          <div>
-            <strong>Правило безопасности:</strong> Изменяйте <u>только</u> пункт ADB! Не нажимайте <em>Shipping Init, Factory Reset</em> или смену Panel Type.
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-num">1</span>
+            <span>Включение отладки (Сервисное меню CVTE)</span>
           </div>
+          <span class="tag">Tuvio / DEXP / Hartens</span>
         </div>
 
-        <h3 style="margin: 12px 0 8px; color: #e2e8f0; font-size: 1.05rem;">Комбинация с пульта:</h3>
-        <ol>
-          <li>Включите ТВ и зажмите кнопку <strong>Menu</strong> (три полоски) на 1-2 секунды.</li>
-          <li>Быстро и без пауз нажмите стрелки: 
-            <span class="key-combo">Влево ➔ Вверх ➔ Влево ➔ Вверх</span>
-          </li>
-          <li>Нажмите кнопку <strong>Назад</strong> (стрелка возврата).</li>
-          <li>Откроется синее меню <strong>Factory menu</strong>.</li>
-          <li>Перейдите в <strong>other options</strong> ➔ нажмите <strong>OK</strong>.</li>
-          <li>Найдите пункт <strong>ADB</strong> и переведите его в положение <strong style="color: #4ade80;">ON</strong>.</li>
-          <li>Если есть <strong>USB Mode</strong> — переведите с Host на <strong>Device</strong>. Нажмите Назад для выхода.</li>
-        </ol>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px;">
+          В телевизорах на Яндекс ТВ стандартная настройка отладки скрыта вендором. Активируется через заводскую сервисную комбинацию пульта:
+        </p>
 
-        <!-- БЛОК ПРОВЕРКИ СОЕДИНЕНИЯ YAOS -->
-        <div class="test-box">
-          <h3 style="color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-            🔍 Проверка связи с Яндекс ТВ
-          </h3>
-          <p style="color: #cbd5e1; font-size: 0.92rem; margin-bottom: 14px;">
-            Программа автоматически найдет ТВ в домашней сети по протоколу YandexIO mDNS или по порту 5555:
-          </p>
-
-          <div class="test-input-row">
-            <label style="color: #cbd5e1; font-size: 0.92rem;">IP телевизора:</label>
-            <input type="text" id="yaosIpInput" class="test-input" placeholder="Автопоиск" value="Автопоиск">
-            <button id="btnCheckYaos" class="btn-test" onclick="runConnectionTest('yaos')">
-              <span>📡 Проверить соединение</span>
-            </button>
-          </div>
-
-          <div id="yaosTestResult" class="test-result-box"></div>
+        <div class="path-flow">
+          <span class="path-step">Зажать кнопку Menu (1-2 сек)</span>
+          <span class="path-arrow">➔</span>
+          <span class="path-step">Влево</span>
+          <span class="path-arrow">➔</span>
+          <span class="path-step">Вверх</span>
+          <span class="path-arrow">➔</span>
+          <span class="path-step">Влево</span>
+          <span class="path-arrow">➔</span>
+          <span class="path-step">Вверх</span>
+          <span class="path-arrow">➔</span>
+          <span class="path-step">Назад</span>
+          <span class="path-arrow">➔</span>
+          <span class="path-step target">Factory Menu ➔ other options ➔ ADB: ON</span>
         </div>
+
+        <div class="note-box warn">
+          <strong>Внимание:</strong> В сервисном меню изменяйте только пункт <code>ADB ➔ ON</code> и при наличии <code>USB Mode ➔ Device</code>. Не прикасайтесь к Panel Type и Shipping Init.
+        </div>
+
+        <!-- Connection Bar -->
+        <div class="conn-bar">
+          <label style="font-size: 0.84rem; color: var(--text-muted);">IP телевизора:</label>
+          <input type="text" id="yaosIpInput" class="input-ip" value="Автопоиск" placeholder="Автопоиск или 192.168.x.x">
+          <button id="btnCheckYaos" class="btn btn-primary" onclick="testConnection('yaos')">
+            <span>📡 Проверить связь</span>
+          </button>
+        </div>
+
+        <div id="yaosConnResult" class="result-view"></div>
       </div>
 
-      <!-- ДЕЙСТВИЯ ДЛЯ ЯНДЕКС ТВ -->
-      <div class="card">
-        <div class="card-title">
-          <div class="step-number">2</div>
-          <h2>Оптимизация и управление Яндекс ТВ</h2>
-        </div>
-
-        <p>Нажмите карточку нужного действия (все изменения обратимы в 1 клик):</p>
-
-        <div class="btn-grid">
-          <div class="action-btn" onclick="openInstallModal()">
-            <div class="btn-header">📥 1. Подгрузка приложений</div>
-            <div class="btn-desc">Установка Топ-6 для ТВ: Zona, HDrezka TV, Lampa, Spotify, Happ и File Manager+.</div>
-          </div>
-
-          <div class="action-btn" onclick="runActionGeneric('light_debloat', 'yaos')">
-            <div class="btn-header">⚡ 2. Очистить рекламу (Яндекс остается)</div>
-            <div class="btn-desc">Замораживает рекламные службы advid, сборщики отчетов и фоновый браузер. Родной лаунчер Яндекса и Алиса сохранены!</div>
-          </div>
-
-          <div class="action-btn success" onclick="runActionGeneric('full_debloat', 'yaos')">
-            <div class="btn-header">🚀 3. Полный деблоат + Apple TV лаунчер</div>
-            <div class="btn-desc">Максимальное ускорение: заморозка тяжелой оболочки Яндекса и перевод на чистый лаунчер CleanYourTV.</div>
-          </div>
-
-          <div class="action-btn danger" onclick="runActionGeneric('restore', 'yaos')">
-            <div class="btn-header">🔄 4. Откат: Заводской Яндекс ТВ</div>
-            <div class="btn-desc">Мгновенно размораживает все службы Яндекса и возвращает стоковый домашний экран.</div>
+      <!-- Actions YaOS -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-num">2</span>
+            <span>Оптимизация и установка приложений</span>
           </div>
         </div>
 
-        <div id="yaosActionStatus" style="margin-top: 16px; display: none;" class="alert alert-info"></div>
+        <div class="tiles-grid">
+          <div class="tile-action" onclick="openInstallModal()">
+            <div class="tile-title"><span>📥</span> <span>1. Подгрузка приложений</span></div>
+            <div class="tile-desc">Пакетная установка Топ-6: Zona, HDrezka TV, Lampa, Spotify, Happ и File Manager+.</div>
+          </div>
+
+          <div class="tile-action" onclick="runAction('light_debloat', 'yaos')">
+            <div class="tile-title"><span>⚡</span> <span>2. Очистить рекламу</span></div>
+            <div class="tile-desc">Заморозка рекламных трекеров advid и фонового браузера. Родной лаунчер и Алиса остаются.</div>
+          </div>
+
+          <div class="tile-action" onclick="runAction('full_debloat', 'yaos')">
+            <div class="tile-title" style="color: #6ee7b7;"><span>🚀</span> <span>3. Полный деблоат + CleanYourTV</span></div>
+            <div class="tile-desc">Заморозка тяжелой оболочки Яндекса и переход на ультралегкий Apple TV лаунчер.</div>
+          </div>
+
+          <div class="tile-action" onclick="runAction('restore', 'yaos')">
+            <div class="tile-title" style="color: #fca5a5;"><span>🔄</span> <span>4. Откат: Заводской Яндекс ТВ</span></div>
+            <div class="tile-desc">Мгновенная разморозка всех служб и возврат стандартного домашнего экрана.</div>
+          </div>
+        </div>
+
+        <div id="yaosActionStatus" class="result-view"></div>
       </div>
     </div>
 
-    <!-- ==================== ВКЛАДКА 2: ANDROID TV & GOOGLE TV ==================== -->
+    <!-- ==================== TAB 2: ANDROID TV / GOOGLE TV ==================== -->
     <div id="tab-generic" class="tab-content">
-      <div class="card">
-        <div class="card-title">
-          <div class="step-number">1</div>
-          <h2>Шпаргалка: Как включить отладку по USB на любом телевизоре</h2>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-num">1</span>
+            <span>Шпаргалка: Включение отладки по маркам ТВ</span>
+          </div>
+          <span class="tag" id="currentBrandBadge">Haier</span>
         </div>
 
-        <p style="margin-bottom: 14px;">Для телевизоров на чистом Android TV и Google TV (Xiaomi, TCL, Sony, Hisense, realme, Chromecast и др.) выполните эту простую инструкцию <strong>перед</strong> проверкой соединения:</p>
+        <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 10px;">
+          Выберите вашу марку телевизора, чтобы увидеть точный путь в меню и специфику настройки:
+        </p>
 
-        <!-- ПОШАГОВАЯ ШПАРГАЛКА -->
-        <div class="cheat-box">
-          <h3 style="color: #38bdf8; font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-            <span>📋</span> Универсальные 4 шага настройки:
-          </h3>
-          <ol style="margin-bottom: 0;">
-            <li>
-              <strong>Откройте меню «Об устройстве»:</strong><br>
-              Зайдите в <code>Настройки ➔ Настройки устройства</code> (или <code>Система</code>) ➔ <code>Об устройстве</code>.
-            </li>
-            <li>
-              <strong>Активируйте режим разработчика (7 кликов):</strong><br>
-              Найдите строку <strong>«Номер сборки»</strong> (или <em>«Сборка ОС Android TV»</em>) и быстро нажмите на нее пультом кнопку <strong>OK ровно 7 раз</strong>, пока не появится надпись <em>«Вы стали разработчиком!»</em>.
-            </li>
-            <li>
-              <strong>Включите сетевую отладку:</strong><br>
-              Вернитесь на шаг назад в меню <code>Для разработчиков</code>, найдите пункты <strong>«Отладка по USB»</strong> (USB debugging) и <strong>«Сетевая отладка»</strong> (если есть) и включите их.
-            </li>
-            <li>
-              <strong>Узнайте IP-адрес ТВ:</strong><br>
-              Зайдите в <code>Настройки ➔ Сеть и Интернет ➔ Имя вашей Wi-Fi сети ➔ IP-адрес</code> (например, <code>192.168.1.45</code>) и введите его в поле ниже.
-            </li>
-          </ol>
+        <!-- Interactive Brand Switcher -->
+        <div class="brand-pills">
+          <button class="brand-pill active" onclick="selectBrandGuide('haier', this)">
+            <span>🏢</span> <span>Haier</span>
+          </button>
+          <button class="brand-pill" onclick="selectBrandGuide('xiaomi', this)">
+            <span>📱</span> <span>Xiaomi / Redmi</span>
+          </button>
+          <button class="brand-pill" onclick="selectBrandGuide('tcl', this)">
+            <span>📺</span> <span>TCL / iFFALCON</span>
+          </button>
+          <button class="brand-pill" onclick="selectBrandGuide('sony', this)">
+            <span>🌐</span> <span>Sony / Philips</span>
+          </button>
+          <button class="brand-pill" onclick="selectBrandGuide('chromecast', this)">
+            <span>📡</span> <span>Google TV / Chromecast</span>
+          </button>
+          <button class="brand-pill" onclick="selectBrandGuide('hisense', this)">
+            <span>🖥️</span> <span>Hisense</span>
+          </button>
+          <button class="brand-pill" onclick="selectBrandGuide('universal', this)">
+            <span>⚙️</span> <span>Универсальная</span>
+          </button>
         </div>
 
-        <!-- ОСОБЕННОСТИ ПО БРЕНДАМ -->
-        <h4 style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 8px;">Специфика популярных брендов:</h4>
-        <div class="brand-grid">
-          <div class="brand-card">
-            <h4>📱 Xiaomi / Mi TV / Redmi</h4>
-            <p>Настройки ➔ Настройки устройства ➔ Об устройстве ➔ Сборка (7 раз) ➔ Для разработчиков ➔ Отладка по USB ➔ Вкл.</p>
-          </div>
-          <div class="brand-card">
-            <h4>📺 TCL & iFFALCON</h4>
-            <p>Настройки ➔ Система ➔ Об устройстве ➔ Сборка ОС Android TV (7 раз) ➔ Для разработчиков ➔ Отладка по USB ➔ Вкл.</p>
-          </div>
-          <div class="brand-card">
-            <h4>🌐 Sony Bravia & Philips</h4>
-            <p>Настройки ➔ Настройки устройства ➔ Об устройстве ➔ Номер сборки (7 раз) ➔ Для разработчиков ➔ Отладка ➔ Вкл.</p>
-          </div>
-          <div class="brand-card">
-            <h4>📡 Chromecast / Google TV</h4>
-            <p>Настройки ➔ Система ➔ Об устройстве ➔ Сборка ОС Android TV (7 раз) ➔ Система ➔ Для разработчиков ➔ Вкл.</p>
-          </div>
+        <!-- DYNAMIC GUIDE CONTAINER (Replaces itself on brand click) -->
+        <div id="brandGuideContainer">
+          <!-- Will be rendered by JavaScript -->
         </div>
 
-        <!-- БЛОК ПРОВЕРКИ СОЕДИНЕНИЯ GENERIC -->
-        <div class="test-box" style="margin-top: 22px;">
-          <h3 style="color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-            📡 Проверка соединения с Android TV / Google TV
-          </h3>
-          <p style="color: #cbd5e1; font-size: 0.92rem; margin-bottom: 14px;">
-            Введите IP-адрес, который вы посмотрели в настройках сети ТВ, и нажмите «Проверить соединение»:
-          </p>
-
-          <div class="test-input-row">
-            <label style="color: #cbd5e1; font-size: 0.92rem;">IP телевизора:</label>
-            <input type="text" id="genericIpInput" class="test-input" placeholder="например, 192.168.1.50" value="Автопоиск">
-            <button id="btnCheckGeneric" class="btn-test" onclick="runConnectionTest('generic')">
-              <span>📡 Проверить соединение с ТВ</span>
-            </button>
-          </div>
-
-          <div id="genericTestResult" class="test-result-box"></div>
+        <!-- Connection Bar Generic -->
+        <div class="conn-bar" style="margin-top: 16px;">
+          <label style="font-size: 0.84rem; color: var(--text-muted);">IP телевизора:</label>
+          <input type="text" id="genericIpInput" class="input-ip" value="Автопоиск" placeholder="например, 192.168.1.50">
+          <button id="btnCheckGeneric" class="btn btn-primary" onclick="testConnection('generic')">
+            <span>📡 Проверить соединение с ТВ</span>
+          </button>
         </div>
+
+        <div id="genericConnResult" class="result-view"></div>
       </div>
 
-      <!-- ДЕЙСТВИЯ ДЛЯ ANDROID TV / GOOGLE TV -->
-      <div class="card">
-        <div class="card-title">
-          <div class="step-number">2</div>
-          <h2>Оптимизация Android TV и Google TV</h2>
-        </div>
-
-        <p>Безопасная очистка рекламных рекомендаций, промо-каналов и вендорской телеметрии:</p>
-
-        <div class="btn-grid">
-          <div class="action-btn" onclick="openInstallModal()">
-            <div class="btn-header">📥 1. Подгрузка приложений</div>
-            <div class="btn-desc">Установка лучших ТВ-приложений: Zona, HDrezka TV, Lampa, Spotify, Happ, File Manager+.</div>
-          </div>
-
-          <div class="action-btn" onclick="runActionGeneric('light_debloat', 'generic')">
-            <div class="btn-header">⚡ 2. Очистить рекламу и рекомендации</div>
-            <div class="btn-desc">Замораживает Google SetupWraith, TV Recommendations, рекламные модули Xiaomi и TCL. Стоковый лаунчер остается чистым!</div>
-          </div>
-
-          <div class="action-btn success" onclick="runActionGeneric('full_debloat', 'generic')">
-            <div class="btn-header">🚀 3. Полный деблоат + Apple TV лаунчер</div>
-            <div class="btn-desc">Заморозка тяжелого Google LauncherX или MiTV Home и перевод телевизора на сверхбыстрый CleanYourTV.</div>
-          </div>
-
-          <div class="action-btn danger" onclick="runActionGeneric('restore', 'generic')">
-            <div class="btn-header">🔄 4. Откат: Стандартный Google TV</div>
-            <div class="btn-desc">Размораживает все заводские службы и восстанавливает оригинальный лаунчер Google TV / Xiaomi.</div>
+      <!-- Actions Generic -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-num">2</span>
+            <span>Оптимизация выбранной платформы</span>
           </div>
         </div>
 
-        <div id="genericActionStatus" style="margin-top: 16px; display: none;" class="alert alert-info"></div>
+        <div class="tiles-grid">
+          <div class="tile-action" onclick="openInstallModal()">
+            <div class="tile-title"><span>📥</span> <span>1. Подгрузка приложений</span></div>
+            <div class="tile-desc">Установка медиа-пакета (Zona, HDrezka TV, Lampa, Spotify, Happ, File Manager+).</div>
+          </div>
+
+          <div class="tile-action" onclick="runBrandDebloat('light')">
+            <div class="tile-title"><span>⚡</span> <span>2. Очистить рекламу и рекомендации</span></div>
+            <div class="tile-desc">Заморозка промо-каналов, фоновых трекеров вендора и Google SetupWraith.</div>
+          </div>
+
+          <div class="tile-action" onclick="runBrandDebloat('full')">
+            <div class="tile-title" style="color: #6ee7b7;"><span>🚀</span> <span>3. Полный деблоат + CleanYourTV</span></div>
+            <div class="tile-desc">Заморозка тяжелого Google LauncherX / MiTV Home и перевод на ультралегкий лаунчер.</div>
+          </div>
+
+          <div class="tile-action" onclick="runBrandDebloat('restore')">
+            <div class="tile-title" style="color: #fca5a5;"><span>🔄</span> <span>4. Откат: Стандартная система</span></div>
+            <div class="tile-desc">Разморозка всех заводских пакетов и возврат оригинального стокового лаунчера.</div>
+          </div>
+        </div>
+
+        <div id="genericActionStatus" class="result-view"></div>
       </div>
     </div>
 
-    <!-- ==================== ВКЛАДКА 3: ИНСТРУМЕНТЫ 2.0 ==================== -->
+    <!-- ==================== TAB 3: TOOLS 2.0 ==================== -->
     <div id="tab-tools" class="tab-content">
       
-      <!-- ИНСТРУМЕНТ 1: БЛОКИРОВКА РЕКЛАМЫ ADGUARD DNS -->
-      <div class="card">
-        <div class="card-title">
-          <div class="step-number">🛡️</div>
-          <h2>Системная блокировка рекламы (AdGuard Private DNS)</h2>
+      <!-- TOOL 1: ADGUARD DNS -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-num">🛡️</span>
+            <span>Системная блокировка рекламы (AdGuard Private DNS)</span>
+          </div>
+          <span id="dnsBadgeStatus" class="tag">⚪ Не проверено</span>
         </div>
 
-        <p>Блокирует баннеры, всплывающие окна и рекламные трекеры во <strong>всех приложениях и браузерах</strong> на системном уровне Android 9+. Не требует установки сторонних VPN, не расходует оперативную память ТВ и не замедляет интернет-канал.</p>
+        <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 12px;">
+          Блокирует баннеры и рекламные видео в онлайн-кинотеатрах и браузерах на системном уровне Android 9+. Не требует фоновых VPN-приложений и не нагружает ОЗУ телевизора.
+        </p>
 
-        <div class="tool-panel">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
-            <div>
-              <span style="font-size: 1.05rem; font-weight: 700; color: #fff;">Статус защиты от рекламы на ТВ:</span>
-              <span id="dnsStatusBadge" class="status-badge off" style="margin-left: 8px;">⚪ Не проверено</span>
-            </div>
-            <button class="btn-secondary" onclick="checkDnsStatus()">🔄 Проверить статус DNS</button>
-          </div>
-
-          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <button class="btn-primary-action" onclick="toggleDns(true)">
-              <span>🛡️ Включить блокировку рекламы (AdGuard DNS)</span>
-            </button>
-            <button class="btn-secondary" onclick="toggleDns(false)">
-              <span>⚪ Отключить (Стандартный DNS)</span>
-            </button>
-          </div>
-
-          <div id="dnsResultAlert" style="margin-top: 14px; display: none;" class="alert alert-info"></div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="setDns(true)">
+            <span>🛡️ Включить блокировку рекламы (AdGuard DNS)</span>
+          </button>
+          <button class="btn btn-secondary" onclick="setDns(false)">
+            <span>⚪ Выключить (Стандартный DNS)</span>
+          </button>
+          <button class="btn btn-secondary" onclick="checkDnsStatus()">
+            <span>🔄 Проверить статус</span>
+          </button>
         </div>
+
+        <div id="dnsResultView" class="result-view"></div>
       </div>
 
-      <!-- ИНСТРУМЕНТ 2: ВЫБОР ЛАУНЧЕРА И РЕДАКТОР ДОКА -->
-      <div class="card">
-        <div class="card-title">
-          <div class="step-number">🍎</div>
-          <h2>Лаунчер CleanYourTV (Apple TV Style) & Редактор Дока</h2>
+      <!-- TOOL 2: DOCK EDITOR -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-num">🍎</span>
+            <span>Редактор нижнего дока CleanYourTV (Apple TV Style)</span>
+          </div>
+          <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem;" onclick="loadTvPackages()">
+            <span>🔄 Загрузить установленные с ТВ</span>
+          </button>
         </div>
 
-        <p>CleanYourTV — ультралегкий (всего 0.5 МБ) домашний экран в стиле Apple TV. Вы можете настроить порядок приложений в нижнем доке прямо отсюда:</p>
+        <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 12px;">
+          Настройте количество и точный порядок приложений в нижней панели лаунчера CleanYourTV:
+        </p>
 
-        <div class="tool-panel">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-            <div style="font-weight: 700; font-size: 1.05rem; color: #fff;">
-              Порядок приложений в нижнем доке CleanYourTV:
+        <!-- Dock Toolbar -->
+        <div class="dock-config-bar">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 0.86rem; font-weight: 600; color: #cbd5e1;">Количество плиток в доке:</span>
+            <div class="segmented-count">
+              <button class="seg-btn" onclick="setDockCount(4)">4</button>
+              <button class="seg-btn" onclick="setDockCount(5)">5</button>
+              <button class="seg-btn active" id="segCount6" onclick="setDockCount(6)">6</button>
+              <button class="seg-btn" id="segCount7" onclick="setDockCount(7)">7</button>
+              <button class="seg-btn" id="segCount8" onclick="setDockCount(8)">8</button>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <label style="font-size: 0.9rem; color: var(--text-muted);">Количество колонок:</label>
-              <select id="dockColumnsSelect" style="background: #090d16; border: 1px solid #334155; color: #fff; padding: 4px 8px; border-radius: 6px;">
-                <option value="6" selected>6 колонок</option>
-                <option value="7">7 колонок</option>
-                <option value="8">8 колонок</option>
-              </select>
-            </div>
           </div>
 
-          <div id="dockListContainer" class="dock-list">
-            <!-- Заполняется JS -->
-          </div>
-
-          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px;">
-            <button class="btn-primary-action" onclick="applyDockConfig()">
-              <span>💾 Применить порядок на телевизоре</span>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem;" onclick="addDockSlot()">
+              <span>＋ Добавить слот</span>
             </button>
-            <button class="btn-secondary" onclick="resetDefaultDock()">
-              <span>🔄 Сбросить к стандарту (Топ-6)</span>
-            </button>
-            <button class="btn-secondary" onclick="switchLauncher('cleanyourtv')">
-              <span>🍎 Сделать CleanYourTV основным экраном</span>
+            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem;" onclick="resetDockToTop6()">
+              <span>Сброс к Топ-6</span>
             </button>
           </div>
-
-          <div id="dockResultAlert" style="margin-top: 14px; display: none;" class="alert alert-info"></div>
         </div>
+
+        <!-- Dynamic Dock Slots List -->
+        <div id="dockRowsContainer" class="dock-rows">
+          <!-- Dynamically populated by renderDockRows() -->
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px;">
+          <button class="btn btn-success" onclick="applyDockConfig()">
+            <span>💾 Применить порядок на телевизоре</span>
+          </button>
+          <button class="btn btn-secondary" onclick="switchLauncherAction('cleanyourtv')">
+            <span>🍎 Сделать CleanYourTV основным экраном</span>
+          </button>
+        </div>
+
+        <div id="dockResultView" class="result-view"></div>
       </div>
 
-      <!-- ИНСТРУМЕНТ 3: УСТАНОВКА СВОЕГО APK -->
-      <div class="card">
-        <div class="card-title">
-          <div class="step-number">📦</div>
-          <h2>Установка любого своего APK-файла</h2>
+      <!-- TOOL 3: CUSTOM APK -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-num">📦</span>
+            <span>Установка любого своего APK-файла</span>
+          </div>
         </div>
 
-        <p>Выберите любой сторонний <code>.apk</code> файл с компьютера и отправьте его на телевизор по беспроводной сети:</p>
-
-        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; align-items: center;">
-          <input type="text" id="customApkPath" class="test-input" placeholder="Выберите .apk файл на компьютере...">
-          <button class="btn-secondary" onclick="browseCustomApk()">📁 Обзор...</button>
-          <button id="btnInstallCustom" class="btn-primary-action" onclick="installCustomApk()">🚀 Установить на ТВ</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <input type="text" id="customApkPath" class="input-ip" placeholder="Выберите .apk файл на компьютере...">
+          <button class="btn btn-secondary" onclick="browseApk()">📁 Обзор...</button>
+          <button class="btn btn-primary" onclick="installApk()">🚀 Установить на ТВ</button>
         </div>
 
-        <div id="customApkStatus" style="margin-top: 14px; display: none;" class="alert alert-info"></div>
+        <div id="customApkResult" class="result-view"></div>
       </div>
     </div>
 
-    <!-- ==================== ОБЩИЙ ЖИВОЙ ЛОГ КОМАНД ==================== -->
-    <div class="card">
-      <div class="card-title" style="justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="step-number" style="background: #334155; color: #fff;">💻</div>
-          <h2>Лог выполнения операций</h2>
+    <!-- ==================== CONSOLE LOG ==================== -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title" style="font-size: 0.95rem;">
+          <span style="color: var(--text-dim);">●</span>
+          <span>Журнал операций (ADB Console)</span>
         </div>
-        <button class="btn-secondary" style="padding: 4px 12px; font-size: 0.82rem;" onclick="clearLog()">Очистить лог</button>
+        <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.75rem;" onclick="clearLog()">Очистить</button>
       </div>
-      <p style="color: var(--text-muted); font-size: 0.88rem;">Живые события ADB и ответы телевизора:</p>
-      <div id="consoleLog" class="console-log">[*] Smart TV Toolbox v2.0 готов к работе. Выберите вкладку вашей платформы выше...</div>
+      <div id="consoleLog" class="console-box">[*] Smart TV Toolbox v2.0 готов. Подключите ТВ или выберите операцию...</div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПОДГРУЗКИ ПРИЛОЖЕНИЙ -->
+    <!-- MODAL FOR APPS INSTALLATION -->
     <div id="installModal" class="modal-overlay" onclick="closeInstallModalOnBackdrop(event)">
-      <div class="modal-dialog">
-        <div class="modal-header">
-          <div class="modal-title">
-            <span>📥</span>
-            <span>Подгрузка приложений на телевизор</span>
-          </div>
-          <button class="modal-close" onclick="closeInstallModal()">&times;</button>
+      <div class="modal-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
+          <div style="font-weight: 700; font-size: 1.05rem; color: #fff;">📥 Подгрузка приложений на ТВ</div>
+          <button style="background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="closeInstallModal()">&times;</button>
         </div>
 
-        <!-- ТОП-НАБОР 6 ПРИЛОЖЕНИЙ -->
-        <div class="preset-card highlight">
-          <div class="preset-title">
-            <span>⭐</span>
-            <span>Топ-набор: Кино, Музыка и Файлы (6 приложений)</span>
+        <div class="note-box" style="margin-bottom: 12px;">
+          <strong>⭐ Топ-набор (6 приложений):</strong> Zona, HDrezka TV, LAMPA, Spotify TV, Happ и File Manager+.
+          <div style="margin-top: 8px;">
+            <button class="btn btn-primary" onclick="runPreset('top6')">🚀 Установить Топ-6 в 1 клик</button>
           </div>
-          <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px;">
-            Установка полного комплекта под пульт телевизора в одно нажатие:
-          </div>
-          <div class="pills-row">
-            <span class="pill">⚡ Zona</span>
-            <span class="pill from-tv">🎬 HDrezka TV</span>
-            <span class="pill from-tv">🎥 LAMPA</span>
-            <span class="pill from-tv">🎵 Spotify TV</span>
-            <span class="pill">📂 File Manager +</span>
-            <span class="pill">📱 Happ (Proxy)</span>
-          </div>
-          <button class="btn-primary-action" onclick="runPresetInstall('top6')" style="margin-top: 8px;">
-            <span>🚀 Установить Топ-6 в 1 клик</span>
-          </button>
         </div>
 
-        <!-- БАЗОВЫЙ НАБОР -->
-        <div class="preset-card">
-          <div class="preset-title">
-            <span>📦</span>
-            <span>Базовый набор (5 приложений)</span>
+        <div class="note-box" style="margin-bottom: 12px;">
+          <strong>📦 Базовый набор (5 приложений):</strong> Happ, HDrezka TV, Zona, File Manager+, SmartTube.
+          <div style="margin-top: 8px;">
+            <button class="btn btn-secondary" onclick="runPreset('basic')">Установить базовый набор</button>
           </div>
-          <div class="pills-row">
-            <span class="pill">📱 Happ</span>
-            <span class="pill from-tv">🎬 HDrezka TV</span>
-            <span class="pill">⚡ Zona</span>
-            <span class="pill">📂 File Manager +</span>
-            <span class="pill">📺 SmartTube</span>
-          </div>
-          <button class="btn-secondary" onclick="runPresetInstall('basic')" style="margin-top: 6px;">
-            <span>📦 Установить базовый набор</span>
-          </button>
-        </div>
-
-        <!-- ВЫБОР ОТДЕЛЬНЫХ ПРИЛОЖЕНИЙ -->
-        <div class="preset-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <div class="preset-title" style="margin-bottom: 0;">
-              <span>🛠</span>
-              <span>Выбор отдельных приложений:</span>
-            </div>
-            <div style="font-size: 0.85rem; display: flex; gap: 8px;">
-              <a href="javascript:void(0)" onclick="toggleAllApps(true)" style="color: var(--accent); text-decoration: none;">Выбрать все</a>
-              <span style="color: var(--card-border);">|</span>
-              <a href="javascript:void(0)" onclick="toggleAllApps(false)" style="color: var(--text-muted); text-decoration: none;">Снять все</a>
-            </div>
-          </div>
-          <div id="appsCheckboxList" style="max-height: 180px; overflow-y: auto; margin: 10px 0;"></div>
-          <button class="btn-secondary" onclick="runCustomSelectionInstall()">
-            <span>📲 Установить выбранные</span>
-          </button>
         </div>
 
         <div style="text-align: right; margin-top: 14px;">
-          <button class="btn-secondary" onclick="closeInstallModal()">Закрыть</button>
+          <button class="btn btn-secondary" onclick="closeInstallModal()">Закрыть</button>
         </div>
       </div>
     </div>
 
     <footer>
-      Smart TV Toolbox v2.0.0 • Поддержка Яндекс ТВ (Tuvio/CVTE), Android TV и Google TV • 2026
+      <span>Smart TV Toolbox v2.0.0</span>
+      <span>Unslop Engineered UI</span>
     </footer>
   </div>
 
   <script>
-    // Текущий активный IP телевизора (синхронизируется между всеми полями)
+    // Global State
     let activeTvIp = null;
+    let selectedBrand = 'haier';
+    let installedTvPackages = [];
 
-    // Список приложений дока CleanYourTV
+    // App Catalog
+    const CATALOG_APPS = [
+      { pkg: "mobi.zona", name: "⚡ Zona (Кино и сериалы)" },
+      { pkg: "com.falcofemoralis.hdrezkaapp", name: "🎬 HDrezka TV (Фильмы и озвучки)" },
+      { pkg: "ru.twicker.lampa", name: "🎥 LAMPA (Медиаплеер и торренты)" },
+      { pkg: "com.spotify.tv.android", name: "🎵 Spotify TV (Музыка)" },
+      { pkg: "su.happ.proxyutility", name: "📱 Happ (Прокси-утилита)" },
+      { pkg: "com.alphainventor.filemanager", name: "📂 File Manager + (Файлы)" },
+      { pkg: "ru.rutube.app", name: "📺 RuTube (Видеохостинг)" },
+      { pkg: "com.vk.tv", name: "🔵 VK Видео (Клипы и фильмы)" },
+      { pkg: "de.benzac.msx", name: "🌐 Media Station X (MSX портал)" },
+      { pkg: "com.teamsmart.videomanager.tv", name: "📺 SmartTube (YouTube без рекламы)" },
+      { pkg: "com.yandex.tv.kinopoisk", name: "🍿 Кинопоиск" },
+      { pkg: "org.videolan.vlc", name: "🎬 VLC медиаплеер" },
+      { pkg: "com.mxtech.videoplayer.ad", name: "🎬 MX Player" }
+    ];
+
+    // Current Dock Apps (initially 6 items)
     let currentDockApps = [
-      { pkg: "mobi.zona", name: "⚡ Zona", desc: "Онлайн-кинотеатр" },
-      { pkg: "com.falcofemoralis.hdrezkaapp", name: "🎬 HDrezka TV", desc: "Фильмы и сериалы" },
-      { pkg: "ru.twicker.lampa", name: "🎥 LAMPA", desc: "Медиаплеер и торренты" },
-      { pkg: "com.spotify.tv.android", name: "🎵 Spotify TV", desc: "Музыкальный стриминг" },
-      { pkg: "su.happ.proxyutility", name: "📱 Happ", desc: "Прокси-утилита" },
-      { pkg: "com.alphainventor.filemanager", name: "📂 File Manager +", desc: "Файловый менеджер" }
+      "mobi.zona",
+      "com.falcofemoralis.hdrezkaapp",
+      "ru.twicker.lampa",
+      "com.spotify.tv.android",
+      "su.happ.proxyutility",
+      "com.alphainventor.filemanager"
     ];
 
-    const KNOWN_APPS = [
-      { filename: "zona.apk", name: "⚡ Zona", desc: "Онлайн-кинотеатр" },
-      { filename: "hdrezka.apk", name: "🎬 HDrezka TV", desc: "Фильмы и сериалы" },
-      { filename: "lampa.apk", name: "🎥 LAMPA", desc: "Медиаплеер и торренты" },
-      { filename: "spotify.apk", name: "🎵 Spotify TV", desc: "Музыка под пульт" },
-      { filename: "filemanager_plus.apk", name: "📂 File Manager +", desc: "Файловый менеджер" },
-      { filename: "Happ.apk", name: "📱 Happ", desc: "Прокси-утилита" },
-      { filename: "smarttube.apk", name: "📺 SmartTube", desc: "YouTube без рекламы" },
-      { filename: "cleanyourtv.apk", name: "🍎 CleanYourTV", desc: "Apple TV лаунчер" },
-      { filename: "flauncher.apk", name: "🚀 FLauncher", desc: "Плиточный лаунчер" }
-    ];
+    // Brand Guides Database
+    const BRAND_GUIDES = {
+      haier: {
+        name: "Haier",
+        badge: "Haier (Android TV 9–14 / Google TV)",
+        summary: "Телевизоры Haier (Smart TV BX, MatrixTV, H32, H43, H50, H55, H65) работают на платах MediaTek и CVTE. Режим разработчика включается через стандартное меню «Об устройстве» 7 нажатиями на «Номер сборки».",
+        path: ["Настройки (шестеренка на пульте)", "Настройки устройства (Device Preferences)", "Об устройстве (About)", "Номер сборки (Build) [x7]", "Для разработчиков", "Отладка по USB (ВКЛ)"],
+        steps: [
+          "Нажмите кнопку <strong>Шестеренка</strong> (или кнопку <em>Home</em> ➔ значок настроек в правом верхнем углу экрана).",
+          "Перейдите в раздел <code>Настройки устройства</code> (или <code>Система</code>) ➔ выберите <code>Об устройстве</code>.",
+          "Пролистайте вниз до пункта <strong>«Номер сборки»</strong> (Build) и нажмите на пульте кнопку <strong>OK ровно 7 раз подряд</strong>.",
+          "Появится сообщение <em>«Вы стали разработчиком!»</em>. Нажмите кнопку <strong>Назад</strong>.",
+          "В появившемся меню <code>Для разработчиков</code> найдите и включите пункт <strong>«Отладка по USB»</strong> (USB debugging).",
+          "Посмотрите IP-адрес телевизора в <code>Сеть и Интернет ➔ Имя Wi-Fi сети ➔ IP-адрес</code> и нажмите «Проверить соединение с ТВ»."
+        ],
+        notes: "💡 <strong>Особенности Haier:</strong> На телевизорах Haier установлены рекламные модули <code>com.haier.oemtabprovider</code>, промо-лаунчер <code>com.haier.launcher.haiermatrix</code> и служба <code>Haier Housekeeper</code>. Кнопка оптимизации ниже безопасно замораживает их без нарушения работы пульта и регулировки звука."
+      },
+      xiaomi: {
+        name: "Xiaomi / Redmi",
+        badge: "Xiaomi / Redmi / Mi TV / TV Stick",
+        summary: "Оболочка PatchWall / Android TV на моделях Mi TV 4A/4S/P1/A2, TV Stick и Mi Box.",
+        path: ["Настройки (шестеренка)", "Настройки устройства", "Об устройстве", "Сборка (Build) [x7]", "Для разработчиков", "Отладка по USB + Установка через USB"],
+        steps: [
+          "Откройте меню <code>Настройки</code> на домашнем экране или с пульта.",
+          "Выберите <code>Настройки устройства</code> ➔ откройте <code>Об устройстве</code>.",
+          "Найдите строку <strong>«Сборка»</strong> и нажмите кнопку <strong>OK на пульте 7 раз</strong>.",
+          "Вернитесь назад, откройте новый раздел <code>Для разработчиков</code>.",
+          "Включите <strong>«Отладка по USB»</strong>. На некоторых версиях Mi TV также включите <em>«Установка через USB»</em>."
+        ],
+        notes: "💡 <strong>Особенности Xiaomi:</strong> Отключаются системные рекламные службы <code>com.xiaomi.mitv.advertise</code>, всплывающие промо-баннеры и тяжелый фоновый сервис обновлений."
+      },
+      tcl: {
+        name: "TCL / iFFALCON",
+        badge: "TCL & iFFALCON (Android / Google TV)",
+        summary: "Модели TCL C-series, P-series, S-series и iFFALCON.",
+        path: ["Настройки", "Система (System)", "Об устройстве (About)", "Сборка ОС Android TV [x7]", "Система ➔ Для разработчиков", "Отладка по USB ➔ ВКЛ"],
+        steps: [
+          "Откройте <code>Настройки</code> ➔ перейдите в пункт <code>Система</code>.",
+          "Зайдите в подраздел <code>Об устройстве</code>.",
+          "Нажмите кнопку <strong>OK 7 раз</strong> на строке <strong>«Сборка ОС Android TV»</strong>.",
+          "Вернитесь назад в меню <code>Система</code> ➔ откройте пункт <code>Для разработчиков</code>.",
+          "Переведите переключатель <strong>«Отладка по USB»</strong> в положение ВКЛ."
+        ],
+        notes: "💡 <strong>Особенности TCL:</strong> Безопасно отключается сбор телеметрии <code>com.tcl.partnercustomizer</code> и встроенный плеер TCL Channel."
+      },
+      sony: {
+        name: "Sony / Philips",
+        badge: "Sony Bravia & Philips Android TV",
+        summary: "Телевизоры Sony Bravia (X-series, A-series, Bravia XR) и Philips Smart TV.",
+        path: ["Кнопка Шестеренка", "Настройки устройства", "Об устройстве", "Номер сборки [x7]", "Для разработчиков", "Отладка по USB ➔ ВКЛ"],
+        steps: [
+          "На пульте нажмите кнопку <code>Настройки</code> (Quick Settings или Шестеренка).",
+          "Перейдите в <code>Настройки устройства</code> ➔ <code>Об устройстве</code>.",
+          "Быстро нажмите <strong>7 раз</strong> на <strong>«Номер сборки»</strong>.",
+          "Вернитесь назад в меню <code>Для разработчиков</code> и активируйте <strong>«Отладку по USB»</strong>."
+        ],
+        notes: "💡 <strong>Особенности Sony:</strong> Замораживаются промо-модули <code>com.sony.dtv.bravialife</code> и фоновые телеметрические службы."
+      },
+      chromecast: {
+        name: "Chromecast / Google TV",
+        badge: "Google TV & Chromecast HD/4K",
+        summary: "Оригинальные устройства Chromecast with Google TV и ТВ на чистом интерфейсе Google TV.",
+        path: ["Аватар профиля", "Настройки", "Система", "Об устройстве", "Сборка ОС Android TV [x7]", "Для разработчиков ➔ Отладка по USB"],
+        steps: [
+          "В правом верхнем углу нажмите на значок своего профиля ➔ <code>Настройки</code>.",
+          "Перейдите в <code>Система</code> ➔ <code>Об устройстве</code>.",
+          "Нажмите <strong>7 раз кнопку OK</strong> на пункте <strong>«Сборка ОС Android TV»</strong>.",
+          "Вернитесь в <code>Система ➔ Для разработчиков</code> и включите <strong>«Отладка по USB»</strong>."
+        ],
+        notes: "💡 <strong>Особенности Google TV:</strong> Отключается рекламная оболочка LauncherX с навязчивыми трейлерами и служба Google SetupWraith."
+      },
+      hisense: {
+        name: "Hisense",
+        badge: "Hisense (Android TV)",
+        summary: "Модели Hisense на базе Android TV (не VIDAA).",
+        path: ["Настройки", "Поддержка / Система", "Сведения о системе", "Номер сборки [x7]", "Для разработчиков", "Отладка ➔ ВКЛ"],
+        steps: [
+          "Зайдите в <code>Настройки</code> ➔ <code>Поддержка</code> (или <code>Система</code>).",
+          "Откройте <code>Сведения о системе</code> (или <code>Об устройстве</code>).",
+          "Нажмите <strong>7 раз</strong> на строку <strong>«Номер сборки»</strong>.",
+          "В меню <code>Для разработчиков</code> активируйте отладку по USB."
+        ],
+        notes: "💡 <strong>Обратите внимание:</strong> Для моделей Hisense на закрытой ОС VIDAA сетевая отладка не поддерживается."
+      },
+      universal: {
+        name: "Универсальная",
+        badge: "Любой Android TV / Приставка",
+        summary: "Универсальный алгоритм для любых китайских и брендовых приставок и смарт-телевизоров на Android.",
+        path: ["Настройки", "Об устройстве", "Сборка / Build [x7]", "Меню разработчика", "Отладка по USB"],
+        steps: [
+          "Откройте меню настроек устройства.",
+          "Найдите раздел информации об устройстве (<code>Об устройстве</code> / <code>About</code>).",
+          "Нажимайте на строку <strong>«Номер сборки»</strong> (Build number) 7 раз подряд до активации режима разработчика.",
+          "В появившемся разделе для разработчиков активируйте сетевую отладку или отладку по USB."
+        ],
+        notes: "💡 После включения отладки проверьте, что ПК и ТВ подключены к одному роутеру Wi-Fi."
+      }
+    };
 
     function addLog(msg) {
       const box = document.getElementById('consoleLog');
@@ -1029,151 +1107,149 @@
       if (box) box.innerHTML = '[*] Лог очищен.';
     }
 
-    // Переключение вкладок
-    function switchTab(tabId, btn) {
+    function switchMainTab(tabId, btn) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      
-      if (btn) btn.classList.add('active');
-      const target = document.getElementById(tabId);
-      if (target) target.classList.add('active');
+      btn.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
 
-      // Если переключились на Инструменты, автоматически опрашиваем DNS
       if (tabId === 'tab-tools') {
         checkDnsStatus();
+        renderDockRows();
       }
     }
 
-    function syncIpFields(newIp) {
-      if (!newIp) return;
-      activeTvIp = newIp;
-      const yInput = document.getElementById('yaosIpInput');
-      const gInput = document.getElementById('genericIpInput');
-      if (yInput) yInput.value = newIp;
-      if (gInput) gInput.value = newIp;
-    }
+    // Interactive Brand Guide Switcher
+    function selectBrandGuide(brandKey, btn) {
+      selectedBrand = brandKey;
+      document.querySelectorAll('.brand-pill').forEach(p => p.classList.remove('active'));
+      if (btn) btn.classList.add('active');
 
-    function getActiveIp() {
-      const yInput = document.getElementById('yaosIpInput');
-      const gInput = document.getElementById('genericIpInput');
-      let val = (yInput && yInput.value.trim() && yInput.value.trim().toLowerCase() !== 'автопоиск') ? yInput.value.trim() : null;
-      if (!val && gInput && gInput.value.trim() && gInput.value.trim().toLowerCase() !== 'автопоиск') {
-        val = gInput.value.trim();
-      }
-      return val || activeTvIp;
-    }
+      const guide = BRAND_GUIDES[brandKey] || BRAND_GUIDES.haier;
+      document.getElementById('currentBrandBadge').innerText = guide.badge;
 
-    // Проверка соединения
-    async function runConnectionTest(sourceTab = 'yaos') {
-      const btnId = sourceTab === 'yaos' ? 'btnCheckYaos' : 'btnCheckGeneric';
-      const resId = sourceTab === 'yaos' ? 'yaosTestResult' : 'genericTestResult';
-      const inputId = sourceTab === 'yaos' ? 'yaosIpInput' : 'genericIpInput';
+      const container = document.getElementById('brandGuideContainer');
+      const breadcrumbsHtml = guide.path.map((step, idx) => {
+        const isLast = idx === guide.path.length - 1;
+        return `<span class="path-step ${isLast ? 'target' : ''}">${step}</span>` +
+               (!isLast ? '<span class="path-arrow">➔</span>' : '');
+      }).join('');
 
-      const btn = document.getElementById(btnId);
-      const res = document.getElementById(resId);
-      let manualIp = document.getElementById(inputId).value.trim();
-      if (manualIp.toLowerCase() === 'автопоиск' || manualIp === '') {
-        manualIp = null;
-      }
+      const stepsHtml = guide.steps.map(s => `<li>${s}</li>`).join('');
 
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> <span>Поиск ТВ и проверка ADB...</span>';
+      container.innerHTML = `
+        <div style="font-size: 0.88rem; color: #e2e8f0; margin-bottom: 8px;">
+          ${guide.summary}
+        </div>
 
-      res.style.display = 'block';
-      res.style.background = 'rgba(56, 189, 248, 0.12)';
-      res.style.border = '1px solid rgba(56, 189, 248, 0.35)';
-      res.style.color = '#bae6fd';
-      res.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <span class="spinner"></span>
-          <div>
-            <div style="font-weight: bold; font-size: 1.05rem; color: #38bdf8;">⏳ Идет подключение к телевизору...</div>
-            <div style="font-size: 0.88rem; color: #94a3b8; margin-top: 4px;">
-              Поиск в сети и соединение по порту 5555. Если на экране ТВ появился запрос — нажмите ОК пультом!
-            </div>
-          </div>
+        <div class="path-flow">
+          ${breadcrumbsHtml}
+        </div>
+
+        <ol class="steps-list">
+          ${stepsHtml}
+        </ol>
+
+        <div class="note-box">
+          ${guide.notes}
         </div>
       `;
-      addLog(`[>] Проверка соединения (${sourceTab})...`);
+      addLog(`[*] Переключена шпаргалка для марки: ${guide.name}`);
+    }
+
+    // Synchronize IP across inputs
+    function syncIp(ip) {
+      if (!ip) return;
+      activeTvIp = ip;
+      document.getElementById('yaosIpInput').value = ip;
+      document.getElementById('genericIpInput').value = ip;
+    }
+
+    function getTargetIp() {
+      let y = document.getElementById('yaosIpInput').value.trim();
+      let g = document.getElementById('genericIpInput').value.trim();
+      if (y && y.toLowerCase() !== 'автопоиск') return y;
+      if (g && g.toLowerCase() !== 'автопоиск') return g;
+      return activeTvIp;
+    }
+
+    // Connection Test
+    async function testConnection(sourceTab) {
+      const btn = document.getElementById(sourceTab === 'yaos' ? 'btnCheckYaos' : 'btnCheckGeneric');
+      const res = document.getElementById(sourceTab === 'yaos' ? 'yaosConnResult' : 'genericConnResult');
+      const ipInput = document.getElementById(sourceTab === 'yaos' ? 'yaosIpInput' : 'genericIpInput');
+      
+      let ip = ipInput.value.trim();
+      if (ip.toLowerCase() === 'автопоиск' || ip === '') ip = null;
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> <span>Поиск ТВ...</span>';
+      res.style.display = 'block';
+      res.style.background = 'rgba(56, 189, 248, 0.08)';
+      res.style.border = '1px solid rgba(56, 189, 248, 0.25)';
+      res.style.color = '#bae6fd';
+      res.innerHTML = `<span>⏳ Поиск телевизора в локальной сети и проверка ADB... Подтвердите запрос на экране ТВ пультом!</span>`;
+      addLog('[>] Запуск проверки соединения...');
 
       try {
         let data;
         if (window.pywebview && window.pywebview.api) {
-          data = await window.pywebview.api.test_connection(manualIp);
+          data = await window.pywebview.api.test_connection(ip);
         } else {
           const resp = await fetch('/api/test_connection', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ip: manualIp })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ ip: ip })
           });
           data = await resp.json();
         }
 
         if (data && data.success) {
-          syncIpFields(data.ip);
-          addLog(`[✓] Связь установлена! ${data.ip} (${data.brand} ${data.model})`);
-
-          let dnsBadge = data.dns_specifier && data.dns_specifier.includes('adguard')
-            ? '<span style="color: #4ade80; font-weight: bold;">🟢 AdGuard DNS АКТИВЕН</span>'
-            : '<span style="color: #94a3b8;">⚪ Стандартный DNS</span>';
-
-          res.style.background = 'rgba(34, 197, 94, 0.18)';
-          res.style.border = '1px solid rgba(34, 197, 94, 0.5)';
-          res.style.color = '#bbf7d0';
+          syncIp(data.ip);
+          addLog(`[✓] Подключено: ${data.ip} (${data.brand} ${data.model}, Android ${data.android})`);
+          res.style.background = 'rgba(16, 185, 129, 0.12)';
+          res.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+          res.style.color = '#a7f3d0';
           res.innerHTML = `
-            <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; color: #4ade80; display: flex; align-items: center; gap: 8px;">
-              <span>✅</span> <span>ТЕЛЕВИЗОР НА СВЯЗИ!</span>
-            </div>
-            <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.7; margin-bottom: 8px;">
-              • <strong>IP-адрес:</strong> <code style="color: #67e8f9; background: #0b1120; padding: 2px 6px; border-radius: 4px;">${data.ip}:5555</code><br>
-              • <strong>Марка / Модель:</strong> ${data.brand} ${data.model}<br>
-              • <strong>Версия Android:</strong> ${data.android}<br>
-              • <strong>Текущий лаунчер:</strong> ${data.launcher}<br>
-              • <strong>Защита от рекламы:</strong> ${dnsBadge}<br>
-              • <strong>Статус отладки:</strong> <span style="color: #4ade80; font-weight: bold;">РАЗРЕШЕНО (Полный доступ)</span>
-            </div>
-            <div style="font-size: 0.88rem; color: #86efac;">
-              🎉 Связь активна! Теперь вы можете запускать оптимизацию или устанавливать приложения.
+            <div style="font-weight: 700; margin-bottom: 4px;">✅ Телевизор успешно подключен по ADB!</div>
+            <div style="font-family: var(--font-mono); font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
+              • IP: <strong>${data.ip}:5555</strong><br>
+              • Устройство: <strong>${data.brand} ${data.model}</strong> (Android ${data.android})<br>
+              • Текущий лаунчер: <strong>${data.launcher}</strong>
             </div>
           `;
           updateDnsBadge(data.dns_specifier && data.dns_specifier.includes('adguard'));
         } else {
-          const errMsg = data ? data.message : 'Неизвестная ошибка связи';
-          const errDet = data ? (data.details || '') : '';
-          addLog(`[✗] Ошибка соединения: ${errMsg}`);
-          res.style.background = 'rgba(239, 68, 68, 0.18)';
-          res.style.border = '1px solid rgba(239, 68, 68, 0.5)';
-          res.style.color = '#fecaca';
+          const msg = data ? data.message : 'Телевизор не отвечает по порту 5555';
+          addLog(`[✗] Ошибка связи: ${msg}`);
+          res.style.background = 'rgba(239, 68, 68, 0.12)';
+          res.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          res.style.color = '#fca5a5';
           res.innerHTML = `
-            <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 6px; color: #f87171; display: flex; align-items: center; gap: 8px;">
-              <span>❌</span> <span>СВЯЗЬ НЕ УСТАНОВЛЕНА</span>
-            </div>
-            <div style="font-size: 0.95rem; font-weight: 500; margin-bottom: 6px;">${errMsg}</div>
-            <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 0.88rem; color: #fca5a5; line-height: 1.4;">
-              ${errDet}
-            </div>
+            <div style="font-weight: 700; margin-bottom: 4px;">❌ Нет связи с телевизором</div>
+            <div style="font-size: 0.82rem;">${msg}. Убедитесь, что отладка включена по инструкции выше, и ТВ в одной Wi-Fi сети.</div>
           `;
         }
       } catch (e) {
-        addLog(`[!] Исключение при проверке: ${e}`);
-        res.style.background = 'rgba(239, 68, 68, 0.18)';
-        res.style.border = '1px solid rgba(239, 68, 68, 0.5)';
-        res.innerHTML = `<div style="color: #f87171; font-weight: bold;">❌ Ошибка: ${e}</div>`;
+        addLog(`[!] Исключение: ${e}`);
+        res.innerHTML = `❌ Ошибка запроса: ${e}`;
       }
 
       btn.disabled = false;
-      btn.innerHTML = '<span>📡 Проверить соединение</span>';
+      btn.innerHTML = '<span>📡 Проверить связь</span>';
     }
 
-    // Выполнение действий (YaOS и Generic)
-    async function runActionGeneric(action, tvType) {
+    // Actions Run
+    async function runAction(action, tvType) {
       const statusBox = document.getElementById(tvType === 'yaos' ? 'yaosActionStatus' : 'genericActionStatus');
       statusBox.style.display = 'block';
-      statusBox.className = 'alert alert-info';
-      statusBox.innerHTML = '<span class="spinner"></span> <strong>Выполняется операция на телевизоре...</strong> Пожалуйста, подождите.';
+      statusBox.style.background = 'rgba(56, 189, 248, 0.08)';
+      statusBox.style.border = '1px solid rgba(56, 189, 248, 0.25)';
+      statusBox.style.color = '#bae6fd';
+      statusBox.innerHTML = '<span class="spinner"></span> Выполнение операции на телевизоре...';
 
-      addLog(`[>] Запуск действия '${action}' (${tvType})...`);
-      const ip = getActiveIp();
+      const ip = getTargetIp();
+      addLog(`[>] Выполнение: ${action} (${tvType})...`);
 
       try {
         let resData;
@@ -1182,254 +1258,408 @@
         } else {
           const resp = await fetch('/api/run_action', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ action: action, ip: ip, tv_type: tvType, launcher_choice: 'cleanyourtv' })
           });
           resData = await resp.json();
         }
 
         if (resData.success) {
-          statusBox.className = 'alert alert-success';
+          statusBox.style.background = 'rgba(16, 185, 129, 0.12)';
+          statusBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+          statusBox.style.color = '#a7f3d0';
           statusBox.innerHTML = '✅ ' + resData.message;
-          addLog(`[✓] Успех: ${resData.message}`);
+          addLog(`[✓] Успешно: ${resData.message}`);
         } else {
-          statusBox.className = 'alert alert-danger';
+          statusBox.style.background = 'rgba(239, 68, 68, 0.12)';
+          statusBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          statusBox.style.color = '#fca5a5';
           statusBox.innerHTML = '❌ ' + resData.message;
           addLog(`[✗] Ошибка: ${resData.message}`);
         }
       } catch (e) {
-        statusBox.className = 'alert alert-danger';
-        statusBox.innerHTML = '❌ Ошибка выполнения: ' + e;
-        addLog(`[!] Ошибка: ${e}`);
+        statusBox.innerHTML = '❌ Ошибка: ' + e;
       }
     }
 
-    // ================= DNS УПРАВЛЕНИЕ =================
-    function updateDnsBadge(enabled) {
-      const badge = document.getElementById('dnsStatusBadge');
-      if (!badge) return;
-      if (enabled) {
-        badge.className = 'status-badge on';
-        badge.innerHTML = '🟢 Активна (dns.adguard-dns.com)';
-      } else {
-        badge.className = 'status-badge off';
-        badge.innerHTML = '⚪ Отключена (Стандартный)';
-      }
+    function runBrandDebloat(mode) {
+      const tvType = selectedBrand === 'haier' ? 'haier' : 'generic';
+      if (mode === 'light') runAction('light_debloat', tvType);
+      else if (mode === 'full') runAction('full_debloat', tvType);
+      else if (mode === 'restore') runAction('restore', tvType);
     }
 
-    async function checkDnsStatus() {
-      const ip = getActiveIp();
-      addLog('[>] Запрос статуса DNS...');
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.get_dns_status) {
-          data = await window.pywebview.api.get_dns_status(ip);
-        } else {
-          const res = await fetch(`/api/get_dns?ip=${encodeURIComponent(ip || '')}`);
-          data = await res.json();
-        }
-        if (data && data.success) {
-          updateDnsBadge(data.enabled);
-          addLog(`[✓] Текущий DNS: ${data.enabled ? 'AdGuard DNS' : 'Стандартный'}`);
-        }
-      } catch (e) {
-        addLog(`[!] Ошибка проверки DNS: ${e}`);
-      }
-    }
-
-    async function toggleDns(enable) {
-      const alertBox = document.getElementById('dnsResultAlert');
-      alertBox.style.display = 'block';
-      alertBox.className = 'alert alert-info';
-      alertBox.innerHTML = '<span class="spinner"></span> Применение настроек DNS на телевизоре...';
-      
-      const ip = getActiveIp();
-      addLog(`[>] Переключение Private DNS: ${enable ? 'ВКЛ' : 'ВЫКЛ'}...`);
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.set_dns) {
-          data = await window.pywebview.api.set_dns(enable, ip);
-        } else {
-          const res = await fetch('/api/set_dns', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ip: ip, enable: enable })
-          });
-          data = await res.json();
-        }
-        if (data && data.success) {
-          alertBox.className = 'alert alert-success';
-          alertBox.innerHTML = '✅ ' + data.message;
-          updateDnsBadge(data.enabled);
-          addLog(`[✓] ${data.message}`);
-        } else {
-          alertBox.className = 'alert alert-danger';
-          alertBox.innerHTML = '❌ ' + (data ? data.message : 'Ошибка настройки DNS');
-        }
-      } catch (e) {
-        alertBox.className = 'alert alert-danger';
-        alertBox.innerHTML = '❌ Ошибка: ' + e;
-      }
-    }
-
-    // ================= РЕДАКТОР ДОКА CLEANYOURTV =================
-    function renderDockList() {
-      const container = document.getElementById('dockListContainer');
+    // ================= DOCK EDITOR =================
+    function renderDockRows() {
+      const container = document.getElementById('dockRowsContainer');
       if (!container) return;
-      container.innerHTML = currentDockApps.map((item, idx) => `
-        <div class="dock-item">
-          <div class="dock-info">
-            <div class="dock-idx">${idx + 1}</div>
-            <div>
-              <div style="font-weight: 700; color: #fff;">${item.name}</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">${item.pkg}</div>
-            </div>
+
+      // Update segmented buttons
+      const count = currentDockApps.length;
+      document.querySelectorAll('.seg-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.innerText) === count);
+      });
+
+      // Build options list
+      let optionsHtml = '';
+      
+      // 1. Catalog options
+      optionsHtml += '<optgroup label="Рекомендуемые приложения для ТВ">';
+      CATALOG_APPS.forEach(app => {
+        optionsHtml += `<option value="${app.pkg}">${app.name}</option>`;
+      });
+      optionsHtml += '</optgroup>';
+
+      // 2. Installed on TV options (if loaded)
+      if (installedTvPackages && installedTvPackages.length > 0) {
+        optionsHtml += '<optgroup label="Установленные на вашем ТВ">';
+        installedTvPackages.forEach(pkg => {
+          const matched = CATALOG_APPS.find(a => a.pkg === pkg);
+          const label = matched ? matched.name : `📦 ${pkg}`;
+          optionsHtml += `<option value="${pkg}">${label}</option>`;
+        });
+        optionsHtml += '</optgroup>';
+      }
+
+      optionsHtml += '<option value="__custom__">✏️ Ввести имя пакета вручную...</option>';
+
+      // Render slots
+      container.innerHTML = currentDockApps.map((pkg, idx) => {
+        const isCustom = !CATALOG_APPS.some(a => a.pkg === pkg) && !installedTvPackages.includes(pkg);
+        return `
+          <div class="dock-row" id="dockRow_${idx}">
+            <div class="slot-idx">${idx + 1}</div>
+            
+            <select class="slot-select" id="dockSelect_${idx}" onchange="onSlotAppChange(${idx}, this.value)">
+              ${optionsHtml}
+            </select>
+
+            <input type="text" class="slot-custom-input" id="dockInput_${idx}" value="${pkg}" placeholder="com.example.app" oninput="onCustomPackageInput(${idx}, this.value)">
+
+            <button class="btn-row-action" onclick="moveDockSlot(${idx}, -1)" title="Вверх">▲</button>
+            <button class="btn-row-action" onclick="moveDockSlot(${idx}, 1)" title="Вниз">▼</button>
+            <button class="btn-row-action delete" onclick="removeDockSlot(${idx})" title="Удалить слот">✕</button>
           </div>
-          <div class="dock-controls">
-            <button class="btn-icon" onclick="moveDockItem(${idx}, -1)" title="Поднять выше">▲</button>
-            <button class="btn-icon" onclick="moveDockItem(${idx}, 1)" title="Опустить ниже">▼</button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+
+      // Set initial values
+      currentDockApps.forEach((pkg, idx) => {
+        const sel = document.getElementById(`dockSelect_${idx}`);
+        const inp = document.getElementById(`dockInput_${idx}`);
+        if (!sel || !inp) return;
+
+        let hasOption = false;
+        for (let i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value === pkg) {
+            sel.selectedIndex = i;
+            hasOption = true;
+            break;
+          }
+        }
+
+        if (!hasOption) {
+          sel.value = '__custom__';
+          sel.style.display = 'none';
+          inp.style.display = 'block';
+          inp.value = pkg;
+        } else {
+          sel.style.display = 'block';
+          inp.style.display = 'none';
+        }
+      });
     }
 
-    function moveDockItem(index, direction) {
-      const target = index + direction;
+    function onSlotAppChange(index, value) {
+      const sel = document.getElementById(`dockSelect_${index}`);
+      const inp = document.getElementById(`dockInput_${index}`);
+      if (value === '__custom__') {
+        sel.style.display = 'none';
+        inp.style.display = 'block';
+        inp.focus();
+      } else {
+        currentDockApps[index] = value;
+      }
+    }
+
+    function onCustomPackageInput(index, value) {
+      if (value.trim()) {
+        currentDockApps[index] = value.trim();
+      }
+    }
+
+    function setDockCount(newCount) {
+      const count = parseInt(newCount);
+      if (isNaN(count) || count < 3 || count > 8) return;
+
+      while (currentDockApps.length < count) {
+        // Pick an app from catalog that isn't already in dock
+        const unused = CATALOG_APPS.find(a => !currentDockApps.includes(a.pkg));
+        currentDockApps.push(unused ? unused.pkg : `app.slot.${currentDockApps.length + 1}`);
+      }
+
+      while (currentDockApps.length > count) {
+        currentDockApps.pop();
+      }
+
+      renderDockRows();
+      addLog(`[*] Количество слотов в доке установлено: ${count}`);
+    }
+
+    function addDockSlot() {
+      if (currentDockApps.length >= 8) {
+        alert('Максимальное количество плиток в доке — 8.');
+        return;
+      }
+      setDockCount(currentDockApps.length + 1);
+    }
+
+    function removeDockSlot(index) {
+      if (currentDockApps.length <= 3) {
+        alert('В доке должно оставаться минимум 3 приложения.');
+        return;
+      }
+      currentDockApps.splice(index, 1);
+      renderDockRows();
+    }
+
+    function moveDockSlot(index, dir) {
+      const target = index + dir;
       if (target < 0 || target >= currentDockApps.length) return;
-      const temp = currentDockApps[index];
+      const tmp = currentDockApps[index];
       currentDockApps[index] = currentDockApps[target];
-      currentDockApps[target] = temp;
-      renderDockList();
+      currentDockApps[target] = tmp;
+      renderDockRows();
     }
 
-    function resetDefaultDock() {
+    function resetDockToTop6() {
       currentDockApps = [
-        { pkg: "mobi.zona", name: "⚡ Zona", desc: "Онлайн-кинотеатр" },
-        { pkg: "com.falcofemoralis.hdrezkaapp", name: "🎬 HDrezka TV", desc: "Фильмы и сериалы" },
-        { pkg: "ru.twicker.lampa", name: "🎥 LAMPA", desc: "Медиаплеер и торренты" },
-        { pkg: "com.spotify.tv.android", name: "🎵 Spotify TV", desc: "Музыкальный стриминг" },
-        { pkg: "su.happ.proxyutility", name: "📱 Happ", desc: "Прокси-утилита" },
-        { pkg: "com.alphainventor.filemanager", name: "📂 File Manager +", desc: "Файловый менеджер" }
+        "mobi.zona",
+        "com.falcofemoralis.hdrezkaapp",
+        "ru.twicker.lampa",
+        "com.spotify.tv.android",
+        "su.happ.proxyutility",
+        "com.alphainventor.filemanager"
       ];
-      renderDockList();
-      addLog('[*] Док сброшен к стандартному порядку (Топ 6).');
+      renderDockRows();
+      addLog('[*] Док сброшен к стандартному Топ-6.');
+    }
+
+    async function loadTvPackages() {
+      const ip = getTargetIp();
+      addLog('[>] Запрос установленных сторонних приложений с ТВ...');
+      try {
+        let data;
+        if (window.pywebview && window.pywebview.api && window.pywebview.api.get_installed_packages) {
+          data = await window.pywebview.api.get_installed_packages(ip);
+        } else {
+          const resp = await fetch(`/api/get_packages?ip=${encodeURIComponent(ip || '')}`);
+          data = await resp.json();
+        }
+
+        if (data && data.success && data.packages) {
+          installedTvPackages = data.packages;
+          addLog(`[✓] С телевизора получено ${installedTvPackages.length} установленных приложений!`);
+          renderDockRows();
+        } else {
+          addLog('[!] Не удалось получить список приложений с ТВ. Проверьте соединение.');
+        }
+      } catch (e) {
+        addLog(`[!] Ошибка загрузки пакетов: ${e}`);
+      }
     }
 
     async function applyDockConfig() {
-      const alertBox = document.getElementById('dockResultAlert');
-      alertBox.style.display = 'block';
-      alertBox.className = 'alert alert-info';
-      alertBox.innerHTML = '<span class="spinner"></span> Отправка конфигурации дока на телевизор...';
+      const resBox = document.getElementById('dockResultView');
+      resBox.style.display = 'block';
+      resBox.style.background = 'rgba(56, 189, 248, 0.08)';
+      resBox.style.border = '1px solid rgba(56, 189, 248, 0.25)';
+      resBox.style.color = '#bae6fd';
+      resBox.innerHTML = '<span class="spinner"></span> Отправка конфигурации в CleanYourTV...';
 
-      const ip = getActiveIp();
-      const cols = document.getElementById('dockColumnsSelect').value;
-      const pkgs = currentDockApps.map(i => i.pkg);
+      const ip = getTargetIp();
+      const cols = currentDockApps.length;
+      addLog(`[>] Сохранение порядка дока CleanYourTV (${cols} колонок, ${currentDockApps.length} приложений)...`);
 
-      addLog(`[>] Отправка конфигурации CleanYourTV (${pkgs.length} приложений, ${cols} колонок)...`);
       try {
         let data;
         if (window.pywebview && window.pywebview.api && window.pywebview.api.set_dock_config) {
-          data = await window.pywebview.api.set_dock_config(pkgs, cols, ip);
+          data = await window.pywebview.api.set_dock_config(currentDockApps, cols, ip);
         } else {
-          const res = await fetch('/api/set_dock', {
+          const resp = await fetch('/api/set_dock', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ip: ip, dock_apps: pkgs, columns: cols })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ ip: ip, dock_apps: currentDockApps, columns: cols })
           });
-          data = await res.json();
+          data = await resp.json();
         }
+
         if (data && data.success) {
-          alertBox.className = 'alert alert-success';
-          alertBox.innerHTML = '✅ ' + data.message;
+          resBox.style.background = 'rgba(16, 185, 129, 0.12)';
+          resBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+          resBox.style.color = '#a7f3d0';
+          resBox.innerHTML = '✅ Конфигурация успешно применена! Док на телевизоре обновлен.';
           addLog('[✓] Конфигурация дока успешно обновлена на ТВ!');
         } else {
-          alertBox.className = 'alert alert-danger';
-          alertBox.innerHTML = '❌ ' + (data ? data.message : 'Ошибка обновления дока');
+          resBox.style.background = 'rgba(239, 68, 68, 0.12)';
+          resBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          resBox.style.color = '#fca5a5';
+          resBox.innerHTML = '❌ ' + (data ? data.message : 'Ошибка применения конфигурации');
         }
       } catch (e) {
-        alertBox.className = 'alert alert-danger';
-        alertBox.innerHTML = '❌ Ошибка: ' + e;
+        resBox.innerHTML = '❌ Ошибка: ' + e;
       }
     }
 
-    async function switchLauncher(launcherName) {
-      const ip = getActiveIp();
-      addLog(`[>] Переключение лаунчера на ${launcherName}...`);
+    async function switchLauncherAction(launcherName) {
+      const ip = getTargetIp();
+      addLog(`[>] Назначение лаунчера ${launcherName} по умолчанию...`);
       try {
         let data;
         if (window.pywebview && window.pywebview.api && window.pywebview.api.switch_launcher) {
           data = await window.pywebview.api.switch_launcher(launcherName, ip);
         } else {
-          const res = await fetch('/api/switch_launcher', {
+          const resp = await fetch('/api/switch_launcher', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ ip: ip, launcher: launcherName })
           });
-          data = await res.json();
+          data = await resp.json();
         }
         if (data && data.success) {
-          alert(`Лаунчер ${launcherName} успешно активирован по умолчанию!`);
-          addLog(`[✓] Лаунчер переключен на ${launcherName}`);
+          alert(`Лаунчер ${launcherName} успешно установлен по умолчанию!`);
+          addLog(`[✓] Лаунчер активирован: ${launcherName}`);
         }
       } catch (e) {
-        alert('Ошибка переключения: ' + e);
+        alert('Ошибка: ' + e);
       }
     }
 
-    // ================= УСТАНОВКА APK =================
-    async function browseCustomApk() {
+    // ================= DNS TOOLS =================
+    function updateDnsBadge(enabled) {
+      const b1 = document.getElementById('dnsBadgeStatus');
+      const b2 = document.getElementById('quickDnsStatus');
+      if (enabled) {
+        if (b1) { b1.style.color = '#34d399'; b1.style.borderColor = 'rgba(52, 211, 153, 0.35)'; b1.innerText = '🟢 Активна (AdGuard DNS)'; }
+        if (b2) { b2.style.color = '#34d399'; b2.style.borderColor = 'rgba(52, 211, 153, 0.35)'; b2.innerText = 'DNS: AdGuard ON'; }
+      } else {
+        if (b1) { b1.style.color = 'var(--text-muted)'; b1.style.borderColor = 'var(--border)'; b1.innerText = '⚪ Стандартный DNS'; }
+        if (b2) { b2.style.color = 'var(--text-dim)'; b2.style.borderColor = 'var(--border)'; b2.innerText = 'DNS: Стандартный'; }
+      }
+    }
+
+    async function checkDnsStatus() {
+      const ip = getTargetIp();
+      try {
+        let data;
+        if (window.pywebview && window.pywebview.api && window.pywebview.api.get_dns_status) {
+          data = await window.pywebview.api.get_dns_status(ip);
+        } else {
+          const resp = await fetch(`/api/get_dns?ip=${encodeURIComponent(ip || '')}`);
+          data = await resp.json();
+        }
+        if (data && data.success) {
+          updateDnsBadge(data.enabled);
+        }
+      } catch (e) {}
+    }
+
+    async function setDns(enable) {
+      const resBox = document.getElementById('dnsResultView');
+      resBox.style.display = 'block';
+      resBox.style.background = 'rgba(56, 189, 248, 0.08)';
+      resBox.style.border = '1px solid rgba(56, 189, 248, 0.25)';
+      resBox.style.color = '#bae6fd';
+      resBox.innerHTML = '<span class="spinner"></span> Применение настроек Private DNS на ТВ...';
+
+      const ip = getTargetIp();
+      addLog(`[>] Private DNS ➔ ${enable ? 'dns.adguard-dns.com' : 'OFF'}...`);
+
+      try {
+        let data;
+        if (window.pywebview && window.pywebview.api && window.pywebview.api.set_dns) {
+          data = await window.pywebview.api.set_dns(enable, ip);
+        } else {
+          const resp = await fetch('/api/set_dns', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ ip: ip, enable: enable })
+          });
+          data = await resp.json();
+        }
+
+        if (data && data.success) {
+          resBox.style.background = 'rgba(16, 185, 129, 0.12)';
+          resBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+          resBox.style.color = '#a7f3d0';
+          resBox.innerHTML = '✅ ' + data.message;
+          updateDnsBadge(data.enabled);
+          addLog(`[✓] ${data.message}`);
+        } else {
+          resBox.style.background = 'rgba(239, 68, 68, 0.12)';
+          resBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          resBox.style.color = '#fca5a5';
+          resBox.innerHTML = '❌ ' + (data ? data.message : 'Ошибка настройки DNS');
+        }
+      } catch (e) {
+        resBox.innerHTML = '❌ Ошибка: ' + e;
+      }
+    }
+
+    // ================= CUSTOM APK =================
+    async function browseApk() {
       try {
         if (window.pywebview && window.pywebview.api) {
           const path = await window.pywebview.api.browse_file();
-          if (path) {
-            document.getElementById('customApkPath').value = path;
-          }
+          if (path) document.getElementById('customApkPath').value = path;
         } else {
-          alert('Функция обзора файлов доступна в приложении SmartTV_Control.exe');
+          alert('Выбор файлов через проводник доступен в SmartTV_Control.exe');
         }
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) {}
     }
 
-    async function installCustomApk() {
-      const apkPath = document.getElementById('customApkPath').value.trim();
-      const status = document.getElementById('customApkStatus');
-      if (!apkPath || apkPath.includes('Выберите .apk')) {
-        alert('Пожалуйста, выберите APK файл через кнопку «Обзор...»');
+    async function installApk() {
+      const p = document.getElementById('customApkPath').value.trim();
+      const resBox = document.getElementById('customApkResult');
+      if (!p || p.includes('Выберите')) {
+        alert('Пожалуйста, выберите файл .apk через кнопку «Обзор...»');
         return;
       }
-      status.style.display = 'block';
-      status.className = 'alert alert-info';
-      status.innerHTML = `<span class="spinner"></span> <strong>Установка ${apkPath.split(/[\\\\/]/).pop()} на телевизор...</strong>`;
-      addLog(`[>] Загрузка APK на ТВ: ${apkPath}...`);
+      resBox.style.display = 'block';
+      resBox.style.background = 'rgba(56, 189, 248, 0.08)';
+      resBox.style.border = '1px solid rgba(56, 189, 248, 0.25)';
+      resBox.style.color = '#bae6fd';
+      resBox.innerHTML = `<span class="spinner"></span> Установка ${p.split(/[\\\\/]/).pop()}...`;
+      addLog(`[>] Установка APK на ТВ: ${p}...`);
 
-      const ip = getActiveIp();
+      const ip = getTargetIp();
       try {
         let data;
         if (window.pywebview && window.pywebview.api) {
-          data = await window.pywebview.api.install_custom_apk(apkPath, ip);
+          data = await window.pywebview.api.install_custom_apk(p, ip);
         } else {
           data = { success: false, message: "Функция доступна в SmartTV_Control.exe" };
         }
         if (data.success) {
-          status.className = 'alert alert-success';
-          status.innerHTML = '✅ ' + data.message;
+          resBox.style.background = 'rgba(16, 185, 129, 0.12)';
+          resBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+          resBox.style.color = '#a7f3d0';
+          resBox.innerHTML = '✅ ' + data.message;
           addLog(`[✓] ${data.message}`);
         } else {
-          status.className = 'alert alert-danger';
-          status.innerHTML = '❌ ' + data.message;
-          addLog(`[✗] Ошибка установки: ${data.message}`);
+          resBox.style.background = 'rgba(239, 68, 68, 0.12)';
+          resBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+          resBox.style.color = '#fca5a5';
+          resBox.innerHTML = '❌ ' + data.message;
+          addLog(`[✗] Ошибка: ${data.message}`);
         }
       } catch (e) {
-        status.className = 'alert alert-danger';
-        status.innerHTML = '❌ Ошибка: ' + e;
+        resBox.innerHTML = '❌ Ошибка: ' + e;
       }
     }
 
-    // ================= МОДАЛЬНОЕ ОКНО ПАКЕТНОЙ ПОДГРУЗКИ =================
+    // Modal
     function openInstallModal() {
-      populateAppsCheckboxes();
       document.getElementById('installModal').style.display = 'flex';
     }
 
@@ -1441,89 +1671,27 @@
       if (e.target && e.target.id === 'installModal') closeInstallModal();
     }
 
-    async function populateAppsCheckboxes() {
-      const listEl = document.getElementById('appsCheckboxList');
-      if (listEl.children.length > 0) return;
-
-      let apps = KNOWN_APPS;
-      try {
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.get_available_apps) {
-          const remoteApps = await window.pywebview.api.get_available_apps();
-          if (remoteApps && remoteApps.length > 0) {
-            apps = remoteApps.map(r => {
-              const matched = KNOWN_APPS.find(k => k.filename.toLowerCase() === r.filename.toLowerCase());
-              return {
-                filename: r.filename,
-                name: matched ? matched.name : `📦 ${r.filename}`,
-                desc: matched ? matched.desc : `${r.size_mb} МБ`
-              };
-            });
-          }
-        }
-      } catch (e) {}
-
-      listEl.innerHTML = apps.map(app => `
-        <label style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; background: #090d16; border-radius: 8px; margin-bottom: 6px; cursor: pointer;">
-          <input type="checkbox" name="selectedApp" value="${app.filename}" checked style="accent-color: var(--accent); width: 16px; height: 16px;">
-          <span style="font-weight: 600; color: #fff; font-size: 0.9rem;">${app.name}</span>
-          <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: auto;">${app.desc}</span>
-        </label>
-      `).join('');
-    }
-
-    function toggleAllApps(checked) {
-      document.querySelectorAll('#appsCheckboxList input[type="checkbox"]').forEach(cb => cb.checked = checked);
-    }
-
-    function runPresetInstall(preset) {
+    function runPreset(presetName) {
       closeInstallModal();
-      let apks = preset === 'top6'
-        ? ["zona.apk", "hdrezka.apk", "lampa.apk", "spotify.apk", "filemanager_plus.apk", "Happ.apk"]
-        : ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"];
-      executeInstall(apks);
-    }
-
-    function runCustomSelectionInstall() {
-      const checkedBoxes = document.querySelectorAll('#appsCheckboxList input[type="checkbox"]:checked');
-      const selected = Array.from(checkedBoxes).map(cb => cb.value);
-      if (selected.length === 0) {
-        alert('Пожалуйста, отметьте хотя бы одно приложение!');
-        return;
-      }
-      closeInstallModal();
-      executeInstall(selected);
-    }
-
-    async function executeInstall(apks) {
-      const ip = getActiveIp();
-      addLog(`[>] Запуск установки ${apks.length} приложений...`);
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.install_selected_apps) {
-          data = await window.pywebview.api.install_selected_apps(apks, ip);
-        } else {
-          const res = await fetch('/api/run_action', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'install', ip: ip, apks: apks })
-          });
-          data = await res.json();
-        }
-        if (data.success) {
-          alert('✅ ' + data.message);
-          addLog(`[✓] ${data.message}`);
-        } else {
-          alert('❌ ' + data.message);
-          addLog(`[✗] Ошибка: ${data.message}`);
-        }
-      } catch (e) {
-        alert('Ошибка при установке: ' + e);
+      const ip = getTargetIp();
+      addLog(`[>] Запуск установки набора ${presetName}...`);
+      if (window.pywebview && window.pywebview.api && window.pywebview.api.run_action) {
+        window.pywebview.api.run_action('install', ip, presetName).then(d => {
+          alert(d.message);
+        });
+      } else {
+        fetch('/api/run_action', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ action: 'install', ip: ip, preset: presetName })
+        }).then(r => r.json()).then(d => alert(d.message));
       }
     }
 
-    // Инициализация при загрузке
+    // Init
     window.addEventListener('DOMContentLoaded', () => {
-      renderDockList();
+      selectBrandGuide('haier');
+      renderDockRows();
     });
   </script>
 </body>

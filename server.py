@@ -36,6 +36,21 @@ class SmartTVRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps({"success": True, "apps": apps_list}, ensure_ascii=False).encode('utf-8'))
             return
 
+        elif parsed.path == '/api/get_packages':
+            query = urllib.parse.parse_qs(parsed.query)
+            manual_ip = query.get('ip', [None])[0]
+            clean_ip = manual_ip.strip() if (manual_ip and manual_ip.strip() and manual_ip.strip().lower() != 'автопоиск') else None
+            ip = tv_manager.connect_adb(clean_ip)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.end_headers()
+            if not ip:
+                self.wfile.write(json.dumps({"success": False, "packages": []}, ensure_ascii=False).encode('utf-8'))
+            else:
+                pkgs = tv_manager.action_get_installed_packages(ip)
+                self.wfile.write(json.dumps({"success": True, "packages": pkgs}, ensure_ascii=False).encode('utf-8'))
+            return
+
         elif parsed.path == '/api/get_dns':
             query = urllib.parse.parse_qs(parsed.query)
             manual_ip = query.get('ip', [None])[0]

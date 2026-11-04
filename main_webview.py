@@ -96,11 +96,12 @@ class SmartTV_API:
             "message": "AdGuard Private DNS активирован! Реклама блокируется системно." if dns["enabled"] else "Private DNS отключен. Восстановлен стандартный DNS."
         }
 
-    def set_dock_config(self, dock_apps=None, columns=6, manual_ip=None):
+    def set_dock_config(self, dock_apps=None, columns=None, manual_ip=None):
         ip, err = self.connect_tv(manual_ip)
         if not ip:
             return {"success": False, "message": err}
-        tv_manager.action_set_dock(ip, dock_apps, int(columns))
+        cols = int(columns) if columns is not None else (len(dock_apps) if dock_apps else 6)
+        tv_manager.action_set_dock(ip, dock_apps, cols)
         return {"success": True, "message": "Конфигурация дока успешно обновлена на телевизоре!"}
 
     def switch_launcher(self, launcher_name="cleanyourtv", manual_ip=None):
@@ -120,6 +121,13 @@ class SmartTV_API:
                     size_mb = round(os.path.getsize(fp) / (1024 * 1024), 1)
                     apps_list.append({"filename": f, "size_mb": size_mb})
         return apps_list
+
+    def get_installed_packages(self, manual_ip=None):
+        ip, err = self.connect_tv(manual_ip)
+        if not ip:
+            return {"success": False, "message": err, "packages": []}
+        pkgs = tv_manager.action_get_installed_packages(ip)
+        return {"success": True, "packages": pkgs}
 
     def run_action(self, action, manual_ip=None, apps_list=None, tv_type="yaos", launcher_choice="cleanyourtv", *args, **kwargs):
         ip, err = self.connect_tv(manual_ip)
