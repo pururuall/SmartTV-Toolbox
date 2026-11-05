@@ -744,6 +744,7 @@
                   <option value="haier">Haier (MatrixTV / uSmart)</option>
                   <option value="xiaomi">Xiaomi / Redmi (PatchWall)</option>
                   <option value="tcl">TCL / iFFALCON</option>
+                  <option value="toshiba">Toshiba (Android TV / REGZA)</option>
                   <option value="googletv">Android TV / Google TV</option>
                 </select>
               </div>
@@ -804,19 +805,19 @@
             <div id="launcherCardsGrid" class="launchers-grid">
               <div class="launcher-card selected" data-launcher="moytv" onclick="selectLauncher('moytv')">
                 <div class="launcher-name">Мой ТВ (Moy-TV)</div>
-                <div class="launcher-badge">Дашборд погоды и HDMI</div>
+                <div class="launcher-badge">ОЗУ: ~50–70 МБ • Диск: ~20 МБ</div>
               </div>
               <div class="launcher-card" data-launcher="cleanyourtv" onclick="selectLauncher('cleanyourtv')">
                 <div class="launcher-name">CleanYourTV</div>
-                <div class="launcher-badge">Apple TV стиль (~500 КБ)</div>
+                <div class="launcher-badge">ОЗУ: ~15–25 МБ • Диск: ~500 КБ</div>
               </div>
               <div class="launcher-card" data-launcher="projectivy" onclick="selectLauncher('projectivy')">
                 <div class="launcher-name">Projectivy</div>
-                <div class="launcher-badge">Гибкие каналы и HDMI</div>
+                <div class="launcher-badge">ОЗУ: ~65–95 МБ • Диск: ~10 МБ</div>
               </div>
               <div class="launcher-card" data-launcher="flauncher" onclick="selectLauncher('flauncher')">
                 <div class="launcher-name">FLauncher</div>
-                <div class="launcher-badge">Классический Open-Source</div>
+                <div class="launcher-badge">ОЗУ: ~45–60 МБ • Диск: ~26 МБ</div>
               </div>
             </div>
 
@@ -1292,6 +1293,15 @@
       tcl: [
         { id: 'com.tcl.messagebox', name: 'Промо-уведомления TCL', ram: 25, desc: 'Всплывающие уведомления производителя.', rec: true },
         { id: 'com.tcl.recommend', name: 'Рекомендации TCL', ram: 35, desc: 'Карусели партнерского контента.', rec: true }
+      ],
+      toshiba: [
+        { id: 'com.toshiba.tv.service', name: 'Телеметрия и сервисы Toshiba', ram: 35, desc: 'Фоновый сбор статистики использования и отправка на серверы вендора.', rec: true },
+        { id: 'com.toshiba.tv.recommend', name: 'Промо-рекомендации Toshiba', ram: 40, desc: 'Рекламные каналы и партнерские промо-карусели на домашнем экране.', rec: true },
+        { id: 'com.toshiba.tv.notification', name: 'Всплывающие уведомления Toshiba', ram: 20, desc: 'Рекламные системные сообщения и акции производителя.', rec: true },
+        { id: 'com.hisense.tv.service', name: 'Фоновые службы Hisense / OEM', ram: 30, desc: 'Службы партнерской платформы Hisense на шасси Toshiba.', rec: true },
+        { id: 'com.jamdeo.tv.vod', name: 'Партнерский VOD плеер', ram: 25, desc: 'Предустановленная партнерская витрина платного видео.', rec: true },
+        { id: 'com.google.android.tvrecommendations', name: 'Спонсорские каналы Android TV', ram: 50, desc: 'Рекламные промо-блоки Google TV на домашнем экране.', rec: true },
+        { id: 'com.google.android.katniss', name: 'Google Assistant', ram: 75, desc: 'Голосовой помощник Google.', rec: false }
       ],
       googletv: [
         { id: 'com.google.android.tvrecommendations', name: 'Рекомендации Android TV', ram: 55, desc: 'Спонсорские рекламные каналы.', rec: true },

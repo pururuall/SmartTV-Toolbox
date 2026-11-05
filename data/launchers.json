@@ -2,7 +2,7 @@
   "launchers": {
     "moytv": {
       "name": "Мой ТВ (Moy-TV)",
-      "badge": "Инфо-дашборд для YaOS",
+      "badge": "ОЗУ: ~50-70 МБ • Диск: ~20 МБ",
       "apk_path": "apps/launchers/MoyTV.apk",
       "package": "ru.mikulinskiy.tvhome",
       "main_activity": ".MainActivity",
@@ -11,11 +11,13 @@
       "supports_web_remote": true,
       "web_remote_port": 8080,
       "wallpaper_remote_path": "/sdcard/Android/data/ru.mikulinskiy.tvhome/files/wallpaper.jpg",
-      "config_remote_path": "/sdcard/Android/data/ru.mikulinskiy.tvhome/files/settings.json"
+      "config_remote_path": "/sdcard/Android/data/ru.mikulinskiy.tvhome/files/settings.json",
+      "ram_usage": "~50–70 МБ ОЗУ",
+      "disk_usage": "~20 МБ"
     },
     "cleanyourtv": {
       "name": "CleanYourTV Launcher",
-      "badge": "Ультралегкий (~500 КБ)",
+      "badge": "ОЗУ: ~15-25 МБ • Диск: ~500 КБ",
       "apk_path": "apps/launchers/CleanYourTV.apk",
       "package": "com.gathin.tvhome",
       "main_activity": ".MainActivity",
@@ -24,27 +26,33 @@
       "wallpaper_remote_path": "/sdcard/Android/data/com.gathin.tvhome/files/wallpaper.jpg",
       "config_remote_path": "/sdcard/Android/data/com.gathin.tvhome/files/config.json",
       "supports_web_remote": true,
-      "web_remote_port": 8080
+      "web_remote_port": 8080,
+      "ram_usage": "~15–25 МБ ОЗУ",
+      "disk_usage": "~500 КБ"
     },
     "projectivy": {
       "name": "Projectivy Launcher",
-      "badge": "Гибкие каналы и HDMI",
+      "badge": "ОЗУ: ~65-95 МБ • Диск: ~10 МБ",
       "apk_path": "apps/launchers/Projectivy.apk",
       "package": "com.spocky.projengmenu",
       "main_activity": ".ui.home.MainActivity",
       "supports_dock_editor": false,
       "supports_custom_wallpaper": true,
-      "wallpaper_remote_path": "/sdcard/Android/data/com.spocky.projengmenu/files/user_wallpaper.jpg"
+      "wallpaper_remote_path": "/sdcard/Android/data/com.spocky.projengmenu/files/user_wallpaper.jpg",
+      "ram_usage": "~65–95 МБ ОЗУ",
+      "disk_usage": "~10 МБ"
     },
     "flauncher": {
       "name": "FLauncher",
-      "badge": "Open-Source классика",
+      "badge": "ОЗУ: ~45-60 МБ • Диск: ~26 МБ",
       "apk_path": "apps/launchers/FLauncher.apk",
       "package": "me.efesser.flauncher",
       "main_activity": ".MainActivity",
       "supports_dock_editor": false,
       "supports_custom_wallpaper": true,
-      "wallpaper_remote_path": "/sdcard/Pictures/flauncher_wallpaper.jpg"
+      "wallpaper_remote_path": "/sdcard/Pictures/flauncher_wallpaper.jpg",
+      "ram_usage": "~45–60 МБ ОЗУ",
+      "disk_usage": "~26 МБ"
     }
   }
 }

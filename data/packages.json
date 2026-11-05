@@ -8,12 +8,19 @@
     "com.cvte.tv.api",
     "com.cvte.tv.provision",
     "com.xiaomi.mitv.tvplayer",
-    "com.haier.tv.input"
+    "com.haier.tv.input",
+    "com.toshiba.tv.tvinput",
+    "com.toshiba.tv.tvsettings",
+    "com.hisense.tv.input"
   ],
   "profiles": {
     "yaos": {
       "title": "Яндекс ТВ (YaOS / CVTE)",
-      "detect_props": ["yandex", "cvte", "cv9632"],
+      "detect_props": [
+        "yandex",
+        "cvte",
+        "cv9632"
+      ],
       "stock_launcher": "com.yandex.tv.launcher",
       "packages": [
         {
@@ -55,7 +62,11 @@
     },
     "salut": {
       "title": "Салют ТВ (SberBox / StarOS)",
-      "detect_props": ["sber", "salut", "staros"],
+      "detect_props": [
+        "sber",
+        "salut",
+        "staros"
+      ],
       "stock_launcher": "ru.sberdevices.starlauncher",
       "packages": [
         {
@@ -83,7 +94,9 @@
     },
     "haier": {
       "title": "Haier Smart TV (MatrixTV / H-серия)",
-      "detect_props": ["haier"],
+      "detect_props": [
+        "haier"
+      ],
       "stock_launcher": "com.haier.launcher.haiermatrix",
       "packages": [
         {
@@ -118,7 +131,11 @@
     },
     "xiaomi": {
       "title": "Xiaomi / Redmi TV (PatchWall)",
-      "detect_props": ["xiaomi", "redmi", "mitv"],
+      "detect_props": [
+        "xiaomi",
+        "redmi",
+        "mitv"
+      ],
       "stock_launcher": "com.mitv.tvhome",
       "packages": [
         {
@@ -146,7 +163,10 @@
     },
     "tcl": {
       "title": "TCL / iFFALCON TV",
-      "detect_props": ["tcl", "iffalcon"],
+      "detect_props": [
+        "tcl",
+        "iffalcon"
+      ],
       "stock_launcher": "com.tcl.home",
       "packages": [
         {
@@ -167,7 +187,12 @@
     },
     "googletv": {
       "title": "Android TV / Google TV (Стандартный)",
-      "detect_props": ["google", "sony", "philips", "realme"],
+      "detect_props": [
+        "google",
+        "sony",
+        "philips",
+        "realme"
+      ],
       "stock_launcher": "com.google.android.apps.tv.launcherx",
       "packages": [
         {
@@ -190,6 +215,67 @@
           "category": "optional",
           "ram": 25,
           "desc": "Дополнительные метрики Cast (базовая трансляция экрана продолжает работать)."
+        }
+      ]
+    },
+    "toshiba": {
+      "title": "Toshiba (Android TV / REGZA)",
+      "detect_props": [
+        "toshiba",
+        "regza",
+        "vestel",
+        "hisense"
+      ],
+      "stock_launcher": "com.google.android.tvlauncher",
+      "packages": [
+        {
+          "id": "com.toshiba.tv.service",
+          "name": "Телеметрия и сервисы Toshiba",
+          "category": "recommended",
+          "ram": 35,
+          "desc": "Фоновый сбор статистики использования и отправка на серверы вендора."
+        },
+        {
+          "id": "com.toshiba.tv.recommend",
+          "name": "Промо-рекомендации Toshiba",
+          "category": "recommended",
+          "ram": 40,
+          "desc": "Рекламные каналы и партнерские промо-карусели на домашнем экране."
+        },
+        {
+          "id": "com.toshiba.tv.notification",
+          "name": "Всплывающие уведомления Toshiba",
+          "category": "recommended",
+          "ram": 20,
+          "desc": "Рекламные системные сообщения и акции производителя."
+        },
+        {
+          "id": "com.hisense.tv.service",
+          "name": "Фоновые службы Hisense / OEM",
+          "category": "recommended",
+          "ram": 30,
+          "desc": "Службы партнерской платформы Hisense на шасси Toshiba."
+        },
+        {
+          "id": "com.jamdeo.tv.vod",
+          "name": "Партнерский VOD плеер",
+          "category": "recommended",
+          "ram": 25,
+          "desc": "Предустановленная партнерская витрина платного видео."
+        },
+        {
+          "id": "com.google.android.tvrecommendations",
+          "name": "Спонсорские каналы Android TV",
+          "category": "recommended",
+          "ram": 50,
+          "desc": "Рекламные промо-блоки Google TV на домашнем экране."
+        },
+        {
+          "id": "com.google.android.katniss",
+          "name": "Google Assistant",
+          "category": "optional",
+          "ram": 75,
+          "desc": "Голосовой помощник Google. Отключайте, если не пользуетесь голосовым поиском."
         }
       ]
     }
