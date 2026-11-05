@@ -27,37 +27,69 @@
 <div align="center">
 
 ### 🖥️ Интерфейс приложения Smart TV Toolbox v3.0
-*(5 вкладок, диагностика ОЗУ, попакетный конструктор деблоата и Live ADB-терминал)*
 
-<img src="img/app_showcase.png" alt="Интерфейс программы Smart TV Toolbox v3.0" width="94%">
+*(Полнофункциональный центр управления: 5 специализированных вкладок, интерактивный калькулятор ОЗУ и Live ADB-терминал)*
+
+<br/>
+
+<details open>
+<summary><b>📡 Вкладка 1: Подключение, беспроводное сопряжение и диагностика ОЗУ</b></summary>
+<br/>
+<img src="img/tab1_connect.png" alt="Вкладка 1: Подключение и диагностика ОЗУ" width="94%">
+</details>
+
+<br/>
+
+<details open>
+<summary><b>🧹 Вкладка 2: Попакетный конструктор очистки (Debloat) с защитой Hardware Guard</b></summary>
+<br/>
+<img src="img/tab2_debloat.png" alt="Вкладка 2: Кастомная очистка" width="94%">
+</details>
+
+<br/>
+
+<details open>
+<summary><b>🍎 Вкладка 3: Лаунчеры (CleanYourTV / Мой ТВ / FLauncher) и Галерея Обоев</b></summary>
+<br/>
+<img src="img/tab3_launchers.png" alt="Вкладка 3: Лаунчеры и Обои" width="94%">
+</details>
+
+<br/>
+
+<details>
+<summary><b>⚡ Вкладка 4: SmartTube без рекламы и обход замедлений (ByeDPI / Прокси / DNS)</b></summary>
+<br/>
+<img src="img/tab4_youtube.png" alt="Вкладка 4: SmartTube и Обход" width="94%">
+</details>
+
+<br/>
+
+<details>
+<summary><b>📦 Вкладка 5: Каталог медиа-приложений APK и Live ADB консоль</b></summary>
+<br/>
+<img src="img/tab5_apps.png" alt="Вкладка 5: Каталог APK" width="94%">
+</details>
 
 <br/><br/>
 
-### 📺 1. Лаунчер CleanYourTV (Apple TV Style)
+### 📺 1. Лаунчер CleanYourTV (Apple TV Style) на ТВ
 *(Ультралегкий домашний экран ~500 КБ с настраиваемым доком Топ-6 приложений и нулевой рекламой)*
 
 <img src="img/tv_home_clean.png" alt="Лаунчер CleanYourTV на экране телевизора" width="94%">
 
 <br/><br/>
 
-### 📺 2. Лаунчер «Мой ТВ» (Moy-TV)
+### 📺 2. Лаунчер «Мой ТВ» (Moy-TV) на ТВ
 *(Информационный дашборд с виджетами погоды, курсов валют ЦБ РФ, новостей, ярлыками HDMI 1–3 и веб-пультом)*
 
 <img src="img/moytv_screen.png" alt="Лаунчер Мой ТВ на экране телевизора" width="94%">
 
 <br/><br/>
 
-### 📺 3. Лаунчер FLauncher
+### 📺 3. Лаунчер FLauncher на ТВ
 *(Классический Open-Source лаунчер под Android TV с настраиваемыми категориями и сеткой)*
 
 <img src="img/flauncher_screen.png" alt="Лаунчер FLauncher на экране телевизора" width="94%">
-
-<br/><br/>
-
-### 📺 4. Заводской интерфейс Яндекс ТВ (YaOS) до оптимизации
-*(Для сравнения: тяжелая витрина с рекламой, промо-каруселями и фоновыми службами телеметрии)*
-
-<img src="img/yaos_home_screen.png" alt="Заводской экран Яндекс ТВ до очистки" width="94%">
 
 </div>
 
