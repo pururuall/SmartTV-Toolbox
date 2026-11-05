@@ -6,4 +6,6 @@ dist/
 *.spec
 home_screen.png
 *.log
+data/last_ip.txt
+backups/*_tmp.json
 

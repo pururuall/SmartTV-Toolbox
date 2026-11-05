@@ -332,16 +332,46 @@ class SmartTVManager:
         return {"ok": False, "error": push_res["stderr"]}
 
     def setup_tv_web_remote(self, enable: bool = True) -> Dict[str, Any]:
-        """Устанавливает или отключает автономный веб-пульт прямо на ТВ."""
+        """Устанавливает или отключает автономный веб-пульт прямо на ТВ и добавляет круглую кнопку в CleanYourTV."""
         if not self.current_device:
             return {"ok": False, "error": "Телевизор не подключен к ADB."}
 
         ip_only = self.current_device.split(":")[0]
+        remote_pkg = "com.zhouwj.tvinstaller"
+
+        def update_cleanyourtv_topbar(add_pkg: bool):
+            try:
+                cfg_remote = "/sdcard/Android/data/com.gathin.tvhome/files/config.json"
+                tmp_cfg = self.backups_dir / "clean_config_tmp.json"
+                res = self.run_adb(["pull", cfg_remote, str(tmp_cfg)])
+                if res.get("ok", False) and tmp_cfg.exists():
+                    with open(tmp_cfg, "r", encoding="utf-8") as f:
+                        cfg = json.load(f)
+                    top_apps = cfg.get("top_bar_apps", [])
+                    changed = False
+                    if add_pkg and remote_pkg not in top_apps:
+                        top_apps.append(remote_pkg)
+                        cfg["top_bar_apps"] = top_apps
+                        changed = True
+                    elif not add_pkg and remote_pkg in top_apps:
+                        top_apps = [p for p in top_apps if p != remote_pkg]
+                        cfg["top_bar_apps"] = top_apps
+                        changed = True
+
+                    if changed:
+                        with open(tmp_cfg, "w", encoding="utf-8") as f:
+                            json.dump(cfg, f, indent=4)
+                        self.run_adb(["push", str(tmp_cfg), cfg_remote])
+                        self.run_adb(["shell", "am", "force-stop", "com.gathin.tvhome"])
+                        self.run_adb(["shell", "am", "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME"])
+            except Exception as e:
+                print(f"[TVWebRemote] top bar update error: {e}")
 
         if not enable:
             self.run_adb(["shell", "pkill", "-f", "busybox.*httpd"])
             self.run_adb(["shell", "rm", "-rf", "/data/local/tmp/web_remote"])
-            return {"ok": True, "enabled": False, "msg": "Веб-пульт остановлен и удален с ТВ."}
+            update_cleanyourtv_topbar(add_pkg=False)
+            return {"ok": True, "enabled": False, "msg": "Веб-пульт остановлен, круглая кнопка удалена из панели ТВ."}
 
         local_remote_dir = self.base_dir / "web_remote"
         if not local_remote_dir.exists():
@@ -359,6 +389,24 @@ class SmartTVManager:
         self.run_adb(["shell", "chmod", "-R", "755", "/data/local/tmp/web_remote"])
         self.run_adb(["shell", "pkill", "-f", "busybox.*httpd"])
         self.run_adb(["shell", "busybox", "httpd", "-p", "8080", "-h", "/data/local/tmp/web_remote"])
+
+        apk_candidates = [
+            self.base_dir / "apps" / "TVWebRemote.apk",
+            self.base_dir / "apps" / "media" / "TVWebRemote.apk",
+        ]
+        if getattr(sys, '_MEIPASS', None):
+            apk_candidates.append(Path(sys._MEIPASS) / 'apps' / 'TVWebRemote.apk')
+        apk_path = None
+        for cand in apk_candidates:
+            if cand.exists():
+                apk_path = cand
+                break
+
+        pm_check = self.run_adb(["shell", "pm", "path", remote_pkg])
+        if "package:" not in pm_check.get("stdout", "") and apk_path:
+            self.run_adb(["install", "-r", str(apk_path)], timeout=60)
+
+        update_cleanyourtv_topbar(add_pkg=True)
 
         url = f"http://{ip_only}:8080"
         qr_b64 = ""
@@ -380,7 +428,7 @@ class SmartTVManager:
             "port": 8080,
             "url": url,
             "qr_base64": qr_b64,
-            "msg": f"Автономный веб-пульт активен: {url}"
+            "msg": f"Веб-пульт активен! Круглая кнопка вызова QR-кода добавлена на ТВ: {url}"
         }
 
     def setup_smarttube_and_bypass(
