@@ -322,6 +322,44 @@ class SmartTVManager:
             return {"ok": True}
         return {"ok": False, "error": push_res["stderr"]}
 
+    def setup_tv_web_remote(self, enable: bool = True) -> Dict[str, Any]:
+        """Устанавливает или отключает автономный веб-пульт прямо на ТВ."""
+        if not self.current_device:
+            return {"ok": False, "error": "Телевизор не подключен к ADB."}
+
+        ip_only = self.current_device.split(":")[0]
+
+        if not enable:
+            self.run_adb(["shell", "pkill", "-f", "busybox.*httpd"])
+            self.run_adb(["shell", "rm", "-rf", "/data/local/tmp/web_remote"])
+            return {"ok": True, "enabled": False, "msg": "Веб-пульт остановлен и удален с ТВ."}
+
+        local_remote_dir = self.base_dir / "web_remote"
+        if not local_remote_dir.exists():
+            return {"ok": False, "error": "Папка web_remote не найдена."}
+
+        self.run_adb(["shell", "mkdir", "-p", "/data/local/tmp/web_remote/cgi-bin"])
+        self.run_adb(["push", str(local_remote_dir / "index.html"), "/data/local/tmp/web_remote/index.html"])
+
+        cgi_dir = local_remote_dir / "cgi-bin"
+        if cgi_dir.exists():
+            for cgi_file in cgi_dir.iterdir():
+                if cgi_file.is_file():
+                    self.run_adb(["push", str(cgi_file), f"/data/local/tmp/web_remote/cgi-bin/{cgi_file.name}"])
+
+        self.run_adb(["shell", "chmod", "-R", "755", "/data/local/tmp/web_remote"])
+        self.run_adb(["shell", "pkill", "-f", "busybox.*httpd"])
+        self.run_adb(["shell", "busybox", "httpd", "-p", "8080", "-h", "/data/local/tmp/web_remote"])
+
+        url = f"http://{ip_only}:8080"
+        return {
+            "ok": True,
+            "enabled": True,
+            "port": 8080,
+            "url": url,
+            "msg": f"Автономный веб-пульт активен: {url}"
+        }
+
     def setup_smarttube_and_bypass(
         self,
         install_smarttube: bool = True,

@@ -1,0 +1,12 @@
+#!/system/bin/sh
+echo "Content-Type: application/json"
+echo ""
+
+CODE=$(echo "$QUERY_STRING" | sed -n 's/.*c=\([0-9]*\).*/\1/p')
+
+if [ -n "$CODE" ]; then
+    input keyevent "$CODE"
+    echo "{\"ok\":true,\"key\":$CODE}"
+else
+    echo "{\"ok\":false,\"error\":\"missing key code\"}"
+fi

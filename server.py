@@ -87,6 +87,9 @@ class ToolboxHandler(http.server.SimpleHTTPRequestHandler):
         elif endpoint == "/api/adb/raw":
             cmd = payload.get("command", "")
             response = manager.run_raw_adb(cmd)
+        elif endpoint == "/api/web_remote":
+            enable = payload.get("enable", True)
+            response = manager.setup_tv_web_remote(enable)
         elif endpoint == "/api/scan":
             response = {"ok": True, "devices": manager.scan_network()}
 

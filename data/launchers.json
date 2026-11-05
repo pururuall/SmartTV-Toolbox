@@ -17,12 +17,14 @@
       "name": "CleanYourTV Launcher",
       "badge": "Ультралегкий (~500 КБ)",
       "apk_path": "apps/launchers/CleanYourTV.apk",
-      "package": "com.cleanyourtv.launcher",
+      "package": "com.gathin.tvhome",
       "main_activity": ".MainActivity",
       "supports_dock_editor": true,
       "supports_custom_wallpaper": true,
-      "wallpaper_remote_path": "/sdcard/Android/data/com.cleanyourtv.launcher/files/wallpaper.jpg",
-      "config_remote_path": "/sdcard/Android/data/com.cleanyourtv.launcher/files/dock_config.json"
+      "wallpaper_remote_path": "/sdcard/Android/data/com.gathin.tvhome/files/wallpaper.jpg",
+      "config_remote_path": "/sdcard/Android/data/com.gathin.tvhome/files/config.json",
+      "supports_web_remote": true,
+      "web_remote_port": 8080
     },
     "projectivy": {
       "name": "Projectivy Launcher",

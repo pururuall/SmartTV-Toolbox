@@ -66,6 +66,9 @@ class WebViewBridge:
     def execute_raw_adb(self, command: str):
         return self.manager.run_raw_adb(command)
 
+    def setup_web_remote(self, enable: bool = True):
+        return self.manager.setup_tv_web_remote(enable)
+
     def scan_network(self):
         return self.manager.scan_network()
 
