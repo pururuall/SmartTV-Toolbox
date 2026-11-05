@@ -78,7 +78,15 @@ class WebViewBridge:
 
 if __name__ == "__main__":
     bridge = WebViewBridge()
-    ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_ui.html")
+    if getattr(sys, 'frozen', False):
+        exe_dir = os.path.dirname(sys.executable)
+        meipass_dir = getattr(sys, '_MEIPASS', exe_dir)
+        if os.path.exists(os.path.join(exe_dir, "app_ui.html")):
+            ui_path = os.path.join(exe_dir, "app_ui.html")
+        else:
+            ui_path = os.path.join(meipass_dir, "app_ui.html")
+    else:
+        ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_ui.html")
 
     window = webview.create_window(
         title="Smart TV Toolbox v3.0 — Custom TV Optimizer",

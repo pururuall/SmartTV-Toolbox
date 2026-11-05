@@ -15,7 +15,15 @@ class SmartTVManager:
     """
 
     def __init__(self, base_dir: Optional[str] = None):
-        self.base_dir = Path(base_dir or os.path.dirname(os.path.abspath(__file__)))
+        if base_dir:
+            self.base_dir = Path(base_dir)
+        elif getattr(sys, 'frozen', False):
+            exe_dir = Path(os.path.dirname(sys.executable))
+            meipass_dir = Path(getattr(sys, '_MEIPASS', exe_dir))
+            self.base_dir = exe_dir if (exe_dir / "data" / "packages.json").exists() else meipass_dir
+        else:
+            self.base_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+
         self.adb_bin = self._resolve_adb_binary()
         self.current_device: Optional[str] = None
 
