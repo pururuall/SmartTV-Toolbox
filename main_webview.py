@@ -70,7 +70,8 @@ class WebViewBridge:
         return self.manager.setup_tv_web_remote(enable)
 
     def scan_network(self):
-        return self.manager.scan_network()
+        devices = self.manager.scan_network()
+        return {"ok": True, "devices": devices}
 
     def list_third_party(self):
         return self.manager.list_installed_third_party()

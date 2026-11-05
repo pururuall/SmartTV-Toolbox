@@ -478,24 +478,115 @@ class SmartTVManager:
         return packages
 
     def scan_network(self) -> List[str]:
-        """Быстрый поиск телевизоров с открытым портом 5555 в подсети."""
+        """
+        Универсальный многоуровневый поиск ТВ:
+        1. Проверка уже подключенных устройств в adb devices
+        2. Последний успешно подключенный IP из кэша
+        3. Сканирование ARP-таблицы (arp -a)
+        4. mDNS-опрос YandexIO / Android TV на порту 5353
+        5. Параллельное сканирование всех физических подсетей (192.168.x.x, 10.x.x.x, игнорируя VPN-шлюзы)
+        """
+        import concurrent.futures
+
         found = []
+        candidates = []
+
+        # 0. Проверяем кэш последнего IP
+        cache_file = self.base_dir / "data" / "last_ip.txt"
+        if cache_file.exists():
+            try:
+                last_ip = cache_file.read_text(encoding="utf-8").strip()
+                if last_ip and last_ip not in candidates:
+                    candidates.append(last_ip)
+            except Exception:
+                pass
+
+        # 1. Проверяем adb devices
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            my_ip = s.getsockname()[0]
-            s.close()
-            prefix = ".".join(my_ip.split(".")[:3])
-            # Check most probable IPs or mDNS
-            for i in range(2, 60):
-                ip = f"{prefix}.{i}"
-                test_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                test_s.settimeout(0.04)
-                if test_s.connect_ex((ip, 5555)) == 0:
-                    found.append(ip)
-                test_s.close()
+            res = self.run_adb(["devices"])
+            for line in res.get("stdout", "").splitlines():
+                if "\tdevice" in line:
+                    parts = line.split("\t")[0].split(":")
+                    ip = parts[0].strip()
+                    if ip and ip.count(".") == 3 and ip not in found:
+                        found.append(ip)
         except Exception:
             pass
+
+        # 2. mDNS YandexIO
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
+            sock.settimeout(0.6)
+            sock.bind(("", 0))
+            header = b"\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00"
+            q = b"\x09_yandexio\x04_tcp\x05local\x00\x00\x0c\x00\x01"
+            sock.sendto(header + q, ("224.0.0.251", 5353))
+            start_t = time.time()
+            while time.time() - start_t < 0.8:
+                try:
+                    buf, addr = sock.recvfrom(2048)
+                    if b"yandex" in buf.lower():
+                        if addr[0] not in candidates:
+                            candidates.append(addr[0])
+                        break
+                except socket.timeout:
+                    break
+            sock.close()
+        except Exception:
+            pass
+
+        # 3. ARP-таблица (находит устройства даже при включенном VPN!)
+        try:
+            arp_out = subprocess.check_output("arp -a", shell=True).decode("cp866", errors="ignore")
+            for line in arp_out.splitlines():
+                parts = line.strip().split()
+                if len(parts) >= 2 and parts[0].count(".") == 3:
+                    ip = parts[0].strip()
+                    if not (ip.startswith(("224.", "239.", "127.", "0.")) or ip.endswith(".255")):
+                        if ip not in candidates:
+                            candidates.append(ip)
+        except Exception:
+            pass
+
+        # 4. Обнаружение реальных локальных подсетей (игнорируя VPN)
+        subnets = set()
+        try:
+            host_ips = [item[4][0] for item in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET)]
+            for hip in sorted(host_ips, key=lambda x: (not x.startswith("192.168."), x)):
+                if hip.startswith(("192.168.", "10.", "172.")) and not hip.startswith("10.8."):
+                    subnets.add(".".join(hip.split(".")[:3]))
+        except Exception:
+            pass
+
+        for sub in subnets:
+            for i in range(2, 255):
+                ip = f"{sub}.{i}"
+                if ip not in candidates:
+                    candidates.append(ip)
+
+        # 5. Быстрая параллельная проверка порта 5555
+        def check_port(target_ip: str) -> Optional[str]:
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(0.35)
+                code = s.connect_ex((target_ip, 5555))
+                s.close()
+                if code == 0:
+                    return target_ip
+            except Exception:
+                pass
+            return None
+
+        # Проверяем кандидаты через пул потоков
+        with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
+            futures = [executor.submit(check_port, ip) for ip in candidates[:150]]
+            for f in concurrent.futures.as_completed(futures):
+                res = f.result()
+                if res and res not in found:
+                    found.append(res)
+
         return found
 
 

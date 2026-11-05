@@ -1259,11 +1259,13 @@
     async function scanSubnet() {
       log('Сканирование локальной сети на наличие портов ADB (5555)...');
       const res = await callApi('scan_network');
-      if (res && res.devices && res.devices.length > 0) {
-        document.getElementById('inputTvIp').value = res.devices[0];
-        log(`Найден телевизор: ${res.devices.join(', ')}`);
+      const devs = (res && res.devices) ? res.devices : (Array.isArray(res) ? res : []);
+      if (devs && devs.length > 0) {
+        document.getElementById('inputTvIp').value = devs[0];
+        log(`✓ Найден телевизор: ${devs.join(', ')}`);
+        connectTv();
       } else {
-        log('ТВ не обнаружен автопоиском. Введите IP адрес вручную.');
+        log('ТВ не обнаружен автопоиском. Убедитесь, что экран ТВ включен, или введите IP вручную.');
       }
     }
 
