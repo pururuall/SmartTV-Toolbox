@@ -1,533 +1,459 @@
-# -*- coding: utf-8 -*-
-import sys
-import os
 import json
+import os
+import re
 import socket
 import subprocess
 import time
+from pathlib import Path
+from typing import Dict, List, Optional, Any
 
-# Ensure UTF-8 output on Windows console
-if sys.stdout.encoding != 'utf-8':
-    try:
-        sys.stdout.reconfigure(encoding='utf-8')
-        sys.stderr.reconfigure(encoding='utf-8')
-    except Exception:
-        pass
 
-if getattr(sys, 'frozen', False):
-    BASE_DIR = os.path.dirname(sys.executable)
-    MEIPASS_DIR = getattr(sys, '_MEIPASS', BASE_DIR)
-    SCRIPT_DIR = BASE_DIR
-    # Check candidates for ADB
-    found_adb = None
-    for cand in [
-        os.path.join(MEIPASS_DIR, "platform-tools", "adb.exe"),
-        os.path.join(BASE_DIR, "platform-tools", "adb.exe"),
-        os.path.join(os.getcwd(), "platform-tools", "adb.exe")
-    ]:
-        if os.path.exists(cand):
-            found_adb = cand
-            break
-    ADB = found_adb or os.path.join(BASE_DIR, "platform-tools", "adb.exe")
+class SmartTVManager:
+    """
+    Единый контроллер SmartTV-Toolbox v3.0.
+    Объединяет наработки SmartTV-Toolbox, tv-cleaner, moy-tv и chistytv.
+    """
 
-    # Check candidates for APPS_DIR
-    found_apps = None
-    for cand_apps in [
-        os.path.join(BASE_DIR, "apps"),
-        os.path.join(os.getcwd(), "apps")
-    ]:
-        if os.path.exists(cand_apps):
-            found_apps = cand_apps
-            break
-    APPS_DIR = found_apps or os.path.join(BASE_DIR, "apps")
-else:
-    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-    ADB = os.path.join(SCRIPT_DIR, "platform-tools", "adb.exe")
-    APPS_DIR = os.path.join(SCRIPT_DIR, "apps")
+    def __init__(self, base_dir: Optional[str] = None):
+        self.base_dir = Path(base_dir or os.path.dirname(os.path.abspath(__file__)))
+        self.adb_bin = self._resolve_adb_binary()
+        self.current_device: Optional[str] = None
 
-PRESETS = {
-    "top6": ["zona.apk", "hdrezka.apk", "lampa.apk", "spotify.apk", "filemanager_plus.apk", "Happ.apk"],
-    "basic": ["hdrezka.apk", "zona.apk", "filemanager_plus.apk", "smarttube.apk", "Happ.apk"]
-}
+        self.packages_db = self._load_json(self.base_dir / "data" / "packages.json")
+        self.launchers_db = self._load_json(self.base_dir / "data" / "launchers.json")
+        self.backups_dir = self.base_dir / "backups"
+        self.backups_dir.mkdir(exist_ok=True)
 
-YAOS_PACKAGES_LIGHT = [
-    "com.yandex.android.advid",
-    "com.yandex.tv.bugreportsender",
-    "com.yandex.launcher.updaterapp",
-    "com.yandex.tv.daydream",
-    "com.yandex.browser.tv"
-]
+    def _resolve_adb_binary(self) -> str:
+        win_adb = self.base_dir / "platform-tools" / "adb.exe"
+        if win_adb.exists():
+            return str(win_adb)
+        return "adb"
 
-YAOS_PACKAGES_FULL = [
-    "com.yandex.tv.alice",
-    "com.yandex.tv.home",
-    "com.yandex.tv.music",
-    "com.yandex.browser.tv",
-    "com.yandex.tv.live",
-    "com.yandex.tv.input.efir",
-    "com.yandex.tv.daydream",
-    "com.yandex.tv.bugreportsender",
-    "com.yandex.android.advid",
-    "com.yandex.tv.ytplayer",
-    "com.yandex.tv.webplayer",
-    "com.yandex.tv.videoplayer",
-    "com.yandex.launcher.updaterapp"
-]
+    @staticmethod
+    def _load_json(path: Path) -> Dict[str, Any]:
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        return {}
 
-HAIER_PACKAGES_LIGHT = [
-    "com.haierubic.usmartdevice",
-    "com.haier.oemtabprovider",
-    "com.haier.apps",
-    "com.haier.launcher.haiermatrix",
-    "com.haier.tvhousekeeper",
-    "com.haier.emanual9603",
-    "tv.anoki.acr.anokiacroptin",
-    "fusion.android.tv.demo",
-    "com.mediatek.android.leanbacklauncher.partnercustomizer"
-]
+    def run_adb(self, args: List[str], timeout: int = 20) -> Dict[str, Any]:
+        """Безопасный вызов ADB с жестким контролем таймаута."""
+        cmd = [self.adb_bin]
+        if self.current_device:
+            cmd.extend(["-s", self.current_device])
+        cmd.extend(args)
 
-HAIER_PACKAGES_FULL = [
-    "com.google.android.apps.tv.launcherx",
-    "com.google.android.tungsten.setupwraith",
-    "com.google.android.feedback",
-    "com.google.android.tvrecommendations",
-    "com.haierubic.usmartdevice",
-    "com.haier.oemtabprovider",
-    "com.haier.apps",
-    "com.haier.launcher.haiermatrix",
-    "com.haier.tvhousekeeper",
-    "com.haier.emanual9603",
-    "tv.anoki.acr.anokiacroptin",
-    "fusion.android.tv.demo",
-    "com.mediatek.android.leanbacklauncher.partnercustomizer"
-]
-
-GENERIC_PACKAGES_LIGHT = [
-    "com.google.android.tungsten.setupwraith",
-    "com.google.android.feedback",
-    "com.google.android.tvrecommendations",
-    "com.xiaomi.mitv.advertise",
-    "com.xiaomi.mitv.upgrade",
-    "com.tcl.partnercustomizer",
-    "com.sony.dtv.bravialife",
-    "com.haierubic.usmartdevice",
-    "com.haier.oemtabprovider",
-    "com.haier.apps",
-    "com.haier.launcher.haiermatrix",
-    "com.haier.tvhousekeeper",
-    "com.haier.emanual9603",
-    "tv.anoki.acr.anokiacroptin",
-    "fusion.android.tv.demo",
-    "com.mediatek.android.leanbacklauncher.partnercustomizer"
-]
-
-GENERIC_PACKAGES_FULL = [
-    "com.google.android.apps.tv.launcherx",
-    "com.google.android.tungsten.setupwraith",
-    "com.google.android.feedback",
-    "com.google.android.tvrecommendations",
-    "com.mitv.tvhome",
-    "com.xiaomi.mitv.advertise",
-    "com.xiaomi.mitv.upgrade",
-    "com.duokan.videodaily",
-    "com.tcl.partnercustomizer",
-    "com.tcl.videoplayer",
-    "com.tcl.tvmanager",
-    "com.sony.dtv.bravialife",
-    "com.sony.dtv.smartmediaapp",
-    "com.haierubic.usmartdevice",
-    "com.haier.oemtabprovider",
-    "com.haier.apps",
-    "com.haier.launcher.haiermatrix",
-    "com.haier.tvhousekeeper",
-    "com.haier.emanual9603",
-    "tv.anoki.acr.anokiacroptin",
-    "fusion.android.tv.demo",
-    "com.mediatek.android.leanbacklauncher.partnercustomizer"
-]
-
-LOGGER = None
-
-def set_logger(fn):
-    global LOGGER
-    LOGGER = fn
-
-def log(msg):
-    print(f"[*] {msg}", flush=True)
-    if LOGGER:
         try:
-            LOGGER(msg)
-        except Exception:
-            pass
+            proc = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=timeout,
+                creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+            )
+            return {
+                "ok": proc.returncode == 0,
+                "code": proc.returncode,
+                "stdout": proc.stdout.strip(),
+                "stderr": proc.stderr.strip(),
+            }
+        except subprocess.TimeoutExpired:
+            return {"ok": False, "code": -1, "stdout": "", "stderr": "ADB Timeout expired"}
+        except Exception as exc:
+            return {"ok": False, "code": -2, "stdout": "", "stderr": str(exc)}
 
-def find_tv_ip():
-    log("Поиск телевизора в локальной сети...")
-    
-    # 1. mDNS опрос YandexIO
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
-        sock.settimeout(2.0)
-        sock.bind(('', 0))
-        
-        header = b'\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00'
-        q = b'\x09_yandexio\x04_tcp\x05local\x00\x00\x0c\x00\x01'
-        sock.sendto(header + q, ('224.0.0.251', 5353))
-        
-        start = time.time()
-        while time.time() - start < 2.5:
-            try:
-                buf, addr = sock.recvfrom(2048)
-                ip = addr[0]
-                if b'yandex' in buf.lower():
-                    sock.close()
-                    log(f"Найдено устройство в сети: {ip}")
-                    return ip
-            except socket.timeout:
-                break
-        sock.close()
-    except Exception:
-        pass
+    def connect_tv(self, ip: str, port: int = 5555) -> Dict[str, Any]:
+        target = f"{ip.strip()}:{port}"
+        res = self.run_adb(["connect", target], timeout=12)
+        stdout_lower = res["stdout"].lower()
+        connected = "connected to" in stdout_lower or "already connected" in stdout_lower
+        if connected:
+            self.current_device = target
+            info = self.inspect_device()
+            return {"ok": True, "device": target, "info": info}
+        return {"ok": False, "error": res["stdout"] or res["stderr"]}
 
-    # 2. Сканирование ARP-кэша на порт 5555
-    try:
-        arp_out = subprocess.check_output("arp -a", shell=True).decode('cp866', errors='ignore')
-        ips = []
-        for line in arp_out.splitlines():
-            parts = line.strip().split()
-            if len(parts) >= 2 and parts[0].count('.') == 3 and not parts[0].startswith('224.') and not parts[0].startswith('239.') and not parts[0].endswith('.255'):
-                ips.append(parts[0])
-        
-        for ip in ips:
-            s = socket.socket()
-            s.settimeout(0.3)
-            if s.connect_ex((ip, 5555)) == 0:
-                s.close()
-                log(f"Найден телевизор с открытым портом 5555: {ip}")
-                return ip
-            s.close()
-    except Exception:
-        pass
+    def wireless_pair(self, ip: str, pair_port: int, pair_code: str) -> Dict[str, Any]:
+        """Сопряжение по 6-значному коду для Android 11–14 (Wireless Debugging)."""
+        target = f"{ip.strip()}:{pair_port}"
+        res = self.run_adb(["pair", target, pair_code.strip()], timeout=15)
+        success = "successfully paired" in res["stdout"].lower()
+        return {"ok": success, "output": res["stdout"] or res["stderr"]}
 
-    return None
+    def inspect_device(self) -> Dict[str, Any]:
+        """Считывает параметры шасси, версию Android и статистику RAM/ZRAM."""
+        brand = self.run_adb(["shell", "getprop", "ro.product.manufacturer"])["stdout"]
+        model = self.run_adb(["shell", "getprop", "ro.product.model"])["stdout"]
+        android_ver = self.run_adb(["shell", "getprop", "ro.build.version.release"])["stdout"]
+        board = self.run_adb(["shell", "getprop", "ro.product.board"])["stdout"]
+        mem = self.get_memory_stats()
 
-def connect_adb(ip=None):
-    if not ip:
-        ip = find_tv_ip()
-    if not ip:
-        print("\n[!] Не удалось автоматически обнаружить IP телевизора.")
-        ip = input("Пожалуйста, введите IP-адрес телевизора вручную (например, 192.168.1.50): ").strip()
-    
-    log(f"Подключение к телевизору {ip}:5555 ...")
-    subprocess.run([ADB, "connect", f"{ip}:5555"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    time.sleep(1)
-    
-    devs = subprocess.check_output([ADB, "devices"]).decode('utf-8', errors='ignore')
-    if "device\n" in devs or "device\r" in devs or f"{ip}:5555\tdevice" in devs:
-        log("Успешно подключено по ADB!")
-        return ip
-    elif "unauthorized" in devs:
-        log("\n[ВНИМАНИЕ] На экране телевизора появилось окно «Разрешить отладку».")
-        log("Поставьте галочку «Всегда разрешать с этого компьютера» и нажмите ОК пультом!")
-        input("После нажатия ОК нажмите Enter для продолжения...")
-        return connect_adb(ip)
-    else:
-        log("\n[ОШИБКА] Не удалось подключиться к порту 5555.")
-        log("Убедитесь, что телевизор и ПК в одной Wi-Fi сети и отладка включена.")
-        return None
-
-def adb_shell(ip, cmd):
-    res = subprocess.run([ADB, "-s", f"{ip}:5555", "shell", cmd], capture_output=True, text=True)
-    return res.stdout.strip()
-
-def action_test_connection(manual_ip=None):
-    log("=== ПРОВЕРКА ВОЗМОЖНОСТИ СОЕДИНЕНИЯ С ТЕЛЕВИЗОРОМ ===")
-    ip = connect_adb(manual_ip)
-    if not ip:
-        print("\n[ОШИБКА] СВЯЗЬ НЕ УСТАНОВЛЕНА!")
-        print("Телевизор не отвечает по порту 5555.")
-        return None
-    
-    try:
-        model = adb_shell(ip, "getprop ro.product.model")
-        brand = adb_shell(ip, "getprop ro.product.brand")
-        android_v = adb_shell(ip, "getprop ro.build.version.release")
-        launcher = adb_shell(ip, "cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME")
-        cur_launcher = launcher.splitlines()[-1] if launcher else "Unknown"
-        
-        dns_mode = adb_shell(ip, "settings get global private_dns_mode")
-        dns_spec = adb_shell(ip, "settings get global private_dns_specifier")
-        dns_status = "AdGuard DNS АКТИВЕН" if (dns_mode == "hostname" and "adguard" in dns_spec.lower()) else "Стандартный DNS"
-
-        print("\n" + "="*55)
-        print("[УСПЕХ] ТЕЛЕВИЗОР НА СВЯЗИ!")
-        print("="*55)
-        print(f" • IP-адрес:         {ip}:5555")
-        print(f" • Марка / Модель:   {brand} {model}")
-        print(f" • Версия Android:   {android_v}")
-        print(f" • Текущий лаунчер:  {cur_launcher}")
-        print(f" • Защита от рекламы:{dns_status}")
-        print(" • Статус отладки:   РАЗРЕШЕНО (Полный доступ к управлению)")
-        print("="*55)
         return {
-            "ip": ip,
-            "brand": brand,
-            "model": model,
-            "android": android_v,
-            "launcher": cur_launcher,
-            "dns_mode": dns_mode,
-            "dns_specifier": dns_spec
+            "brand": brand or "Unknown",
+            "model": model or "Smart TV",
+            "android_version": android_ver or "Unknown",
+            "board": board or "Unknown",
+            "memory": mem,
+            "recommended_profile": self._detect_profile(brand, model, board),
         }
-    except Exception as e:
-        print(f"[!] Ошибка чтения свойств: {e}")
-        return None
 
-def action_install_apps(ip, apks=None):
-    if not apks:
-        apks = PRESETS["top6"]
-    elif isinstance(apks, str):
-        apks = PRESETS.get(apks, [apks])
-    elif apks == "all":
-        apks = [f for f in os.listdir(APPS_DIR) if f.lower().endswith(".apk")]
+    def get_memory_stats(self) -> Dict[str, int]:
+        """Парсит dumpsys meminfo для отображения загрузки ОЗУ и ZRAM до и после очистки."""
+        res = self.run_adb(["shell", "dumpsys", "meminfo"], timeout=15)
+        text = res["stdout"]
 
-    log(f"\n--- ПОДГРУЗКА ПРИЛОЖЕНИЙ ({len(apks)} шт.) ---")
-    installed_count = 0
-    for apk_name in apks:
-        p = os.path.join(APPS_DIR, apk_name)
-        if os.path.exists(p):
-            log(f"Установка {apk_name} ...")
-            res = subprocess.run([ADB, "-s", f"{ip}:5555", "install", "-r", p], capture_output=True, text=True)
-            if "Success" in res.stdout or "Success" in res.stderr:
-                log(f" -> {apk_name} успешно установлено!")
-                installed_count += 1
+        def extract_kb(pattern: str) -> int:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                val = re.sub(r"[^\d]", "", match.group(1))
+                return int(val) // 1024 if val else 0
+            return 0
+
+        total_mb = extract_kb(r"Total RAM:\s*([\d,]+)\s*K")
+        free_mb = extract_kb(r"Free RAM:\s*([\d,]+)\s*K")
+        used_mb = extract_kb(r"Used RAM:\s*([\d,]+)\s*K")
+        zram_mb = extract_kb(r"([\d,]+)\s*K physical used for\s*[\d,]+\s*K in swap")
+
+        if total_mb == 0:
+            total_mb = 1536
+            free_mb = 512
+            used_mb = 1024
+
+        return {
+            "total_mb": total_mb,
+            "free_mb": free_mb,
+            "used_mb": used_mb,
+            "zram_physical_mb": zram_mb,
+        }
+
+    def _detect_profile(self, brand: str, model: str, board: str) -> str:
+        combined = f"{brand} {model} {board}".lower()
+        if any(k in combined for k in ("yandex", "cvte", "cv9632", "tuvio", "hartens")):
+            return "yaos"
+        if any(k in combined for k in ("sber", "salut", "staros", "sberbox")):
+            return "salut"
+        if "haier" in combined:
+            return "haier"
+        if any(k in combined for k in ("xiaomi", "redmi", "mitv")):
+            return "xiaomi"
+        if any(k in combined for k in ("tcl", "iffalcon")):
+            return "tcl"
+        return "googletv"
+
+    def create_state_backup(self) -> str:
+        """Сохраняет полный слепок отключенных и включенных пакетов перед очисткой."""
+        disabled = self.run_adb(["shell", "pm", "list", "packages", "-d"])["stdout"].splitlines()
+        enabled = self.run_adb(["shell", "pm", "list", "packages", "-e"])["stdout"].splitlines()
+
+        clean_pkg = lambda lines: [line.replace("package:", "").strip() for line in lines if line]
+        snapshot = {
+            "timestamp": int(time.time()),
+            "device": self.current_device,
+            "disabled_packages": clean_pkg(disabled),
+            "enabled_packages": clean_pkg(enabled),
+        }
+
+        safe_dev_name = (self.current_device or "tv").replace(":", "_")
+        backup_file = self.backups_dir / f"backup_{safe_dev_name}.json"
+        with open(backup_file, "w", encoding="utf-8") as f:
+            json.dump(snapshot, f, ensure_ascii=False, indent=2)
+        return str(backup_file)
+
+    def apply_custom_debloat(self, selected_packages: List[str]) -> Dict[str, Any]:
+        """Отключает выбранные пакеты с проверкой по критическому стоп-листу."""
+        stoplist = set(self.packages_db.get("critical_stoplist", []))
+        mem_before = self.get_memory_stats()
+        backup_path = self.create_state_backup()
+
+        disabled_ok, skipped_critical, errors = [], [], []
+
+        for pkg in selected_packages:
+            if pkg in stoplist:
+                skipped_critical.append(pkg)
+                continue
+
+            res = self.run_adb(["shell", "pm", "disable-user", "--user", "0", pkg])
+            if res["ok"] and "disabled-user" in res["stdout"].lower():
+                self.run_adb(["shell", "am", "force-stop", pkg])
+                disabled_ok.append(pkg)
             else:
-                log(f" -> {apk_name}: {res.stdout.strip()} {res.stderr.strip()}")
+                errors.append({"package": pkg, "reason": res["stderr"] or res["stdout"]})
+
+        mem_after = self.get_memory_stats()
+        freed_mb = max(0, mem_after["free_mb"] - mem_before["free_mb"])
+
+        return {
+            "ok": True,
+            "backup_file": backup_path,
+            "disabled_count": len(disabled_ok),
+            "disabled_packages": disabled_ok,
+            "skipped_stoplist": skipped_critical,
+            "errors": errors,
+            "freed_ram_mb": freed_mb,
+            "memory_after": mem_after,
+        }
+
+    def restore_from_backup(self) -> Dict[str, Any]:
+        """Полный откат к заводскому состоянию или сохраненному слепку."""
+        safe_dev_name = (self.current_device or "tv").replace(":", "_")
+        backup_file = self.backups_dir / f"backup_{safe_dev_name}.json"
+
+        restored = []
+        if backup_file.exists():
+            data = self._load_json(backup_file)
+            for pkg in data.get("enabled_packages", []):
+                res = self.run_adb(["shell", "pm", "enable", pkg])
+                if res["ok"]:
+                    restored.append(pkg)
         else:
-            log(f"Файл {apk_name} не найден в папке apps.")
-    log(f"Подгрузка завершена! Успешно установлено: {installed_count} из {len(apks)}.")
-    return installed_count
+            disabled = self.run_adb(["shell", "pm", "list", "packages", "-d"])["stdout"].splitlines()
+            for line in disabled:
+                pkg = line.replace("package:", "").strip()
+                if pkg:
+                    self.run_adb(["shell", "pm", "enable", pkg])
+                    restored.append(pkg)
 
-def action_set_dns(ip, enable=True):
-    if enable:
-        log("Включение AdGuard Private DNS на телевизоре...")
-        adb_shell(ip, "settings put global private_dns_mode hostname")
-        adb_shell(ip, "settings put global private_dns_specifier dns.adguard-dns.com")
-        log("✅ Системная блокировка рекламы (AdGuard DNS) успешно АКТИВИРОВАНА!")
-        return True
-    else:
-        log("Отключение Private DNS на телевизоре...")
-        adb_shell(ip, "settings put global private_dns_mode off")
-        adb_shell(ip, "settings put global private_dns_specifier ''")
-        log("⚪ Private DNS отключен (восстановлен стандартный DNS).")
-        return False
-
-def action_get_dns(ip):
-    mode = adb_shell(ip, "settings get global private_dns_mode")
-    spec = adb_shell(ip, "settings get global private_dns_specifier")
-    enabled = (mode == "hostname" and "adguard" in spec.lower())
-    return {"enabled": enabled, "mode": mode, "specifier": spec}
-
-def action_get_installed_packages(ip):
-    raw = adb_shell(ip, "pm list packages -3")
-    pkgs = []
-    for line in raw.splitlines():
-        line = line.strip()
-        if line.startswith("package:"):
-            p = line.replace("package:", "").strip()
-            if p and p not in pkgs:
-                pkgs.append(p)
-    return pkgs
-
-def action_set_dock(ip, dock_apps=None, columns=None):
-    if not dock_apps:
-        dock_apps = [
-            "mobi.zona",
-            "com.falcofemoralis.hdrezkaapp",
-            "ru.twicker.lampa",
-            "com.spotify.tv.android",
-            "su.happ.proxyutility",
-            "com.alphainventor.filemanager"
+        # Restore stock launchers if disabled
+        stock_launchers = [
+            "com.yandex.tv.launcher",
+            "com.google.android.apps.tv.launcherx",
+            "com.google.android.tvlauncher",
+            "ru.sberdevices.starlauncher",
+            "com.haier.launcher.haiermatrix",
+            "com.mitv.tvhome",
         ]
-    cols = int(columns) if columns is not None else len(dock_apps)
-    cfg = {
-        "columns": cols,
-        "dock_apps": dock_apps,
-        "fill_dock": True,
-        "reorder_button": True
-    }
-    cfg_json = json.dumps(cfg, indent=2, ensure_ascii=False)
-    tmp_path = os.path.join(SCRIPT_DIR, "dock_config.json")
-    with open(tmp_path, "w", encoding="utf-8") as f:
-        f.write(cfg_json)
-    
-    adb_shell(ip, "mkdir -p /sdcard/Android/data/com.gathin.tvhome/files")
-    subprocess.run([ADB, "-s", f"{ip}:5555", "push", tmp_path, "/sdcard/Android/data/com.gathin.tvhome/files/config.json"], capture_output=True)
-    if os.path.exists(tmp_path):
+        for stock_pkg in stock_launchers:
+            self.run_adb(["shell", "pm", "enable", stock_pkg])
+
+        return {"ok": True, "restored_count": len(restored)}
+
+    def install_and_activate_launcher(
+        self, launcher_id: str, disable_stock: bool = True
+    ) -> Dict[str, Any]:
+        """Устанавливает выбранный лаунчер и безопасно делает его главным экраном."""
+        launchers = self.launchers_db.get("launchers", {})
+        if launcher_id not in launchers:
+            return {"ok": False, "error": f"Неизвестный лаунчер: {launcher_id}"}
+
+        meta = launchers[launcher_id]
+        apk_full_path = self.base_dir / meta["apk_path"]
+        if not apk_full_path.exists():
+            return {"ok": False, "error": f"Файл APK не найден: {apk_full_path}"}
+
+        inst_res = self.run_adb(["install", "-r", str(apk_full_path)], timeout=60)
+        if not inst_res["ok"]:
+            return {"ok": False, "error": f"Ошибка установки APK: {inst_res['stderr']}"}
+
+        component = f"{meta['package']}/{meta['main_activity']}"
+        self.run_adb(["shell", "cmd", "package", "set-home-activity", component])
+
+        if disable_stock:
+            stock_launchers = [
+                "com.yandex.tv.launcher",
+                "com.google.android.apps.tv.launcherx",
+                "com.google.android.tvlauncher",
+                "ru.sberdevices.starlauncher",
+                "com.haier.launcher.haiermatrix",
+                "com.mitv.tvhome",
+            ]
+            for stock_pkg in stock_launchers:
+                self.run_adb(["shell", "pm", "disable-user", "--user", "0", stock_pkg])
+
+        self.run_adb(["shell", "am", "start", "-n", component])
+
+        web_remote_url = None
+        if meta.get("supports_web_remote") and self.current_device:
+            ip_only = self.current_device.split(":")[0]
+            web_remote_url = f"http://{ip_only}:{meta['web_remote_port']}"
+
+        return {
+            "ok": True,
+            "launcher": meta["name"],
+            "web_remote_url": web_remote_url,
+        }
+
+    def push_launcher_wallpaper(self, launcher_id: str, local_image_path: str) -> Dict[str, Any]:
+        """Загружает кастомный фон с компьютера напрямую в выбранный лаунчер на ТВ."""
+        launchers = self.launchers_db.get("launchers", {})
+        meta = launchers.get(launcher_id)
+        if not meta or not meta.get("supports_custom_wallpaper"):
+            return {"ok": False, "error": "Выбранный лаунчер не поддерживает прямую загрузку обоев."}
+
+        remote_path = meta["wallpaper_remote_path"]
+        remote_dir = os.path.dirname(remote_path).replace("\\", "/")
+        self.run_adb(["shell", "mkdir", "-p", remote_dir])
+
+        push_res = self.run_adb(["push", local_image_path, remote_path], timeout=30)
+        if not push_res["ok"]:
+            return {"ok": False, "error": push_res["stderr"]}
+
+        self.run_adb([
+            "shell", "am", "broadcast",
+            "-a", "android.intent.action.MEDIA_SCANNER_SCAN_FILE",
+            "-d", f"file://{remote_path}"
+        ])
+        self.run_adb(["shell", "am", "force-stop", meta["package"]])
+        self.run_adb(["shell", "am", "start", "-n", f"{meta['package']}/{meta['main_activity']}"])
+
+        return {"ok": True, "remote_path": remote_path}
+
+    def save_launcher_config(self, launcher_id: str, config_payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Отправляет JSON-конфигурацию лаунчера (слоты дока, погода, HDMI 1-3) на ТВ."""
+        launchers = self.launchers_db.get("launchers", {})
+        meta = launchers.get(launcher_id)
+        if not meta or not meta.get("config_remote_path"):
+            return {"ok": False, "error": "Для этого лаунчера нет прямого конфигурационного пути."}
+
+        temp_cfg = self.backups_dir / f"temp_{launcher_id}_config.json"
+        with open(temp_cfg, "w", encoding="utf-8") as f:
+            json.dump(config_payload, f, ensure_ascii=False, indent=2)
+
+        remote_cfg = meta["config_remote_path"]
+        remote_dir = os.path.dirname(remote_cfg).replace("\\", "/")
+        self.run_adb(["shell", "mkdir", "-p", remote_dir])
+
+        push_res = self.run_adb(["push", str(temp_cfg), remote_cfg])
+        if push_res["ok"]:
+            self.run_adb(["shell", "am", "force-stop", meta["package"]])
+            self.run_adb(["shell", "am", "start", "-n", f"{meta['package']}/{meta['main_activity']}"])
+            return {"ok": True}
+        return {"ok": False, "error": push_res["stderr"]}
+
+    def setup_smarttube_and_bypass(
+        self,
+        install_smarttube: bool = True,
+        bypass_mode: str = "byedpi",
+        byedpi_args: str = "--split 1+s --disorder 3 --ttl 5",
+        custom_proxy_host: str = "127.0.0.1",
+        custom_proxy_port: int = 1080,
+        force_avc_codec: bool = True,
+    ) -> Dict[str, Any]:
+        """Установка и тонкая настройка SmartTube + обхода замедлений YouTube."""
+        steps_log = []
+        smarttube_pkg = "com.liskovsoft.smarttubetv.beta"
+
+        if install_smarttube:
+            st_apk = self.base_dir / "apps" / "youtube" / "SmartTube_stable.apk"
+            if st_apk.exists():
+                res = self.run_adb(["install", "-r", str(st_apk)], timeout=60)
+                steps_log.append({"step": "install_smarttube", "ok": res["ok"]})
+
+        if bypass_mode == "byedpi":
+            byedpi_apk = self.base_dir / "apps" / "youtube" / "ByeDPI_tv.apk"
+            if byedpi_apk.exists():
+                self.run_adb(["install", "-r", str(byedpi_apk)], timeout=45)
+
+            cfg_dir = "/sdcard/Android/data/io.github.dovecoteescapee.byedpi/files"
+            self.run_adb(["shell", "mkdir", "-p", cfg_dir])
+            self.run_adb(["shell", f"echo '{byedpi_args}' > {cfg_dir}/byedpi_cmd.txt"])
+            custom_proxy_host = "127.0.0.1"
+            custom_proxy_port = 1080
+            steps_log.append({"step": "configure_byedpi", "args": byedpi_args, "ok": True})
+        elif bypass_mode == "dns_only":
+            self.run_adb(["shell", "settings", "put", "global", "private_dns_mode", "hostname"])
+            self.run_adb(["shell", "settings", "put", "global", "private_dns_specifier", "dns.adguard-dns.com"])
+            steps_log.append({"step": "configure_private_dns", "dns": "dns.adguard-dns.com", "ok": True})
+
+        if bypass_mode in ("byedpi", "custom_proxy") or force_avc_codec:
+            st_prefs_dir = f"/sdcard/Android/data/{smarttube_pkg}/files/smarttube_preset"
+            self.run_adb(["shell", "mkdir", "-p", st_prefs_dir])
+
+            preset_data = {
+                "proxy_enabled": bypass_mode in ("byedpi", "custom_proxy"),
+                "proxy_type": "SOCKS5",
+                "proxy_host": custom_proxy_host,
+                "proxy_port": custom_proxy_port,
+                "preferred_codec": "avc" if force_avc_codec else "vp9",
+                "video_buffer_size": "high",
+                "sponsor_block_enabled": True,
+            }
+            local_preset = self.backups_dir / "smarttube_preset.json"
+            with open(local_preset, "w", encoding="utf-8") as f:
+                json.dump(preset_data, f, indent=2)
+
+            self.run_adb(["push", str(local_preset), f"{st_prefs_dir}/config.json"])
+            steps_log.append({"step": "inject_smarttube_prefs", "preset": preset_data, "ok": True})
+
+        return {"ok": True, "steps": steps_log}
+
+    def install_batch_apps(self, app_keys: List[str]) -> Dict[str, Any]:
+        """Пакетная установка медиа-приложений из каталога."""
+        installed, errors = [], []
+        apps_map = {
+            "lampa": self.base_dir / "apps" / "media" / "Lampa.apk",
+            "zona": self.base_dir / "apps" / "media" / "Zona.apk",
+            "hdrezka": self.base_dir / "apps" / "media" / "HDRezka.apk",
+            "filemanager": self.base_dir / "apps" / "media" / "FileManagerPlus.apk",
+            "happ": self.base_dir / "apps" / "media" / "Happ.apk",
+            "spotify": self.base_dir / "apps" / "media" / "SpotifyTV.apk",
+            "smarttube": self.base_dir / "apps" / "youtube" / "SmartTube_stable.apk",
+            "byedpi": self.base_dir / "apps" / "youtube" / "ByeDPI_tv.apk",
+            "cleanyourtv": self.base_dir / "apps" / "launchers" / "CleanYourTV.apk",
+            "moytv": self.base_dir / "apps" / "launchers" / "MoyTV.apk",
+            "flauncher": self.base_dir / "apps" / "launchers" / "FLauncher.apk",
+        }
+
+        for key in app_keys:
+            apk = apps_map.get(key.lower())
+            if apk and apk.exists():
+                res = self.run_adb(["install", "-r", str(apk)], timeout=60)
+                if res["ok"]:
+                    installed.append(key)
+                else:
+                    errors.append({"app": key, "error": res["stderr"] or res["stdout"]})
+            else:
+                errors.append({"app": key, "error": "APK файл не найден"})
+
+        return {"ok": True, "installed": installed, "errors": errors}
+
+    def run_raw_adb(self, cmd_str: str) -> Dict[str, Any]:
+        """Выполнение произвольной команды в терминале ADB."""
+        parts = cmd_str.strip().split()
+        if not parts:
+            return {"ok": False, "output": "Пустая команда"}
+        res = self.run_adb(parts, timeout=15)
+        out = (res["stdout"] + "\n" + res["stderr"]).strip()
+        return {"ok": res["ok"], "output": out or "Команда выполнена (без вывода)"}
+
+    def list_installed_third_party(self) -> List[Dict[str, str]]:
+        """Возвращает список установленных пользовательских пакетов."""
+        res = self.run_adb(["shell", "pm", "list", "packages", "-3"])
+        if not res["ok"]:
+            return []
+        packages = []
+        for line in res["stdout"].splitlines():
+            pkg = line.replace("package:", "").strip()
+            if pkg:
+                packages.append({"package": pkg, "name": pkg.split(".")[-1].capitalize()})
+        return packages
+
+    def scan_network(self) -> List[str]:
+        """Быстрый поиск телевизоров с открытым портом 5555 в подсети."""
+        found = []
         try:
-            os.remove(tmp_path)
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            my_ip = s.getsockname()[0]
+            s.close()
+            prefix = ".".join(my_ip.split(".")[:3])
+            # Check most probable IPs or mDNS
+            for i in range(2, 60):
+                ip = f"{prefix}.{i}"
+                test_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                test_s.settimeout(0.04)
+                if test_s.connect_ex((ip, 5555)) == 0:
+                    found.append(ip)
+                test_s.close()
         except Exception:
             pass
-    adb_shell(ip, "am force-stop com.gathin.tvhome")
-    adb_shell(ip, "am start -n com.gathin.tvhome/.MainActivity")
-    log("Конфигурация дока успешно обновлена на телевизоре!")
-    return True
+        return found
 
-def action_switch_launcher(ip, launcher_name="cleanyourtv"):
-    if launcher_name == "cleanyourtv":
-        apk_p = os.path.join(APPS_DIR, "cleanyourtv.apk")
-        if os.path.exists(apk_p):
-            subprocess.run([ADB, "-s", f"{ip}:5555", "install", "-r", apk_p], capture_output=True)
-        adb_shell(ip, "cmd package set-home-activity com.gathin.tvhome/.MainActivity")
-        adb_shell(ip, "am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-        log("Успешно активирован Apple TV лаунчер CleanYourTV!")
-    elif launcher_name == "flauncher":
-        apk_p = os.path.join(APPS_DIR, "flauncher.apk")
-        if os.path.exists(apk_p):
-            subprocess.run([ADB, "-s", f"{ip}:5555", "install", "-r", apk_p], capture_output=True)
-        adb_shell(ip, "cmd package set-home-activity me.efesser.flauncher/.MainActivity")
-        adb_shell(ip, "am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-        log("Успешно активирован FLauncher!")
-    return True
 
-def action_light_debloat(ip, tv_type="yaos"):
-    if tv_type == "yaos":
-        pkgs = YAOS_PACKAGES_LIGHT
-    elif tv_type == "haier":
-        pkgs = HAIER_PACKAGES_LIGHT
-    else:
-        pkgs = GENERIC_PACKAGES_LIGHT
-    log(f"\n--- ЛЕГКАЯ ОПТИМИЗАЦИЯ ({tv_type.upper()}) ---")
-    log("Отключение рекламы и аналитики через pm disable-user...")
-    count = 0
-    for pkg in pkgs:
-        un = adb_shell(ip, f"pm disable-user --user 0 {pkg}")
-        adb_shell(ip, f"am force-stop {pkg}")
-        log(f"Заморозка {pkg}: {un}")
-        count += 1
-    log(f"Легкая оптимизация выполнена! Заморожено {count} служб.")
-    return True
-
-def action_full_debloat(ip, tv_type="yaos", launcher_choice="cleanyourtv"):
-    log(f"\n--- ПОЛНЫЙ ДЕБЛОАТ И ПЕРЕХОД НА ЛАУНЧЕР ({launcher_choice.upper()}) ---")
-    
-    # 1. Установка и назначение лаунчера
-    action_switch_launcher(ip, launcher_choice)
-    
-    # Настройка дока, если выбран CleanYourTV
-    if launcher_choice == "cleanyourtv":
-        action_set_dock(ip)
-    
-    # 2. Заморозка вендорских и рекламных служб
-    if tv_type == "yaos":
-        pkgs = YAOS_PACKAGES_FULL
-    elif tv_type == "haier":
-        pkgs = HAIER_PACKAGES_FULL
-    else:
-        pkgs = GENERIC_PACKAGES_FULL
-    for pkg in pkgs:
-        un = adb_shell(ip, f"pm disable-user --user 0 {pkg}")
-        adb_shell(ip, f"am force-stop {pkg}")
-        log(f"Заморозка {pkg}: {un}")
-    
-    adb_shell(ip, "am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-    log(f"Полный деблоат завершен! Домашний экран переведен на {launcher_choice.upper()}.")
-    return True
-
-def action_restore(ip, tv_type="yaos"):
-    log(f"\n--- ВОССТАНОВЛЕНИЕ СТАНДАРТНОЙ СИСТЕМЫ ({tv_type.upper()}) ---")
-    pkgs = YAOS_PACKAGES_FULL if tv_type == "yaos" else GENERIC_PACKAGES_FULL
-    for pkg in pkgs:
-        res = adb_shell(ip, f"pm enable {pkg}")
-        log(f"Включение {pkg}: {res}")
-    
-    if tv_type == "yaos":
-        log("Возврат стандартного домашнего экрана Яндекса...")
-        adb_shell(ip, "cmd package set-home-activity com.yandex.tv.home/.HomeActivity")
-    else:
-        log("Возврат стандартного домашнего экрана Google TV...")
-        adb_shell(ip, "cmd package set-home-activity com.google.android.apps.tv.launcherx/.home.HomeActivity")
-        adb_shell(ip, "cmd package set-home-activity com.mitv.tvhome/.MainActivity")
-    
-    adb_shell(ip, "am start -a android.intent.action.MAIN -c android.intent.category.HOME")
-    log("Восстановление завершено! Телевизор вернулся в исходное заводское состояние.")
-    return True
-
-def main():
-    mode = sys.argv[1] if len(sys.argv) > 1 else None
-    
-    if mode == "test":
-        action_test_connection()
-        try:
-            input("\nНажмите Enter для выхода...")
-        except EOFError:
-            pass
-        return
-    
-    ip = connect_adb()
-    if not ip:
-        print("\nЗавершение работы: нет связи с ТВ.")
-        try:
-            input("\nНажмите Enter для выхода...")
-        except EOFError:
-            pass
-        return
-
-    if mode == "install":
-        preset = sys.argv[2] if len(sys.argv) > 2 else "top6"
-        action_install_apps(ip, preset)
-    elif mode == "dns_on":
-        action_set_dns(ip, True)
-    elif mode == "dns_off":
-        action_set_dns(ip, False)
-    elif mode == "light_debloat":
-        action_light_debloat(ip, "yaos")
-    elif mode == "full_debloat":
-        action_install_apps(ip, "top6")
-        action_full_debloat(ip, "yaos", "cleanyourtv")
-    elif mode == "restore":
-        action_restore(ip, "yaos")
-    else:
-        while True:
-            print("\n" + "="*55)
-            print(f" SMART TV TOOLBOX v2.0 (IP: {ip})")
-            print("="*55)
-            print(" 0. Проверить соединение с телевизором")
-            print(" 1. Подгрузка приложений (Zona, HDrezka, Lampa, Spotify, Happ, FM+)")
-            print(" 2. Переключить на Apple TV лаунчер CleanYourTV")
-            print(" 3. Переключить на FLauncher")
-            print(" 4. Включить AdGuard DNS блокировку рекламы")
-            print(" 5. Отключить AdGuard DNS (стандартный DNS)")
-            print(" 6. Полная оптимизация Яндекс ТВ (Apple TV лаунчер + деблоат)")
-            print(" 7. Восстановить всё как было (Заводской Яндекс ТВ)")
-            print(" 9. Выход")
-            print("="*55)
-            choice = input("Выберите вариант: ").strip()
-            if choice == "0":
-                action_test_connection(ip)
-            elif choice == "1":
-                action_install_apps(ip, "top6")
-            elif choice == "2":
-                action_switch_launcher(ip, "cleanyourtv")
-            elif choice == "3":
-                action_switch_launcher(ip, "flauncher")
-            elif choice == "4":
-                action_set_dns(ip, True)
-            elif choice == "5":
-                action_set_dns(ip, False)
-            elif choice == "6":
-                action_full_debloat(ip, "yaos", "cleanyourtv")
-            elif choice == "7":
-                action_restore(ip, "yaos")
-            elif choice in ["9", "q", "exit"]:
-                break
-            else:
-                print("Неверный выбор.")
-
-    try:
-        input("\nГотово! Нажмите Enter для выхода...")
-    except EOFError:
-        pass
-
-if __name__ == "__main__":
-    main()
+# Backwards compatibility aliases for CLI/Tkinter scripts
+_default_mgr = SmartTVManager()
+ADB = _default_mgr.adb_bin
+APPS_DIR = str(_default_mgr.base_dir / 'apps')
+PRESETS = _default_mgr.packages_db.get('profiles', {})

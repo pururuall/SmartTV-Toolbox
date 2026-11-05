@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart TV Toolbox v2.0</title>
+  <title>Smart TV Toolbox v3.0 — Custom TV Optimizer</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -36,23 +36,26 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      padding: 20px;
+      padding: 16px 20px;
       user-select: none;
       -webkit-font-smoothing: antialiased;
     }
 
-    .container { max-width: 980px; margin: 0 auto; }
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
 
-    /* Compact Header with Capybara Logo */
+    /* Compact Header */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 16px;
-      margin-bottom: 20px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
       border-bottom: 1px solid var(--border);
+      gap: 16px;
       flex-wrap: wrap;
-      gap: 14px;
     }
 
     .header-main {
@@ -62,8 +65,8 @@
     }
 
     .app-logo {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border-radius: 12px;
       object-fit: cover;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -75,7 +78,7 @@
     .header-text {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
     }
 
     .brand-title {
@@ -85,7 +88,7 @@
     }
 
     .brand-title h1 {
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       font-weight: 700;
       letter-spacing: -0.02em;
       color: #fff;
@@ -101,62 +104,114 @@
       background: var(--accent-dim);
       color: var(--accent);
       border: 1px solid var(--accent-border);
-      letter-spacing: 0.04em;
     }
 
     .header-desc {
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       color: var(--text-muted);
-      line-height: 1.35;
     }
 
-    /* Segmented Navigation Bar */
-    .tab-bar {
+    .header-status-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 11px;
+      background: #141f32;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--danger);
+      transition: background 0.2s;
+    }
+
+    .status-dot.online {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    /* Navigation Bar (5 tabs) */
+    .nav-tabs {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 6px;
       background: #141f32;
       padding: 5px;
       border-radius: 10px;
       border: 1px solid var(--border);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
-    .tab-btn {
+    .nav-tab-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       font-weight: 600;
-      padding: 9px 14px;
+      padding: 9px 12px;
       border-radius: 7px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 7px;
       transition: all 0.15s ease;
+      white-space: nowrap;
     }
 
-    .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+    .nav-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
 
-    .tab-btn.active {
+    .nav-tab-btn.active {
       background: #2b3952;
       color: #fff;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    /* Layout: Main content + persistent right ADB console */
+    .content-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 16px;
+      align-items: start;
+    }
 
-    /* Card Panels */
+    @media (max-width: 1024px) {
+      .content-layout { grid-template-columns: 1fr; }
+      .nav-tabs { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    }
+
+    .tab-section {
+      display: none;
+    }
+
+    .tab-section.active {
+      display: block;
+    }
+
+    /* Panels & Cards */
     .panel {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 18px 20px;
-      margin-bottom: 16px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
       box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.25);
     }
 
@@ -164,22 +219,21 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .panel-title {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: 700;
       color: #fff;
       display: flex;
       align-items: center;
       gap: 8px;
-      letter-spacing: -0.01em;
     }
 
     .panel-num {
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       font-weight: 700;
       background: #2b3952;
       color: var(--accent);
@@ -192,158 +246,33 @@
       border: 1px solid var(--border);
     }
 
-    /* Interactive Brand Switcher Pills */
-    .brand-pills {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .brand-pill {
-      background: #141f32;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 7px 13px;
-      border-radius: 8px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-
-    .brand-pill:hover {
-      color: #fff;
-      border-color: #475569;
-      background: #1c2b42;
-    }
-
-    .brand-pill.active {
-      background: var(--accent-dim);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    /* Breadcrumbs Path Box */
-    .path-flow {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
-      background: #141f32;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin: 12px 0;
-      font-size: 0.85rem;
-    }
-
-    .path-step {
-      background: #243247;
-      color: #e2e8f0;
-      padding: 3px 8px;
-      border-radius: 5px;
-      font-weight: 500;
-    }
-
-    .path-step.target {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      color: #6ee7b7;
-      font-weight: 700;
-    }
-
-    .path-arrow { color: var(--text-dim); font-size: 0.75rem; }
-
-    /* Steps List */
-    .steps-list {
-      list-style: none;
-      counter-reset: custom-counter;
-      margin: 12px 0;
-    }
-
-    .steps-list li {
-      counter-increment: custom-counter;
-      position: relative;
-      padding-left: 28px;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
-      color: #cbd5e1;
-    }
-
-    .steps-list li::before {
-      content: counter(custom-counter);
-      position: absolute;
-      left: 0;
-      top: 2px;
-      width: 18px;
-      height: 18px;
-      background: #243247;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      font-size: 0.72rem;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Notice Banner */
-    .note-box {
-      background: #141f32;
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: 6px;
-      padding: 10px 14px;
-      margin: 12px 0;
-      font-size: 0.85rem;
-      color: #cbd5e1;
-    }
-
-    .note-box.warn { border-left-color: var(--warning); background: #1c1f2e; }
-
-    /* Connection Test Toolbar */
-    .conn-bar {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      background: #141f32;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 10px 12px;
-      margin-top: 14px;
-    }
-
-    .input-ip {
+    /* Forms & Controls */
+    .input-ip, .select-custom {
       background: #0f172a;
       border: 1px solid var(--border);
       color: #fff;
       font-family: var(--font-mono);
       font-size: 0.88rem;
-      padding: 7px 12px;
-      border-radius: 6px;
+      padding: 8px 12px;
+      border-radius: 7px;
       outline: none;
-      min-width: 170px;
-      flex: 1;
+      transition: border 0.15s;
     }
 
-    .input-ip:focus { border-color: var(--accent); }
+    .input-ip:focus, .select-custom:focus {
+      border-color: var(--border-focus);
+    }
 
     .btn {
       font-size: 0.86rem;
       font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 6px;
+      padding: 8px 15px;
+      border-radius: 7px;
       border: 1px solid transparent;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       transition: all 0.15s ease;
       white-space: nowrap;
@@ -352,9 +281,7 @@
     .btn-primary {
       background: var(--primary);
       color: #fff;
-      border-color: rgba(255, 255, 255, 0.1);
     }
-
     .btn-primary:hover { background: var(--primary-hover); }
 
     .btn-secondary {
@@ -362,269 +289,294 @@
       border-color: var(--border);
       color: #e2e8f0;
     }
-
     .btn-secondary:hover {
       background: #2f4059;
       border-color: #475569;
     }
 
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+    .btn-success:hover { background: #059669; }
+
     .btn-danger {
       background: var(--danger-dim);
-      border-color: rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.4);
       color: #fca5a5;
     }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
 
-    .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
-
-    .btn-success {
-      background: var(--success-dim);
-      border-color: var(--success-border);
-      color: #6ee7b7;
-    }
-
-    .btn-success:hover { background: rgba(16, 185, 129, 0.2); }
-
-    /* Results */
-    .result-view {
-      display: none;
-      border-radius: 8px;
-      padding: 12px 14px;
-      margin-top: 12px;
-      font-size: 0.86rem;
-      animation: fadeIn 0.2s ease;
-    }
-
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    /* Action Tiles Grid */
-    .tiles-grid {
+    /* RAM & Diagnostics Grid */
+    .diag-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 10px;
-      margin-top: 12px;
+      margin: 12px 0;
     }
 
-    .tile-action {
+    .diag-card {
       background: #141f32;
       border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .diag-label {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .diag-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 2px;
+    }
+
+    .ram-bar-container {
+      background: #141f32;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+
+    .ram-bar-bg {
+      height: 8px;
+      background: #0f172a;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .ram-bar-fill {
+      height: 100%;
+      width: 65%;
+      background: linear-gradient(90deg, #10b981, #f59e0b);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* Package Checklist (Tab 2) */
+    .pkg-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #141f32;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      transition: border 0.15s;
+    }
+
+    .pkg-item:hover {
+      border-color: #475569;
+    }
+
+    .pkg-info {
+      flex: 1;
+    }
+
+    .pkg-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .pkg-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .pkg-ram {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Launchers Grid (Tab 3) */
+    .launchers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .launcher-card {
+      background: #141f32;
+      border: 2px solid var(--border);
       border-radius: 10px;
       padding: 14px;
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
       transition: all 0.15s ease;
       text-align: left;
     }
 
-    .tile-action:hover {
+    .launcher-card:hover {
       border-color: #475569;
-      background: #1c2b42;
-      transform: translateY(-1px);
+      background: #1a293e;
     }
 
-    .tile-title {
-      font-size: 0.92rem;
+    .launcher-card.selected {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .launcher-name {
       font-weight: 700;
+      font-size: 0.96rem;
       color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
-    .tile-desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    /* Live Dock Editor (Tab 3) */
-    .dock-config-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      background: #141f32;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 12px;
-    }
-
-    .segmented-count {
-      display: inline-flex;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 2px;
-      gap: 2px;
-    }
-
-    .seg-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.1s;
-    }
-
-    .seg-btn.active {
-      background: var(--accent);
-      color: #090e17;
-    }
-
-    .dock-rows {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-
-    .dock-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #141f32;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 12px;
-      transition: border 0.15s;
-    }
-
-    .dock-row:hover { border-color: #475569; }
-
-    .slot-idx {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 700;
-      background: #243247;
-      color: var(--accent);
-      width: 22px;
-      height: 22px;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .slot-select {
-      flex: 1;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      color: #fff;
-      font-size: 0.85rem;
-      padding: 6px 10px;
-      border-radius: 6px;
-      outline: none;
-      min-width: 200px;
-    }
-
-    .slot-custom-input {
-      flex: 1;
-      display: none;
-      background: #0f172a;
-      border: 1px solid var(--accent);
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      padding: 6px 10px;
-      border-radius: 6px;
-      outline: none;
-    }
-
-    .btn-row-action {
-      background: #243247;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .launcher-badge {
       font-size: 0.75rem;
-      flex-shrink: 0;
-      transition: all 0.1s;
+      color: var(--accent);
+      margin-top: 2px;
     }
 
-    .btn-row-action:hover {
-      background: #2f4059;
-      color: #fff;
-      border-color: #384d6e;
+    /* Wallpapers Gallery */
+    .wallpapers-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .btn-row-action.delete:hover {
-      background: var(--danger-dim);
-      color: #fca5a5;
-      border-color: rgba(239, 68, 68, 0.4);
+    .wall-thumb {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      aspect-ratio: 16/9;
+      background: #0f172a;
     }
 
-    /* Terminal Console */
-    .console-box {
+    .wall-thumb:hover {
+      border-color: var(--accent);
+    }
+
+    .wall-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wall-title {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(15, 23, 42, 0.85);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 6px;
+      text-align: center;
+    }
+
+    /* Right Column Console */
+    .console-panel {
       background: #0b1120;
       border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      height: 640px;
+    }
+
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .console-box {
+      flex: 1;
+      background: #070c18;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px 12px;
+      padding: 10px;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #94a3b8;
-      height: 120px;
       overflow-y: auto;
       user-select: text;
       line-height: 1.5;
+      white-space: pre-wrap;
     }
 
-    /* Modal Overlay */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(4px);
-      z-index: 9999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+    .console-input-bar {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
     }
 
-    .modal-box {
-      background: var(--panel);
+    .note-box {
+      background: #141f32;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      max-width: 600px;
-      width: 100%;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: 20px;
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.84rem;
+      color: #cbd5e1;
+      margin: 10px 0;
     }
 
-    .spinner {
-      display: inline-block;
-      width: 13px;
-      height: 13px;
-      border: 2px solid rgba(255,255,255,0.25);
-      border-radius: 50%;
-      border-top-color: #fff;
-      animation: spin 0.8s linear infinite;
+    .note-box.warn {
+      border-left-color: var(--warning);
+      background: #1c1f2e;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Apps Grid (Tab 5) */
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .app-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #141f32;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .app-card:hover {
+      border-color: #475569;
+    }
+
+    .app-card input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
 
     footer {
       display: flex;
       justify-content: space-between;
       color: var(--text-dim);
       font-size: 0.76rem;
-      margin-top: 24px;
-      padding-top: 14px;
+      margin-top: 20px;
+      padding-top: 12px;
       border-top: 1px solid var(--border);
     }
   </style>
@@ -632,1095 +584,892 @@
 <body>
 
   <div class="container">
-    <!-- Top Header with Capybara Mascot -->
+    <!-- Top Header -->
     <header>
       <div class="header-main">
         <img src="app_icon.png" onerror="this.onerror=null; this.src='data:image/png;base64,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';" class="app-logo" alt="Logo">
         <div class="header-text">
           <div class="brand-title">
             <h1>Smart TV Toolbox</h1>
-            <span class="tag">v2.0.0</span>
+            <span class="tag">v3.0</span>
           </div>
           <div class="header-desc">
-            Мульти-платформенный центр очистки, системного блокировщика рекламы и лаунчера CleanYourTV.
+            Кастомизированный центр оптимизации Smart TV, конструктор лаунчеров и обход замедлений YouTube
           </div>
         </div>
       </div>
-      <div id="quickDnsStatus" class="tag" style="background: transparent; border-color: var(--border); color: var(--text-dim);">
-        DNS: не проверено
+
+      <div class="header-status-group">
+        <div class="status-badge" id="headerDeviceBadge">
+          <span id="connDot" class="status-dot"></span>
+          <span id="connStatusText">ТВ не подключен</span>
+        </div>
+        <div class="status-badge" id="headerRamBadge" style="display: none;">
+          ОЗУ: —
+        </div>
+        <button id="btnQuickBackup" class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem;" onclick="triggerQuickBackup()">
+          💾 Слепок
+        </button>
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="tab-bar">
-      <button class="tab-btn active" onclick="switchMainTab('tab-yaos', this)">
-        <span>📺</span> <span>1. Яндекс ТВ (YaOS)</span>
+    <!-- Navigation Tabs (5 Tabs) -->
+    <nav class="nav-tabs">
+      <button class="nav-tab-btn active" data-tab="tab-connect" onclick="switchTab('tab-connect', this)">
+        <span>📡</span> <span>1. Подключение и ОЗУ</span>
       </button>
-      <button class="tab-btn" onclick="switchMainTab('tab-generic', this)">
-        <span>🌐</span> <span>2. Android TV / Google TV</span>
+      <button class="nav-tab-btn" data-tab="tab-debloat" onclick="switchTab('tab-debloat', this)">
+        <span>🧹</span> <span>2. Кастомная очистка</span>
       </button>
-      <button class="tab-btn" onclick="switchMainTab('tab-tools', this)">
-        <span>🛠️</span> <span>3. Инструменты 2.0</span>
+      <button class="nav-tab-btn" data-tab="tab-launchers" onclick="switchTab('tab-launchers', this)">
+        <span>🍎</span> <span>3. Лаунчеры и Обои</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="tab-youtube" onclick="switchTab('tab-youtube', this)">
+        <span>⚡</span> <span>4. SmartTube и Обход</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="tab-apps" onclick="switchTab('tab-apps', this)">
+        <span>📦</span> <span>5. Каталог APK</span>
       </button>
     </nav>
 
-    <!-- ==================== TAB 1: YAOS ==================== -->
-    <div id="tab-yaos" class="tab-content active">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="panel-num">1</span>
-            <span>Включение отладки (Сервисное меню CVTE)</span>
-          </div>
-          <span class="tag">Tuvio / DEXP / Hartens</span>
-        </div>
+    <!-- Main Two-Column Layout -->
+    <div class="content-layout">
 
-        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px;">
-          В телевизорах на Яндекс ТВ стандартная настройка отладки скрыта вендором. Активируется через заводскую сервисную комбинацию пульта:
-        </p>
+      <!-- LEFT: TAB SECTIONS -->
+      <div class="tab-contents-container">
 
-        <div class="path-flow">
-          <span class="path-step">Зажать кнопку Menu (1-2 сек)</span>
-          <span class="path-arrow">➔</span>
-          <span class="path-step">Влево</span>
-          <span class="path-arrow">➔</span>
-          <span class="path-step">Вверх</span>
-          <span class="path-arrow">➔</span>
-          <span class="path-step">Влево</span>
-          <span class="path-arrow">➔</span>
-          <span class="path-step">Вверх</span>
-          <span class="path-arrow">➔</span>
-          <span class="path-step">Назад</span>
-          <span class="path-arrow">➔</span>
-          <span class="path-step target">Factory Menu ➔ other options ➔ ADB: ON</span>
-        </div>
+        <!-- ==================== TAB 1: CONNECT & DIAG ==================== -->
+        <section id="tab-connect" class="tab-section active">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-num">1</span>
+                <span>Подключение к телевизору по сети</span>
+              </div>
+              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem;" onclick="scanSubnet()">
+                🔍 Автопоиск ТВ
+              </button>
+            </div>
 
-        <div class="note-box warn">
-          <strong>Внимание:</strong> В сервисном меню изменяйте только пункт <code>ADB ➔ ON</code> и при наличии <code>USB Mode ➔ Device</code>. Не прикасайтесь к Panel Type и Shipping Init.
-        </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+              <input type="text" id="inputTvIp" class="input-ip" placeholder="IP адрес (напр. 192.168.1.50)" style="flex: 2; min-width: 170px;">
+              <input type="number" id="inputTvPort" class="input-ip" value="5555" style="width: 85px;">
+              <button id="btnConnectTv" class="btn btn-primary" onclick="connectTv()">
+                <span>📡 Подключиться</span>
+              </button>
+              <button id="btnTogglePairing" class="btn btn-secondary" onclick="togglePairingBox()">
+                <span>🔑 Сопряжение (Код)</span>
+              </button>
+            </div>
 
-        <!-- Connection Bar -->
-        <div class="conn-bar">
-          <label style="font-size: 0.84rem; color: var(--text-muted);">IP телевизора:</label>
-          <input type="text" id="yaosIpInput" class="input-ip" value="Автопоиск" placeholder="Автопоиск или 192.168.x.x">
-          <button id="btnCheckYaos" class="btn btn-primary" onclick="testConnection('yaos')">
-            <span>📡 Проверить связь</span>
-          </button>
-        </div>
+            <!-- Wireless Pairing (Android 11+) -->
+            <div id="pairingBox" style="display: none; background: #141f32; border: 1px dashed var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+              <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-bottom: 6px;">
+                Сопряжение Wireless Debugging (для Android 11–14):
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+                В настройках разработчика выберите «Сопряжение с помощью кода подключения»:
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="number" id="inputPairPort" class="input-ip" placeholder="Порт сопряжения (напр. 37841)" style="flex: 1;">
+                <input type="text" id="inputPairCode" class="input-ip" placeholder="6-значный код сопряжения" style="flex: 1;">
+                <button id="btnPairDevice" class="btn btn-success" onclick="pairWirelessDevice()">
+                  <span>Подтвердить сопряжение</span>
+                </button>
+              </div>
+            </div>
 
-        <div id="yaosConnResult" class="result-view"></div>
-      </div>
+            <!-- Diagnostics Card -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+              <span style="font-size: 0.86rem; font-weight: 700; color: #cbd5e1;">Диагностика системы и аппаратного шасси:</span>
+              <button id="btnRefreshDiag" class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.74rem;" onclick="refreshDiagnostics()">
+                🔄 Обновить
+              </button>
+            </div>
 
-      <!-- Actions YaOS -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="panel-num">2</span>
-            <span>Оптимизация и установка приложений</span>
-          </div>
-        </div>
+            <div class="diag-grid">
+              <div class="diag-card">
+                <div class="diag-label">Вендор / Бренд</div>
+                <div id="diagBrand" class="diag-value">—</div>
+              </div>
+              <div class="diag-card">
+                <div class="diag-label">Android OS</div>
+                <div id="diagAndroidVer" class="diag-value">—</div>
+              </div>
+              <div class="diag-card">
+                <div class="diag-label">Профиль системы</div>
+                <div id="diagProfile" class="diag-value">—</div>
+              </div>
+              <div class="diag-card">
+                <div class="diag-label">ZRAM Swap</div>
+                <div id="diagZram" class="diag-value">—</div>
+              </div>
+            </div>
 
-        <div class="tiles-grid">
-          <div class="tile-action" onclick="openInstallModal()">
-            <div class="tile-title"><span>📥</span> <span>1. Подгрузка приложений</span></div>
-            <div class="tile-desc">Пакетная установка Топ-6: Zona, HDrezka TV, Lampa, Spotify, Happ и File Manager+.</div>
-          </div>
+            <!-- RAM Bar -->
+            <div class="ram-bar-container">
+              <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+                <span style="color: var(--text-muted);">Загрузка оперативной памяти (RAM):</span>
+                <span id="ramBarLabel" style="font-family: var(--font-mono); font-weight: 700; color: #fff;">—</span>
+              </div>
+              <div class="ram-bar-bg">
+                <div id="ramProgressBar" class="ram-bar-fill" style="width: 0%;"></div>
+              </div>
+            </div>
 
-          <div class="tile-action" onclick="runAction('light_debloat', 'yaos')">
-            <div class="tile-title"><span>⚡</span> <span>2. Очистить рекламу</span></div>
-            <div class="tile-desc">Заморозка рекламных трекеров advid и фонового браузера. Родной лаунчер и Алиса остаются.</div>
-          </div>
-
-          <div class="tile-action" onclick="runAction('full_debloat', 'yaos')">
-            <div class="tile-title" style="color: #6ee7b7;"><span>🚀</span> <span>3. Полный деблоат + CleanYourTV</span></div>
-            <div class="tile-desc">Заморозка тяжелой оболочки Яндекса и переход на ультралегкий Apple TV лаунчер.</div>
-          </div>
-
-          <div class="tile-action" onclick="runAction('restore', 'yaos')">
-            <div class="tile-title" style="color: #fca5a5;"><span>🔄</span> <span>4. Откат: Заводской Яндекс ТВ</span></div>
-            <div class="tile-desc">Мгновенная разморозка всех служб и возврат стандартного домашнего экрана.</div>
-          </div>
-        </div>
-
-        <div id="yaosActionStatus" class="result-view"></div>
-      </div>
-    </div>
-
-    <!-- ==================== TAB 2: ANDROID TV / GOOGLE TV ==================== -->
-    <div id="tab-generic" class="tab-content">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="panel-num">1</span>
-            <span>Шпаргалка: Включение отладки по маркам ТВ</span>
-          </div>
-          <span class="tag" id="currentBrandBadge">Haier</span>
-        </div>
-
-        <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 10px;">
-          Выберите вашу марку телевизора, чтобы увидеть точный путь в меню и специфику настройки:
-        </p>
-
-        <!-- Interactive Brand Switcher -->
-        <div class="brand-pills">
-          <button class="brand-pill active" onclick="selectBrandGuide('haier', this)">
-            <span>🏢</span> <span>Haier</span>
-          </button>
-          <button class="brand-pill" onclick="selectBrandGuide('xiaomi', this)">
-            <span>📱</span> <span>Xiaomi / Redmi</span>
-          </button>
-          <button class="brand-pill" onclick="selectBrandGuide('tcl', this)">
-            <span>📺</span> <span>TCL / iFFALCON</span>
-          </button>
-          <button class="brand-pill" onclick="selectBrandGuide('sony', this)">
-            <span>🌐</span> <span>Sony / Philips</span>
-          </button>
-          <button class="brand-pill" onclick="selectBrandGuide('chromecast', this)">
-            <span>📡</span> <span>Google TV / Chromecast</span>
-          </button>
-          <button class="brand-pill" onclick="selectBrandGuide('hisense', this)">
-            <span>🖥️</span> <span>Hisense</span>
-          </button>
-          <button class="brand-pill" onclick="selectBrandGuide('universal', this)">
-            <span>⚙️</span> <span>Универсальная</span>
-          </button>
-        </div>
-
-        <!-- DYNAMIC GUIDE CONTAINER (Replaces itself on brand click) -->
-        <div id="brandGuideContainer">
-          <!-- Will be rendered by JavaScript -->
-        </div>
-
-        <!-- Connection Bar Generic -->
-        <div class="conn-bar" style="margin-top: 16px;">
-          <label style="font-size: 0.84rem; color: var(--text-muted);">IP телевизора:</label>
-          <input type="text" id="genericIpInput" class="input-ip" value="Автопоиск" placeholder="например, 192.168.1.50">
-          <button id="btnCheckGeneric" class="btn btn-primary" onclick="testConnection('generic')">
-            <span>📡 Проверить соединение с ТВ</span>
-          </button>
-        </div>
-
-        <div id="genericConnResult" class="result-view"></div>
-      </div>
-
-      <!-- Actions Generic -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="panel-num">2</span>
-            <span>Оптимизация выбранной платформы</span>
-          </div>
-        </div>
-
-        <div class="tiles-grid">
-          <div class="tile-action" onclick="openInstallModal()">
-            <div class="tile-title"><span>📥</span> <span>1. Подгрузка приложений</span></div>
-            <div class="tile-desc">Установка медиа-пакета (Zona, HDrezka TV, Lampa, Spotify, Happ, File Manager+).</div>
-          </div>
-
-          <div class="tile-action" onclick="runBrandDebloat('light')">
-            <div class="tile-title"><span>⚡</span> <span>2. Очистить рекламу и рекомендации</span></div>
-            <div class="tile-desc">Заморозка промо-каналов, фоновых трекеров вендора и Google SetupWraith.</div>
-          </div>
-
-          <div class="tile-action" onclick="runBrandDebloat('full')">
-            <div class="tile-title" style="color: #6ee7b7;"><span>🚀</span> <span>3. Полный деблоат + CleanYourTV</span></div>
-            <div class="tile-desc">Заморозка тяжелого Google LauncherX / MiTV Home и перевод на ультралегкий лаунчер.</div>
-          </div>
-
-          <div class="tile-action" onclick="runBrandDebloat('restore')">
-            <div class="tile-title" style="color: #fca5a5;"><span>🔄</span> <span>4. Откат: Стандартная система</span></div>
-            <div class="tile-desc">Разморозка всех заводских пакетов и возврат оригинального стокового лаунчера.</div>
-          </div>
-        </div>
-
-        <div id="genericActionStatus" class="result-view"></div>
-      </div>
-    </div>
-
-    <!-- ==================== TAB 3: TOOLS 2.0 ==================== -->
-    <div id="tab-tools" class="tab-content">
-      
-      <!-- TOOL 1: ADGUARD DNS -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="panel-num">🛡️</span>
-            <span>Системная блокировка рекламы (AdGuard Private DNS)</span>
-          </div>
-          <span id="dnsBadgeStatus" class="tag">⚪ Не проверено</span>
-        </div>
-
-        <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 12px;">
-          Блокирует баннеры и рекламные видео в онлайн-кинотеатрах и браузерах на системном уровне Android 9+. Не требует фоновых VPN-приложений и не нагружает ОЗУ телевизора.
-        </p>
-
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn btn-primary" onclick="setDns(true)">
-            <span>🛡️ Включить блокировку рекламы (AdGuard DNS)</span>
-          </button>
-          <button class="btn btn-secondary" onclick="setDns(false)">
-            <span>⚪ Выключить (Стандартный DNS)</span>
-          </button>
-          <button class="btn btn-secondary" onclick="checkDnsStatus()">
-            <span>🔄 Проверить статус</span>
-          </button>
-        </div>
-
-        <div id="dnsResultView" class="result-view"></div>
-      </div>
-
-      <!-- TOOL 2: DOCK EDITOR -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="panel-num">🍎</span>
-            <span>Редактор нижнего дока CleanYourTV (Apple TV Style)</span>
-          </div>
-          <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem;" onclick="loadTvPackages()">
-            <span>🔄 Загрузить установленные с ТВ</span>
-          </button>
-        </div>
-
-        <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 12px;">
-          Настройте количество и точный порядок приложений в нижней панели лаунчера CleanYourTV:
-        </p>
-
-        <!-- Dock Toolbar -->
-        <div class="dock-config-bar">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 0.86rem; font-weight: 600; color: #cbd5e1;">Количество плиток в доке:</span>
-            <div class="segmented-count">
-              <button class="seg-btn" onclick="setDockCount(4)">4</button>
-              <button class="seg-btn" onclick="setDockCount(5)">5</button>
-              <button class="seg-btn active" id="segCount6" onclick="setDockCount(6)">6</button>
-              <button class="seg-btn" id="segCount7" onclick="setDockCount(7)">7</button>
-              <button class="seg-btn" id="segCount8" onclick="setDockCount(8)">8</button>
+            <!-- Quick Instructions Box -->
+            <div class="note-box" style="margin-top: 14px;">
+              <strong>ℹ️ Как включить отладку:</strong>
+              <div style="margin-top: 4px; font-size: 0.82rem; line-height: 1.4;">
+                • <strong>Яндекс ТВ / CVTE:</strong> Зажмите <code>Menu</code> (1-2 сек) ➔ <code>Влево</code> ➔ <code>Вверх</code> ➔ <code>Влево</code> ➔ <code>Вверх</code> ➔ <code>Назад</code> ➔ Factory Menu ➔ other options ➔ <strong>ADB: ON</strong>.<br/>
+                • <strong>Haier / Xiaomi / TCL:</strong> Настройки ➔ Об устройстве ➔ <strong>Номер сборки</strong> (кликнуть 7 раз) ➔ Для разработчиков ➔ <strong>Отладка по USB: ON</strong>.
+              </div>
             </div>
           </div>
+        </section>
 
-          <div style="display: flex; gap: 6px;">
-            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem;" onclick="addDockSlot()">
-              <span>＋ Добавить слот</span>
+        <!-- ==================== TAB 2: CUSTOM DEBLOAT ==================== -->
+        <section id="tab-debloat" class="tab-section">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-num">2</span>
+                <span>Попакетный конструктор очистки ТВ</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 0.84rem; color: var(--text-muted);">Профиль:</span>
+                <select id="selectBrandProfile" class="select-custom" onchange="onProfileChange()">
+                  <option value="yaos">Яндекс ТВ (YaOS / CVTE)</option>
+                  <option value="salut">Салют ТВ (StarOS)</option>
+                  <option value="haier">Haier (MatrixTV / uSmart)</option>
+                  <option value="xiaomi">Xiaomi / Redmi (PatchWall)</option>
+                  <option value="tcl">TCL / iFFALCON</option>
+                  <option value="googletv">Android TV / Google TV</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Presets & RAM Saved Summary -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: #141f32; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button id="btnPresetRecommended" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="applyPreset('recommended')">
+                  ⭐ Рекомендуемое
+                </button>
+                <button id="btnPresetAllSafe" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="applyPreset('all')">
+                  Выбрать все
+                </button>
+                <button id="btnPresetClear" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="applyPreset('clear')">
+                  Снять выбор
+                </button>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 0.82rem; color: var(--text-muted);">Прогноз экономии:</span>
+                <span id="estimatedRamSaved" class="pkg-ram" style="font-size: 0.82rem;">0 МБ ОЗУ</span>
+              </div>
+            </div>
+
+            <!-- Interactive Package List -->
+            <div id="packageListContainer" style="max-height: 380px; overflow-y: auto; padding-right: 4px;">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- Hardware Guard Warning -->
+            <div class="note-box" style="margin-top: 10px;">
+              🛡️ <strong>Hardware Guard (tv-cleaner):</strong> Критические службы HDMI, ТВ-тюнера и кнопок пульта защищены аппаратным стоп-листом и заблокированы от случайного отключения.
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px;">
+              <button id="btnApplyDebloat" class="btn btn-primary" onclick="applyDebloat()">
+                <span>🚀 Применить безопасное отключение</span>
+              </button>
+              <button id="btnRestoreFactory" class="btn btn-danger" onclick="restoreFactoryState()">
+                <span>🔄 Откат: Включить всё назад</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 3: LAUNCHERS & WALLPAPERS ==================== -->
+        <section id="tab-launchers" class="tab-section">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-num">3</span>
+                <span>Выбор домашнего экрана и обоев</span>
+              </div>
+            </div>
+
+            <!-- Launcher Selection Grid -->
+            <div id="launcherCardsGrid" class="launchers-grid">
+              <div class="launcher-card selected" data-launcher="moytv" onclick="selectLauncher('moytv')">
+                <div class="launcher-name">Мой ТВ (Moy-TV)</div>
+                <div class="launcher-badge">Дашборд погоды и HDMI</div>
+              </div>
+              <div class="launcher-card" data-launcher="cleanyourtv" onclick="selectLauncher('cleanyourtv')">
+                <div class="launcher-name">CleanYourTV</div>
+                <div class="launcher-badge">Apple TV стиль (~500 КБ)</div>
+              </div>
+              <div class="launcher-card" data-launcher="projectivy" onclick="selectLauncher('projectivy')">
+                <div class="launcher-name">Projectivy</div>
+                <div class="launcher-badge">Гибкие каналы и HDMI</div>
+              </div>
+              <div class="launcher-card" data-launcher="flauncher" onclick="selectLauncher('flauncher')">
+                <div class="launcher-name">FLauncher</div>
+                <div class="launcher-badge">Классический Open-Source</div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.86rem; cursor: pointer;">
+                <input type="checkbox" id="chkDisableStockLauncher" checked>
+                <span>Отключить штатную тяжелую оболочку ТВ</span>
+              </label>
+              <button id="btnInstallLauncher" class="btn btn-primary" style="margin-left: auto;" onclick="installSelectedLauncher()">
+                🚀 Установить и активировать
+              </button>
+            </div>
+
+            <!-- MoyTV Config Panel -->
+            <div id="panelConfigMoyTv" style="background: #141f32; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+              <div style="font-weight: 700; font-size: 0.9rem; color: #fff; margin-bottom: 8px;">
+                ⚙️ Настройки лаунчера «Мой ТВ»:
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+                <div>
+                  <div style="font-size: 0.74rem; color: var(--text-dim);">ГОРОД ДЛЯ ПОГОДЫ</div>
+                  <input type="text" id="moyCityInput" class="input-ip" value="Москва" style="width: 100%;">
+                </div>
+                <div>
+                  <div style="font-size: 0.74rem; color: var(--text-dim);">РУБРИКА НОВОСТЕЙ</div>
+                  <select id="moyNewsCategory" class="select-custom" style="width: 100%;">
+                    <option value="general">Главные новости</option>
+                    <option value="technology">Технологии</option>
+                    <option value="movies">Кино и культура</option>
+                  </select>
+                </div>
+                <div>
+                  <div style="font-size: 0.74rem; color: var(--text-dim);">ПОДСВЕТКА ЭКРАНА</div>
+                  <select id="moyBacklightPreset" class="select-custom" style="width: 100%;">
+                    <option value="auto">Авто / Стандартная</option>
+                    <option value="eco">Эко / Мягкая (70%)</option>
+                    <option value="cinema">Кино / Теплая</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px;">
+                <input type="text" id="hdmi1Name" class="input-ip" placeholder="Имя HDMI 1 (ПК/PS5)" value="PlayStation 5">
+                <input type="text" id="hdmi2Name" class="input-ip" placeholder="Имя HDMI 2 (Приставка)" value="ТВ Бокс">
+                <input type="text" id="hdmi3Name" class="input-ip" placeholder="Имя HDMI 3 (ПК)" value="Компьютер">
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <a id="moyRemoteUrl" href="#" target="_blank" style="font-size: 0.8rem; color: var(--accent); text-decoration: none;">
+                  🌐 Открыть веб-пульт Moy-TV (порт 8080)
+                </a>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="saveMoyTvSettings()">
+                  💾 Сохранить настройки
+                </button>
+              </div>
+            </div>
+
+            <!-- CleanYourTV Config Panel -->
+            <div id="panelConfigDock" style="display: none; background: #141f32; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+              <div style="font-weight: 700; font-size: 0.9rem; color: #fff; margin-bottom: 8px;">
+                🍎 Настройка слотов дока CleanYourTV:
+              </div>
+              <div id="dockAppsSelector" style="display: flex; flex-direction: column; gap: 6px;">
+                <!-- Populated dynamically -->
+              </div>
+              <button id="btnPushLauncherConfig" class="btn btn-secondary" style="margin-top: 8px; padding: 4px 10px; font-size: 0.8rem;" onclick="saveCleanYourTvDock()">
+                💾 Применить док на ТВ
+              </button>
+            </div>
+
+            <!-- Wallpapers Section -->
+            <div style="font-weight: 700; font-size: 0.9rem; color: #fff; margin-top: 14px; margin-bottom: 8px;">
+              🖼️ Встроенная коллекция ТВ-обоев (1080p / 4K):
+            </div>
+            <div id="wallpaperGalleryGrid" class="wallpapers-grid">
+              <div class="wall-thumb" onclick="sendPresetWallpaper('webb_nebula.jpg')">
+                <div style="background: linear-gradient(135deg, #1e1b4b, #581c87); width: 100%; height: 100%;"></div>
+                <div class="wall-title">Webb Космос</div>
+              </div>
+              <div class="wall-thumb" onclick="sendPresetWallpaper('deep_ocean.jpg')">
+                <div style="background: linear-gradient(135deg, #0369a1, #082f49); width: 100%; height: 100%;"></div>
+                <div class="wall-title">Океан</div>
+              </div>
+              <div class="wall-thumb" onclick="sendPresetWallpaper('aurora_night.jpg')">
+                <div style="background: linear-gradient(135deg, #064e3b, #042f2e); width: 100%; height: 100%;"></div>
+                <div class="wall-title">Аврора</div>
+              </div>
+              <div class="wall-thumb" onclick="sendPresetWallpaper('oled_carbon.jpg')">
+                <div style="background: #0f172a; width: 100%; height: 100%;"></div>
+                <div class="wall-title">OLED Carbon</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 12px;">
+              <button id="btnUploadCustomWallpaper" class="btn btn-secondary" onclick="uploadCustomWallpaper()">
+                📁 Загрузить свою картинку с компьютера в лаунчер ТВ
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 4: SMARTTUBE & BYPASS ==================== -->
+        <section id="tab-youtube" class="tab-section">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-num">4</span>
+                <span>SmartTube и обход замедлений YouTube</span>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer;">
+                <input type="checkbox" id="chkInstallSmartTube" checked>
+                <span><strong>Установить SmartTube Stable</strong> (без рекламы, SponsorBlock, 4K HDR)</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer;">
+                <input type="checkbox" id="chkForceAvcCodec" checked>
+                <span><strong>Принудительный кодек AVC/H.264</strong> (рекомендуется для слабых ТВ процессоров)</span>
+              </label>
+            </div>
+
+            <!-- Bypass Mode Selector -->
+            <div style="font-weight: 700; font-size: 0.88rem; color: #fff; margin-bottom: 6px;">
+              Метод обхода замедлений и буферизации:
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 12px;">
+              <button class="btn btn-secondary bypass-mode-btn active" data-bypass="byedpi" onclick="selectBypassMode('byedpi', this)">
+                ⚡ ByeDPI на ТВ
+              </button>
+              <button class="btn btn-secondary bypass-mode-btn" data-bypass="custom_proxy" onclick="selectBypassMode('custom_proxy', this)">
+                🌐 Внешний Прокси
+              </button>
+              <button class="btn btn-secondary bypass-mode-btn" data-bypass="dns_only" onclick="selectBypassMode('dns_only', this)">
+                🛡️ Private DNS
+              </button>
+              <button class="btn btn-secondary bypass-mode-btn" data-bypass="none" onclick="selectBypassMode('none', this)">
+                ✖️ Без обхода
+              </button>
+            </div>
+
+            <!-- ByeDPI Args Box -->
+            <div id="boxByeDpiArgs" style="background: #141f32; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+              <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 6px;">
+                Аргументы сплита пакетов ByeDPI:
+              </div>
+              <input type="text" id="inputByeDpiArgs" class="input-ip" value="--split 1+s --disorder 3 --ttl 5" style="width: 100%; margin-bottom: 8px;">
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="btn btn-secondary dpi-preset-btn" style="padding: 3px 8px; font-size: 0.74rem;" onclick="setDpiPreset('--split 1+s --disorder 3 --ttl 5')">
+                  Пресет 1 (Стандарт)
+                </button>
+                <button class="btn btn-secondary dpi-preset-btn" style="padding: 3px 8px; font-size: 0.74rem;" onclick="setDpiPreset('--split 2 --fake -1 --ttl 4')">
+                  Пресет 2 (Агрессивный)
+                </button>
+                <button class="btn btn-secondary dpi-preset-btn" style="padding: 3px 8px; font-size: 0.74rem;" onclick="setDpiPreset('--split 1 --oob')">
+                  Пресет 3 (OOB)
+                </button>
+              </div>
+            </div>
+
+            <!-- Custom Proxy Box -->
+            <div id="boxCustomProxy" style="display: none; background: #141f32; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+              <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 6px;">
+                Параметры SOCKS5 / HTTP прокси:
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="inputProxyHost" class="input-ip" placeholder="Хост (напр. 192.168.1.1)" value="127.0.0.1" style="flex: 2;">
+                <input type="number" id="inputProxyPort" class="input-ip" placeholder="Порт" value="1080" style="flex: 1;">
+              </div>
+            </div>
+
+            <!-- DNS Note -->
+            <div id="boxDnsWarning" class="note-box" style="display: none;">
+              🛡️ Будет включен системный <strong>AdGuard Private DNS</strong> (<code>dns.adguard-dns.com</code>) на уровне Android для блокировки видеорекламы и трекеров без сторонних VPN.
+            </div>
+
+            <button id="btnApplyYoutubeSetup" class="btn btn-primary" style="margin-top: 8px;" onclick="applyYoutubeConfig()">
+              🚀 Применить конфигурацию YouTube на ТВ
             </button>
-            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem;" onclick="resetDockToTop6()">
-              <span>Сброс к Топ-6</span>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 5: APPS CATALOG ==================== -->
+        <section id="tab-apps" class="tab-section">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-num">5</span>
+                <span>Каталог медиа-приложений</span>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.78rem;" onclick="selectTop6Apps()">
+                  ⭐ Топ-6
+                </button>
+                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.78rem;" onclick="toggleAllApps(true)">
+                  Выбрать все
+                </button>
+              </div>
+            </div>
+
+            <div id="appsCatalogGrid" class="apps-grid">
+              <label class="app-card">
+                <input type="checkbox" value="zona" checked>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.86rem; color: #fff;">Zona TV</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Фильмы и сериалы</div>
+                </div>
+              </label>
+
+              <label class="app-card">
+                <input type="checkbox" value="hdrezka" checked>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.86rem; color: #fff;">HDRezka TV</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Озвучки и релизы</div>
+                </div>
+              </label>
+
+              <label class="app-card">
+                <input type="checkbox" value="lampa" checked>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.86rem; color: #fff;">LAMPA</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Торрент-плеер</div>
+                </div>
+              </label>
+
+              <label class="app-card">
+                <input type="checkbox" value="smarttube" checked>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.86rem; color: #fff;">SmartTube</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">YouTube без рекламы</div>
+                </div>
+              </label>
+
+              <label class="app-card">
+                <input type="checkbox" value="filemanager" checked>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.86rem; color: #fff;">File Manager+</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Файловый менеджер</div>
+                </div>
+              </label>
+
+              <label class="app-card">
+                <input type="checkbox" value="happ" checked>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.86rem; color: #fff;">Happ Proxy</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Проксирование трафика</div>
+                </div>
+              </label>
+
+              <label class="app-card">
+                <input type="checkbox" value="spotify">
+                <div>
+                  <div style="font-weight: 700; font-size: 0.86rem; color: #fff;">Spotify TV</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Музыка на ТВ</div>
+                </div>
+              </label>
+
+              <label class="app-card">
+                <input type="checkbox" value="byedpi">
+                <div>
+                  <div style="font-weight: 700; font-size: 0.86rem; color: #fff;">ByeDPI TV</div>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">Сплит пакетов DPI</div>
+                </div>
+              </label>
+            </div>
+
+            <button id="btnInstallSelectedApps" class="btn btn-primary" onclick="installSelectedApps()">
+              🚀 Установить выбранные приложения на ТВ
             </button>
           </div>
-        </div>
+        </section>
 
-        <!-- Dynamic Dock Slots List -->
-        <div id="dockRowsContainer" class="dock-rows">
-          <!-- Dynamically populated by renderDockRows() -->
-        </div>
+      </div>
 
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px;">
-          <button class="btn btn-success" onclick="applyDockConfig()">
-            <span>💾 Применить порядок на телевизоре</span>
+      <!-- RIGHT: LIVE ADB CONSOLE -->
+      <div class="console-panel">
+        <div class="console-header">
+          <div style="font-size: 0.86rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+            <span>💻</span> <span>Журнал операций (ADB)</span>
+          </div>
+          <button id="btnClearLog" class="btn btn-secondary" style="padding: 2px 7px; font-size: 0.72rem;" onclick="clearLog()">
+            Очистить
           </button>
-          <button class="btn btn-secondary" onclick="switchLauncherAction('cleanyourtv')">
-            <span>🍎 Сделать CleanYourTV основным экраном</span>
+        </div>
+
+        <div id="adbConsoleOutput" class="console-box">[*] Smart TV Toolbox v3.0 инициализирован.
+[*] Готов к подключению к ТВ по локальной сети...</div>
+
+        <div class="console-input-bar">
+          <input type="text" id="inputRawAdb" class="input-ip" placeholder="adb shell getprop..." style="flex: 1; font-size: 0.78rem;" onkeydown="if(event.key==='Enter') sendRawAdb();">
+          <button id="btnSendRawAdb" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.78rem;" onclick="sendRawAdb()">
+            Отправить
           </button>
         </div>
-
-        <div id="dockResultView" class="result-view"></div>
       </div>
 
-      <!-- TOOL 3: CUSTOM APK -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="panel-num">📦</span>
-            <span>Установка любого своего APK-файла</span>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-          <input type="text" id="customApkPath" class="input-ip" placeholder="Выберите .apk файл на компьютере...">
-          <button class="btn btn-secondary" onclick="browseApk()">📁 Обзор...</button>
-          <button class="btn btn-primary" onclick="installApk()">🚀 Установить на ТВ</button>
-        </div>
-
-        <div id="customApkResult" class="result-view"></div>
-      </div>
-    </div>
-
-    <!-- ==================== CONSOLE LOG ==================== -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title" style="font-size: 0.95rem;">
-          <span style="color: var(--text-dim);">●</span>
-          <span>Журнал операций (ADB Console)</span>
-        </div>
-        <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.75rem;" onclick="clearLog()">Очистить</button>
-      </div>
-      <div id="consoleLog" class="console-box">[*] Smart TV Toolbox v2.0 готов. Подключите ТВ или выберите операцию...</div>
-    </div>
-
-    <!-- MODAL FOR APPS INSTALLATION -->
-    <div id="installModal" class="modal-overlay" onclick="closeInstallModalOnBackdrop(event)">
-      <div class="modal-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
-          <div style="font-weight: 700; font-size: 1.05rem; color: #fff;">📥 Подгрузка приложений на ТВ</div>
-          <button style="background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="closeInstallModal()">&times;</button>
-        </div>
-
-        <div class="note-box" style="margin-bottom: 12px;">
-          <strong>⭐ Топ-набор (6 приложений):</strong> Zona, HDrezka TV, LAMPA, Spotify TV, Happ и File Manager+.
-          <div style="margin-top: 8px;">
-            <button class="btn btn-primary" onclick="runPreset('top6')">🚀 Установить Топ-6 в 1 клик</button>
-          </div>
-        </div>
-
-        <div class="note-box" style="margin-bottom: 12px;">
-          <strong>📦 Базовый набор (5 приложений):</strong> Happ, HDrezka TV, Zona, File Manager+, SmartTube.
-          <div style="margin-top: 8px;">
-            <button class="btn btn-secondary" onclick="runPreset('basic')">Установить базовый набор</button>
-          </div>
-        </div>
-
-        <div style="text-align: right; margin-top: 14px;">
-          <button class="btn btn-secondary" onclick="closeInstallModal()">Закрыть</button>
-        </div>
-      </div>
     </div>
 
     <footer>
-      <span>Smart TV Toolbox v2.0.0</span>
-      <span>Smart TV Toolbox</span>
+      <span>Smart TV Toolbox v3.0 • Open Source</span>
+      <span>Jipok/tv-cleaner • andrewm8888/moy-tv • by-sonic/chistytv</span>
     </footer>
   </div>
 
   <script>
     // Global State
-    let activeTvIp = null;
-    let selectedBrand = 'haier';
-    let installedTvPackages = [];
+    let currentBypassMode = 'byedpi';
+    let currentSelectedLauncher = 'moytv';
+    let catalogPackages = {};
 
-    // App Catalog
-    const CATALOG_APPS = [
-      { pkg: "mobi.zona", name: "⚡ Zona (Кино и сериалы)" },
-      { pkg: "com.falcofemoralis.hdrezkaapp", name: "🎬 HDrezka TV (Фильмы и озвучки)" },
-      { pkg: "ru.twicker.lampa", name: "🎥 LAMPA (Медиаплеер и торренты)" },
-      { pkg: "com.spotify.tv.android", name: "🎵 Spotify TV (Музыка)" },
-      { pkg: "su.happ.proxyutility", name: "📱 Happ (Прокси-утилита)" },
-      { pkg: "com.alphainventor.filemanager", name: "📂 File Manager + (Файлы)" },
-      { pkg: "ru.rutube.app", name: "📺 RuTube (Видеохостинг)" },
-      { pkg: "com.vk.tv", name: "🔵 VK Видео (Клипы и фильмы)" },
-      { pkg: "de.benzac.msx", name: "🌐 Media Station X (MSX портал)" },
-      { pkg: "com.teamsmart.videomanager.tv", name: "📺 SmartTube (YouTube без рекламы)" },
-      { pkg: "com.yandex.tv.kinopoisk", name: "🍿 Кинопоиск" },
-      { pkg: "org.videolan.vlc", name: "🎬 VLC медиаплеер" },
-      { pkg: "com.mxtech.videoplayer.ad", name: "🎬 MX Player" }
-    ];
-
-    // Current Dock Apps (initially 6 items)
-    let currentDockApps = [
-      "mobi.zona",
-      "com.falcofemoralis.hdrezkaapp",
-      "ru.twicker.lampa",
-      "com.spotify.tv.android",
-      "su.happ.proxyutility",
-      "com.alphainventor.filemanager"
-    ];
-
-    // Brand Guides Database
-    const BRAND_GUIDES = {
-      haier: {
-        name: "Haier",
-        badge: "Haier (Android TV 9–14 / Google TV)",
-        summary: "Телевизоры Haier (Smart TV BX, MatrixTV, H32, H43, H50, H55, H65) работают на платах MediaTek и CVTE. Режим разработчика включается через стандартное меню «Об устройстве» 7 нажатиями на «Номер сборки».",
-        path: ["Настройки (шестеренка на пульте)", "Настройки устройства (Device Preferences)", "Об устройстве (About)", "Номер сборки (Build) [x7]", "Для разработчиков", "Отладка по USB (ВКЛ)"],
-        steps: [
-          "Нажмите кнопку <strong>Шестеренка</strong> (или кнопку <em>Home</em> ➔ значок настроек в правом верхнем углу экрана).",
-          "Перейдите в раздел <code>Настройки устройства</code> (или <code>Система</code>) ➔ выберите <code>Об устройстве</code>.",
-          "Пролистайте вниз до пункта <strong>«Номер сборки»</strong> (Build) и нажмите на пульте кнопку <strong>OK ровно 7 раз подряд</strong>.",
-          "Появится сообщение <em>«Вы стали разработчиком!»</em>. Нажмите кнопку <strong>Назад</strong>.",
-          "В появившемся меню <code>Для разработчиков</code> найдите и включите пункт <strong>«Отладка по USB»</strong> (USB debugging).",
-          "Посмотрите IP-адрес телевизора в <code>Сеть и Интернет ➔ Имя Wi-Fi сети ➔ IP-адрес</code> и нажмите «Проверить соединение с ТВ»."
-        ],
-        notes: "💡 <strong>Особенности Haier:</strong> На телевизорах Haier установлены рекламные модули <code>com.haier.oemtabprovider</code>, промо-лаунчер <code>com.haier.launcher.haiermatrix</code> и служба <code>Haier Housekeeper</code>. Кнопка оптимизации ниже безопасно замораживает их без нарушения работы пульта и регулировки звука."
-      },
-      xiaomi: {
-        name: "Xiaomi / Redmi",
-        badge: "Xiaomi / Redmi / Mi TV / TV Stick",
-        summary: "Оболочка PatchWall / Android TV на моделях Mi TV 4A/4S/P1/A2, TV Stick и Mi Box.",
-        path: ["Настройки (шестеренка)", "Настройки устройства", "Об устройстве", "Сборка (Build) [x7]", "Для разработчиков", "Отладка по USB + Установка через USB"],
-        steps: [
-          "Откройте меню <code>Настройки</code> на домашнем экране или с пульта.",
-          "Выберите <code>Настройки устройства</code> ➔ откройте <code>Об устройстве</code>.",
-          "Найдите строку <strong>«Сборка»</strong> и нажмите кнопку <strong>OK на пульте 7 раз</strong>.",
-          "Вернитесь назад, откройте новый раздел <code>Для разработчиков</code>.",
-          "Включите <strong>«Отладка по USB»</strong>. На некоторых версиях Mi TV также включите <em>«Установка через USB»</em>."
-        ],
-        notes: "💡 <strong>Особенности Xiaomi:</strong> Отключаются системные рекламные службы <code>com.xiaomi.mitv.advertise</code>, всплывающие промо-баннеры и тяжелый фоновый сервис обновлений."
-      },
-      tcl: {
-        name: "TCL / iFFALCON",
-        badge: "TCL & iFFALCON (Android / Google TV)",
-        summary: "Модели TCL C-series, P-series, S-series и iFFALCON.",
-        path: ["Настройки", "Система (System)", "Об устройстве (About)", "Сборка ОС Android TV [x7]", "Система ➔ Для разработчиков", "Отладка по USB ➔ ВКЛ"],
-        steps: [
-          "Откройте <code>Настройки</code> ➔ перейдите в пункт <code>Система</code>.",
-          "Зайдите в подраздел <code>Об устройстве</code>.",
-          "Нажмите кнопку <strong>OK 7 раз</strong> на строке <strong>«Сборка ОС Android TV»</strong>.",
-          "Вернитесь назад в меню <code>Система</code> ➔ откройте пункт <code>Для разработчиков</code>.",
-          "Переведите переключатель <strong>«Отладка по USB»</strong> в положение ВКЛ."
-        ],
-        notes: "💡 <strong>Особенности TCL:</strong> Безопасно отключается сбор телеметрии <code>com.tcl.partnercustomizer</code> и встроенный плеер TCL Channel."
-      },
-      sony: {
-        name: "Sony / Philips",
-        badge: "Sony Bravia & Philips Android TV",
-        summary: "Телевизоры Sony Bravia (X-series, A-series, Bravia XR) и Philips Smart TV.",
-        path: ["Кнопка Шестеренка", "Настройки устройства", "Об устройстве", "Номер сборки [x7]", "Для разработчиков", "Отладка по USB ➔ ВКЛ"],
-        steps: [
-          "На пульте нажмите кнопку <code>Настройки</code> (Quick Settings или Шестеренка).",
-          "Перейдите в <code>Настройки устройства</code> ➔ <code>Об устройстве</code>.",
-          "Быстро нажмите <strong>7 раз</strong> на <strong>«Номер сборки»</strong>.",
-          "Вернитесь назад в меню <code>Для разработчиков</code> и активируйте <strong>«Отладку по USB»</strong>."
-        ],
-        notes: "💡 <strong>Особенности Sony:</strong> Замораживаются промо-модули <code>com.sony.dtv.bravialife</code> и фоновые телеметрические службы."
-      },
-      chromecast: {
-        name: "Chromecast / Google TV",
-        badge: "Google TV & Chromecast HD/4K",
-        summary: "Оригинальные устройства Chromecast with Google TV и ТВ на чистом интерфейсе Google TV.",
-        path: ["Аватар профиля", "Настройки", "Система", "Об устройстве", "Сборка ОС Android TV [x7]", "Для разработчиков ➔ Отладка по USB"],
-        steps: [
-          "В правом верхнем углу нажмите на значок своего профиля ➔ <code>Настройки</code>.",
-          "Перейдите в <code>Система</code> ➔ <code>Об устройстве</code>.",
-          "Нажмите <strong>7 раз кнопку OK</strong> на пункте <strong>«Сборка ОС Android TV»</strong>.",
-          "Вернитесь в <code>Система ➔ Для разработчиков</code> и включите <strong>«Отладка по USB»</strong>."
-        ],
-        notes: "💡 <strong>Особенности Google TV:</strong> Отключается рекламная оболочка LauncherX с навязчивыми трейлерами и служба Google SetupWraith."
-      },
-      hisense: {
-        name: "Hisense",
-        badge: "Hisense (Android TV)",
-        summary: "Модели Hisense на базе Android TV (не VIDAA).",
-        path: ["Настройки", "Поддержка / Система", "Сведения о системе", "Номер сборки [x7]", "Для разработчиков", "Отладка ➔ ВКЛ"],
-        steps: [
-          "Зайдите в <code>Настройки</code> ➔ <code>Поддержка</code> (или <code>Система</code>).",
-          "Откройте <code>Сведения о системе</code> (или <code>Об устройстве</code>).",
-          "Нажмите <strong>7 раз</strong> на строку <strong>«Номер сборки»</strong>.",
-          "В меню <code>Для разработчиков</code> активируйте отладку по USB."
-        ],
-        notes: "💡 <strong>Обратите внимание:</strong> Для моделей Hisense на закрытой ОС VIDAA сетевая отладка не поддерживается."
-      },
-      universal: {
-        name: "Универсальная",
-        badge: "Любой Android TV / Приставка",
-        summary: "Универсальный алгоритм для любых китайских и брендовых приставок и смарт-телевизоров на Android.",
-        path: ["Настройки", "Об устройстве", "Сборка / Build [x7]", "Меню разработчика", "Отладка по USB"],
-        steps: [
-          "Откройте меню настроек устройства.",
-          "Найдите раздел информации об устройстве (<code>Об устройстве</code> / <code>About</code>).",
-          "Нажимайте на строку <strong>«Номер сборки»</strong> (Build number) 7 раз подряд до активации режима разработчика.",
-          "В появившемся разделе для разработчиков активируйте сетевую отладку или отладку по USB."
-        ],
-        notes: "💡 После включения отладки проверьте, что ПК и ТВ подключены к одному роутеру Wi-Fi."
-      }
-    };
-
-    function addLog(msg) {
-      const box = document.getElementById('consoleLog');
-      if (box) {
-        box.innerHTML += '<br>' + msg;
-        box.scrollTop = box.scrollHeight;
-      }
+    function log(msg) {
+      const con = document.getElementById('adbConsoleOutput');
+      const time = new Date().toLocaleTimeString();
+      con.innerText += `\n[${time}] ${msg}`;
+      con.scrollTop = con.scrollHeight;
     }
 
     function clearLog() {
-      const box = document.getElementById('consoleLog');
-      if (box) box.innerHTML = '[*] Лог очищен.';
+      document.getElementById('adbConsoleOutput').innerText = '[*] Журнал очищен.';
     }
 
-    function switchMainTab(tabId, btn) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(tabId).classList.add('active');
-
-      if (tabId === 'tab-tools') {
-        checkDnsStatus();
-        renderDockRows();
-      }
-    }
-
-    // Interactive Brand Guide Switcher
-    function selectBrandGuide(brandKey, btn) {
-      selectedBrand = brandKey;
-      document.querySelectorAll('.brand-pill').forEach(p => p.classList.remove('active'));
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
+      
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
       if (btn) btn.classList.add('active');
-
-      const guide = BRAND_GUIDES[brandKey] || BRAND_GUIDES.haier;
-      document.getElementById('currentBrandBadge').innerText = guide.badge;
-
-      const container = document.getElementById('brandGuideContainer');
-      const breadcrumbsHtml = guide.path.map((step, idx) => {
-        const isLast = idx === guide.path.length - 1;
-        return `<span class="path-step ${isLast ? 'target' : ''}">${step}</span>` +
-               (!isLast ? '<span class="path-arrow">➔</span>' : '');
-      }).join('');
-
-      const stepsHtml = guide.steps.map(s => `<li>${s}</li>`).join('');
-
-      container.innerHTML = `
-        <div style="font-size: 0.88rem; color: #e2e8f0; margin-bottom: 8px;">
-          ${guide.summary}
-        </div>
-
-        <div class="path-flow">
-          ${breadcrumbsHtml}
-        </div>
-
-        <ol class="steps-list">
-          ${stepsHtml}
-        </ol>
-
-        <div class="note-box">
-          ${guide.notes}
-        </div>
-      `;
-      addLog(`[*] Переключена шпаргалка для марки: ${guide.name}`);
     }
 
-    // Synchronize IP across inputs
-    function syncIp(ip) {
-      if (!ip) return;
-      activeTvIp = ip;
-      document.getElementById('yaosIpInput').value = ip;
-      document.getElementById('genericIpInput').value = ip;
-    }
-
-    function getTargetIp() {
-      let y = document.getElementById('yaosIpInput').value.trim();
-      let g = document.getElementById('genericIpInput').value.trim();
-      if (y && y.toLowerCase() !== 'автопоиск') return y;
-      if (g && g.toLowerCase() !== 'автопоиск') return g;
-      return activeTvIp;
-    }
-
-    // Connection Test
-    async function testConnection(sourceTab) {
-      const btn = document.getElementById(sourceTab === 'yaos' ? 'btnCheckYaos' : 'btnCheckGeneric');
-      const res = document.getElementById(sourceTab === 'yaos' ? 'yaosConnResult' : 'genericConnResult');
-      const ipInput = document.getElementById(sourceTab === 'yaos' ? 'yaosIpInput' : 'genericIpInput');
-      
-      let ip = ipInput.value.trim();
-      if (ip.toLowerCase() === 'автопоиск' || ip === '') ip = null;
-
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> <span>Поиск ТВ...</span>';
-      res.style.display = 'block';
-      res.style.background = 'rgba(56, 189, 248, 0.08)';
-      res.style.border = '1px solid rgba(56, 189, 248, 0.25)';
-      res.style.color = '#bae6fd';
-      res.innerHTML = `<span>⏳ Поиск телевизора в локальной сети и проверка ADB... Подтвердите запрос на экране ТВ пультом!</span>`;
-      addLog('[>] Запуск проверки соединения...');
-
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api) {
-          data = await window.pywebview.api.test_connection(ip);
-        } else {
-          const resp = await fetch('/api/test_connection', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ ip: ip })
-          });
-          data = await resp.json();
-        }
-
-        if (data && data.success) {
-          syncIp(data.ip);
-          addLog(`[✓] Подключено: ${data.ip} (${data.brand} ${data.model}, Android ${data.android})`);
-          res.style.background = 'rgba(16, 185, 129, 0.12)';
-          res.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-          res.style.color = '#a7f3d0';
-          res.innerHTML = `
-            <div style="font-weight: 700; margin-bottom: 4px;">✅ Телевизор успешно подключен по ADB!</div>
-            <div style="font-family: var(--font-mono); font-size: 0.82rem; color: #cbd5e1; line-height: 1.6;">
-              • IP: <strong>${data.ip}:5555</strong><br>
-              • Устройство: <strong>${data.brand} ${data.model}</strong> (Android ${data.android})<br>
-              • Текущий лаунчер: <strong>${data.launcher}</strong>
-            </div>
-          `;
-          updateDnsBadge(data.dns_specifier && data.dns_specifier.includes('adguard'));
-        } else {
-          const msg = data ? data.message : 'Телевизор не отвечает по порту 5555';
-          addLog(`[✗] Ошибка связи: ${msg}`);
-          res.style.background = 'rgba(239, 68, 68, 0.12)';
-          res.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-          res.style.color = '#fca5a5';
-          res.innerHTML = `
-            <div style="font-weight: 700; margin-bottom: 4px;">❌ Нет связи с телевизором</div>
-            <div style="font-size: 0.82rem;">${msg}. Убедитесь, что отладка включена по инструкции выше, и ТВ в одной Wi-Fi сети.</div>
-          `;
-        }
-      } catch (e) {
-        addLog(`[!] Исключение: ${e}`);
-        res.innerHTML = `❌ Ошибка запроса: ${e}`;
+    // Bridge Caller Helper (Works with PyWebView, Server API or Mock)
+    async function callApi(method, payload = {}) {
+      if (window.pywebview && window.pywebview.api && typeof window.pywebview.api[method] === 'function') {
+        return await window.pywebview.api[method](...Object.values(payload));
       }
-
-      btn.disabled = false;
-      btn.innerHTML = '<span>📡 Проверить связь</span>';
-    }
-
-    // Actions Run
-    async function runAction(action, tvType) {
-      const statusBox = document.getElementById(tvType === 'yaos' ? 'yaosActionStatus' : 'genericActionStatus');
-      statusBox.style.display = 'block';
-      statusBox.style.background = 'rgba(56, 189, 248, 0.08)';
-      statusBox.style.border = '1px solid rgba(56, 189, 248, 0.25)';
-      statusBox.style.color = '#bae6fd';
-      statusBox.innerHTML = '<span class="spinner"></span> Выполнение операции на телевизоре...';
-
-      const ip = getTargetIp();
-      addLog(`[>] Выполнение: ${action} (${tvType})...`);
-
+      // Fallback to local server HTTP endpoints
       try {
-        let resData;
-        if (window.pywebview && window.pywebview.api) {
-          resData = await window.pywebview.api.run_action(action, ip, null, tvType, 'cleanyourtv');
-        } else {
-          const resp = await fetch('/api/run_action', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ action: action, ip: ip, tv_type: tvType, launcher_choice: 'cleanyourtv' })
-          });
-          resData = await resp.json();
-        }
-
-        if (resData.success) {
-          statusBox.style.background = 'rgba(16, 185, 129, 0.12)';
-          statusBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-          statusBox.style.color = '#a7f3d0';
-          statusBox.innerHTML = '✅ ' + resData.message;
-          addLog(`[✓] Успешно: ${resData.message}`);
-        } else {
-          statusBox.style.background = 'rgba(239, 68, 68, 0.12)';
-          statusBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-          statusBox.style.color = '#fca5a5';
-          statusBox.innerHTML = '❌ ' + resData.message;
-          addLog(`[✗] Ошибка: ${resData.message}`);
-        }
-      } catch (e) {
-        statusBox.innerHTML = '❌ Ошибка: ' + e;
-      }
-    }
-
-    function runBrandDebloat(mode) {
-      const tvType = selectedBrand === 'haier' ? 'haier' : 'generic';
-      if (mode === 'light') runAction('light_debloat', tvType);
-      else if (mode === 'full') runAction('full_debloat', tvType);
-      else if (mode === 'restore') runAction('restore', tvType);
-    }
-
-    // ================= DOCK EDITOR =================
-    function renderDockRows() {
-      const container = document.getElementById('dockRowsContainer');
-      if (!container) return;
-
-      // Update segmented buttons
-      const count = currentDockApps.length;
-      document.querySelectorAll('.seg-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.innerText) === count);
-      });
-
-      // Build options list
-      let optionsHtml = '';
-      
-      // 1. Catalog options
-      optionsHtml += '<optgroup label="Рекомендуемые приложения для ТВ">';
-      CATALOG_APPS.forEach(app => {
-        optionsHtml += `<option value="${app.pkg}">${app.name}</option>`;
-      });
-      optionsHtml += '</optgroup>';
-
-      // 2. Installed on TV options (if loaded)
-      if (installedTvPackages && installedTvPackages.length > 0) {
-        optionsHtml += '<optgroup label="Установленные на вашем ТВ">';
-        installedTvPackages.forEach(pkg => {
-          const matched = CATALOG_APPS.find(a => a.pkg === pkg);
-          const label = matched ? matched.name : `📦 ${pkg}`;
-          optionsHtml += `<option value="${pkg}">${label}</option>`;
+        const res = await fetch(`/api/${method.replace(/([A-Z])/g, '_$1').toLowerCase()}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-        optionsHtml += '</optgroup>';
+        if (res.ok) return await res.json();
+      } catch (e) {}
+      
+      // Standalone browser fallback simulation
+      log(`[Demo API] Вызов: ${method}(${JSON.stringify(payload)})`);
+      return { ok: true, demo: true };
+    }
+
+    // Connect TV
+    async function connectTv() {
+      const ip = document.getElementById('inputTvIp').value.trim() || '192.168.1.50';
+      const port = parseInt(document.getElementById('inputTvPort').value.trim()) || 5555;
+      log(`Подключение к ТВ: ${ip}:${port}...`);
+
+      const res = await callApi('connect', { ip, port });
+      if (res.ok) {
+        document.getElementById('connDot').classList.add('online');
+        document.getElementById('connStatusText').innerText = `Подключен: ${ip}`;
+        log(`Успешно подключено к ${ip}:${port}!`);
+        refreshDiagnostics();
+      } else {
+        log(`Ошибка подключения: ${res.error || 'Проверьте IP и включение ADB'}`);
       }
+    }
 
-      optionsHtml += '<option value="__custom__">✏️ Ввести имя пакета вручную...</option>';
+    function togglePairingBox() {
+      const b = document.getElementById('pairingBox');
+      b.style.display = b.style.display === 'none' ? 'block' : 'none';
+    }
 
-      // Render slots
-      container.innerHTML = currentDockApps.map((pkg, idx) => {
-        const isCustom = !CATALOG_APPS.some(a => a.pkg === pkg) && !installedTvPackages.includes(pkg);
-        return `
-          <div class="dock-row" id="dockRow_${idx}">
-            <div class="slot-idx">${idx + 1}</div>
-            
-            <select class="slot-select" id="dockSelect_${idx}" onchange="onSlotAppChange(${idx}, this.value)">
-              ${optionsHtml}
-            </select>
+    async function pairWirelessDevice() {
+      const ip = document.getElementById('inputTvIp').value.trim();
+      const port = parseInt(document.getElementById('inputPairPort').value.trim());
+      const code = document.getElementById('inputPairCode').value.trim();
 
-            <input type="text" class="slot-custom-input" id="dockInput_${idx}" value="${pkg}" placeholder="com.example.app" oninput="onCustomPackageInput(${idx}, this.value)">
+      if (!ip || !port || !code) {
+        alert('Заполните IP, порт сопряжения и 6-значный код!');
+        return;
+      }
+      log(`Сопряжение с ${ip}:${port} по коду ${code}...`);
+      const res = await callApi('pair_wireless', { ip, pair_port: port, code });
+      log(res.ok ? '✓ Устройство успешно сопряжено!' : `Ошибка: ${res.output}`);
+    }
 
-            <button class="btn-row-action" onclick="moveDockSlot(${idx}, -1)" title="Вверх">▲</button>
-            <button class="btn-row-action" onclick="moveDockSlot(${idx}, 1)" title="Вниз">▼</button>
-            <button class="btn-row-action delete" onclick="removeDockSlot(${idx})" title="Удалить слот">✕</button>
+    async function refreshDiagnostics() {
+      log('Запрос аппаратных свойств и статистики памяти...');
+      const diag = await callApi('get_device_diag');
+      if (diag) {
+        document.getElementById('diagBrand').innerText = diag.brand || 'Android TV';
+        document.getElementById('diagAndroidVer').innerText = diag.android_version || '11';
+        document.getElementById('diagProfile').innerText = diag.recommended_profile?.toUpperCase() || 'YAOS';
+        
+        const mem = diag.memory || { total_mb: 1536, free_mb: 480, used_mb: 1056, zram_physical_mb: 128 };
+        document.getElementById('diagZram').innerText = `${mem.zram_physical_mb || 0} МБ`;
+        
+        const pct = Math.round((mem.used_mb / (mem.total_mb || 1)) * 100);
+        document.getElementById('ramBarLabel').innerText = `${mem.used_mb} / ${mem.total_mb} МБ (${pct}%)`;
+        document.getElementById('ramProgressBar').style.width = `${pct}%`;
+
+        document.getElementById('headerRamBadge').style.display = 'inline-flex';
+        document.getElementById('headerRamBadge').innerText = `ОЗУ: ${mem.free_mb} МБ своб.`;
+      }
+    }
+
+    async function scanSubnet() {
+      log('Сканирование локальной сети на наличие портов ADB (5555)...');
+      const res = await callApi('scan_network');
+      if (res && res.devices && res.devices.length > 0) {
+        document.getElementById('inputTvIp').value = res.devices[0];
+        log(`Найден телевизор: ${res.devices.join(', ')}`);
+      } else {
+        log('ТВ не обнаружен автопоиском. Введите IP адрес вручную.');
+      }
+    }
+
+    // Debloat Module
+    const profileDb = {
+      yaos: [
+        { id: 'com.yandex.tv.services', name: 'Фоновые сервисы и реклама Яндекса', ram: 60, desc: 'Телеметрия, баннеры и промо-карусели на домашнем экране.', rec: true },
+        { id: 'com.yandex.tv.bugreports', name: 'Служба отчетов об ошибках YaOS', ram: 15, desc: 'Фоновая отправка дампов и логов системы.', rec: true },
+        { id: 'com.yandex.tv.store.promos', name: 'Промо-витрина Кинопоиска', ram: 30, desc: 'Тяжелые промо-карточки поверх лаунчера.', rec: true },
+        { id: 'com.yandex.tv.alice', name: 'Голосовой ассистент Алиса', ram: 85, desc: 'Демон голосового ввода. Отключайте, если не пользуетесь голосовым поиском.', rec: false },
+        { id: 'com.yandex.tv.music.overlay', name: 'Фоновый оверлей Музыки', ram: 40, desc: 'Фоновый сервис музыки при запуске ТВ.', rec: false }
+      ],
+      salut: [
+        { id: 'ru.sberdevices.analytics', name: 'Телеметрия StarOS', ram: 25, desc: 'Сбор статистики и рекламные баннеры.', rec: true },
+        { id: 'ru.sberdevices.promoservice', name: 'Рекламная витрина Салют', ram: 35, desc: 'Промо-видео на главном экране.', rec: true },
+        { id: 'ru.sberdevices.salute', name: 'Ассистент Салют', ram: 90, desc: 'Голосовой сервис в фоне.', rec: false }
+      ],
+      haier: [
+        { id: 'com.haierubic.usmartdevice', name: 'Служба Haier uSmart IoT', ram: 45, desc: 'Постоянный фоновый опрос устройств умного дома Haier.', rec: true },
+        { id: 'com.haier.oemtabprovider', name: 'Вкладка OEM Haier', ram: 30, desc: 'Рекламные промо-каналы на домашнем экране.', rec: true },
+        { id: 'com.haier.tvhousekeeper', name: 'Haier TV Housekeeper', ram: 25, desc: 'Фоновая системная телеметрия.', rec: true }
+      ],
+      xiaomi: [
+        { id: 'com.xiaomi.mitv.advertise', name: 'Демон рекламы Xiaomi', ram: 40, desc: 'Заставки и баннеры при запуске.', rec: true },
+        { id: 'com.xiaomi.mitv.upgrade', name: 'Автообновления Xiaomi', ram: 20, desc: 'Фоновая нагрузка на сеть.', rec: true }
+      ],
+      tcl: [
+        { id: 'com.tcl.messagebox', name: 'Промо-уведомления TCL', ram: 25, desc: 'Всплывающие уведомления производителя.', rec: true },
+        { id: 'com.tcl.recommend', name: 'Рекомендации TCL', ram: 35, desc: 'Карусели партнерского контента.', rec: true }
+      ],
+      googletv: [
+        { id: 'com.google.android.tvrecommendations', name: 'Рекомендации Android TV', ram: 55, desc: 'Спонсорские рекламные каналы.', rec: true },
+        { id: 'com.google.android.katniss', name: 'Google Assistant', ram: 75, desc: 'Голосовой ассистент Google.', rec: false }
+      ]
+    };
+
+    function onProfileChange() {
+      const prof = document.getElementById('selectBrandProfile').value;
+      renderPackageList(profileDb[prof] || []);
+    }
+
+    function renderPackageList(list) {
+      const c = document.getElementById('packageListContainer');
+      c.innerHTML = '';
+      list.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'pkg-item';
+        div.innerHTML = `
+          <input type="checkbox" value="${item.id}" data-ram="${item.ram}" class="pkg-chk" ${item.rec ? 'checked' : ''} onchange="updateEstimatedRam()">
+          <div class="pkg-info">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="pkg-name">${item.name}</span>
+              <span class="pkg-ram">+${item.ram} МБ ОЗУ</span>
+            </div>
+            <div class="pkg-desc">${item.desc} <code style="font-size: 0.72rem; color: var(--text-dim);">${item.id}</code></div>
           </div>
         `;
-      }).join('');
+        c.appendChild(div);
+      });
+      updateEstimatedRam();
+    }
 
-      // Set initial values
-      currentDockApps.forEach((pkg, idx) => {
-        const sel = document.getElementById(`dockSelect_${idx}`);
-        const inp = document.getElementById(`dockInput_${idx}`);
-        if (!sel || !inp) return;
+    function updateEstimatedRam() {
+      let total = 0;
+      document.querySelectorAll('.pkg-chk:checked').forEach(cb => {
+        total += parseInt(cb.dataset.ram || 0);
+      });
+      document.getElementById('estimatedRamSaved').innerText = `+${total} МБ ОЗУ`;
+    }
 
-        let hasOption = false;
-        for (let i = 0; i < sel.options.length; i++) {
-          if (sel.options[i].value === pkg) {
-            sel.selectedIndex = i;
-            hasOption = true;
-            break;
-          }
+    function applyPreset(mode) {
+      document.querySelectorAll('.pkg-chk').forEach(cb => {
+        if (mode === 'all') cb.checked = true;
+        else if (mode === 'clear') cb.checked = false;
+        else if (mode === 'recommended') {
+          const prof = document.getElementById('selectBrandProfile').value;
+          const found = (profileDb[prof] || []).find(x => x.id === cb.value);
+          cb.checked = found ? found.rec : false;
         }
+      });
+      updateEstimatedRam();
+    }
 
-        if (!hasOption) {
-          sel.value = '__custom__';
-          sel.style.display = 'none';
-          inp.style.display = 'block';
-          inp.value = pkg;
-        } else {
-          sel.style.display = 'block';
-          inp.style.display = 'none';
+    async function applyDebloat() {
+      const selected = Array.from(document.querySelectorAll('.pkg-chk:checked')).map(cb => cb.value);
+      if (selected.length === 0) {
+        alert('Выберите хотя бы один пакет для отключения!');
+        return;
+      }
+      log(`Отключение пакетов (${selected.length} шт): ${selected.join(', ')}...`);
+      const res = await callApi('run_custom_debloat', { selected_packages: selected });
+      if (res.ok) {
+        log(`✓ Успешно отключено: ${res.disabled_count} пакетов. Освобождено ОЗУ: ${res.freed_ram_mb} МБ.`);
+        refreshDiagnostics();
+      } else {
+        log(`Ошибка деблоата: ${res.error}`);
+      }
+    }
+
+    async function restoreFactoryState() {
+      if (!confirm('Восстановить все заводские службы и вернуть штатный лаунчер?')) return;
+      log('Восстановление заводского состояния ТВ...');
+      const res = await callApi('restore_tv');
+      log(`✓ Восстановлено: ${res.restored_count} служб.`);
+      refreshDiagnostics();
+    }
+
+    // Launchers Module
+    function selectLauncher(id) {
+      currentSelectedLauncher = id;
+      document.querySelectorAll('.launcher-card').forEach(c => {
+        c.classList.toggle('selected', c.dataset.launcher === id);
+      });
+
+      document.getElementById('panelConfigMoyTv').style.display = (id === 'moytv') ? 'block' : 'none';
+      document.getElementById('panelConfigDock').style.display = (id === 'cleanyourtv') ? 'block' : 'none';
+    }
+
+    async function installSelectedLauncher() {
+      const disableStock = document.getElementById('chkDisableStockLauncher').checked;
+      log(`Установка и активация лаунчера [${currentSelectedLauncher}], disable_stock=${disableStock}...`);
+      const res = await callApi('apply_launcher', { launcher_id: currentSelectedLauncher, disable_stock: disableStock });
+      if (res.ok) {
+        log(`✓ Лаунчер ${res.launcher} успешно активирован на ТВ!`);
+        if (res.web_remote_url) {
+          document.getElementById('moyRemoteUrl').href = res.web_remote_url;
+          log(`Веб-пульт доступен по адресу: ${res.web_remote_url}`);
         }
+      } else {
+        log(`Ошибка: ${res.error}`);
+      }
+    }
+
+    async function sendPresetWallpaper(filename) {
+      log(`Загрузка обоев [${filename}] в лаунчер ${currentSelectedLauncher}...`);
+      const res = await callApi('push_preset_wallpaper', { launcher_id: currentSelectedLauncher, filename });
+      log(res.ok ? '✓ Обои успешно применены на телевизоре!' : `Ошибка: ${res.error}`);
+    }
+
+    async function uploadCustomWallpaper() {
+      log('Открытие диалога выбора фонового изображения...');
+      const res = await callApi('choose_and_push_wallpaper', { launcher_id: currentSelectedLauncher });
+      log(res.ok ? '✓ Кастомные обои загружены на ТВ!' : `Статус: ${res.error}`);
+    }
+
+    async function saveMoyTvSettings() {
+      const payload = {
+        city: document.getElementById('moyCityInput').value,
+        news_category: document.getElementById('moyNewsCategory').value,
+        backlight: document.getElementById('moyBacklightPreset').value,
+        hdmi_names: [
+          document.getElementById('hdmi1Name').value,
+          document.getElementById('hdmi2Name').value,
+          document.getElementById('hdmi3Name').value
+        ]
+      };
+      log('Отправка настроек лаунчера «Мой ТВ»...');
+      const res = await callApi('update_launcher_settings', { launcher_id: 'moytv', payload });
+      log(res.ok ? '✓ Настройки Moy-TV успешно сохранены!' : `Ошибка: ${res.error}`);
+    }
+
+    // YouTube & Bypass Module
+    function selectBypassMode(mode, btn) {
+      currentBypassMode = mode;
+      document.querySelectorAll('.bypass-mode-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      document.getElementById('boxByeDpiArgs').style.display = (mode === 'byedpi') ? 'block' : 'none';
+      document.getElementById('boxCustomProxy').style.display = (mode === 'custom_proxy') ? 'block' : 'none';
+      document.getElementById('boxDnsWarning').style.display = (mode === 'dns_only') ? 'block' : 'none';
+    }
+
+    function setDpiPreset(preset) {
+      document.getElementById('inputByeDpiArgs').value = preset;
+    }
+
+    async function applyYoutubeConfig() {
+      const opts = {
+        install_smarttube: document.getElementById('chkInstallSmartTube').checked,
+        force_avc: document.getElementById('chkForceAvcCodec').checked,
+        bypass_mode: currentBypassMode,
+        byedpi_args: document.getElementById('inputByeDpiArgs').value,
+        proxy_host: document.getElementById('inputProxyHost').value,
+        proxy_port: parseInt(document.getElementById('inputProxyPort').value) || 1080
+      };
+      log(`Настройка SmartTube и обхода [${currentBypassMode}]...`);
+      const res = await callApi('configure_youtube', { options: opts });
+      log(res.ok ? '✓ Конфигурация YouTube успешно применена на ТВ!' : 'Ошибка настройки YouTube');
+    }
+
+    // Apps Catalog Module
+    function selectTop6Apps() {
+      const top6 = ['zona', 'hdrezka', 'lampa', 'smarttube', 'filemanager', 'happ'];
+      document.querySelectorAll('#appsCatalogGrid input[type="checkbox"]').forEach(cb => {
+        cb.checked = top6.includes(cb.value);
       });
     }
 
-    function onSlotAppChange(index, value) {
-      const sel = document.getElementById(`dockSelect_${index}`);
-      const inp = document.getElementById(`dockInput_${index}`);
-      if (value === '__custom__') {
-        sel.style.display = 'none';
-        inp.style.display = 'block';
-        inp.focus();
-      } else {
-        currentDockApps[index] = value;
-      }
+    function toggleAllApps(state) {
+      document.querySelectorAll('#appsCatalogGrid input[type="checkbox"]').forEach(cb => cb.checked = state);
     }
 
-    function onCustomPackageInput(index, value) {
-      if (value.trim()) {
-        currentDockApps[index] = value.trim();
-      }
-    }
-
-    function setDockCount(newCount) {
-      const count = parseInt(newCount);
-      if (isNaN(count) || count < 3 || count > 8) return;
-
-      while (currentDockApps.length < count) {
-        // Pick an app from catalog that isn't already in dock
-        const unused = CATALOG_APPS.find(a => !currentDockApps.includes(a.pkg));
-        currentDockApps.push(unused ? unused.pkg : `app.slot.${currentDockApps.length + 1}`);
-      }
-
-      while (currentDockApps.length > count) {
-        currentDockApps.pop();
-      }
-
-      renderDockRows();
-      addLog(`[*] Количество слотов в доке установлено: ${count}`);
-    }
-
-    function addDockSlot() {
-      if (currentDockApps.length >= 8) {
-        alert('Максимальное количество плиток в доке — 8.');
+    async function installSelectedApps() {
+      const selected = Array.from(document.querySelectorAll('#appsCatalogGrid input[type="checkbox"]:checked')).map(cb => cb.value);
+      if (selected.length === 0) {
+        alert('Выберите приложения для установки!');
         return;
       }
-      setDockCount(currentDockApps.length + 1);
-    }
-
-    function removeDockSlot(index) {
-      if (currentDockApps.length <= 3) {
-        alert('В доке должно оставаться минимум 3 приложения.');
-        return;
-      }
-      currentDockApps.splice(index, 1);
-      renderDockRows();
-    }
-
-    function moveDockSlot(index, dir) {
-      const target = index + dir;
-      if (target < 0 || target >= currentDockApps.length) return;
-      const tmp = currentDockApps[index];
-      currentDockApps[index] = currentDockApps[target];
-      currentDockApps[target] = tmp;
-      renderDockRows();
-    }
-
-    function resetDockToTop6() {
-      currentDockApps = [
-        "mobi.zona",
-        "com.falcofemoralis.hdrezkaapp",
-        "ru.twicker.lampa",
-        "com.spotify.tv.android",
-        "su.happ.proxyutility",
-        "com.alphainventor.filemanager"
-      ];
-      renderDockRows();
-      addLog('[*] Док сброшен к стандартному Топ-6.');
-    }
-
-    async function loadTvPackages() {
-      const ip = getTargetIp();
-      addLog('[>] Запрос установленных сторонних приложений с ТВ...');
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.get_installed_packages) {
-          data = await window.pywebview.api.get_installed_packages(ip);
-        } else {
-          const resp = await fetch(`/api/get_packages?ip=${encodeURIComponent(ip || '')}`);
-          data = await resp.json();
+      log(`Пакетная установка APK (${selected.length} шт): ${selected.join(', ')}...`);
+      const res = await callApi('install_apps', { app_keys: selected });
+      if (res.ok) {
+        log(`✓ Успешно установлено: ${res.installed.join(', ')}`);
+        if (res.errors && res.errors.length > 0) {
+          res.errors.forEach(err => log(`⚠ ${err.app}: ${err.error}`));
         }
-
-        if (data && data.success && data.packages) {
-          installedTvPackages = data.packages;
-          addLog(`[✓] С телевизора получено ${installedTvPackages.length} установленных приложений!`);
-          renderDockRows();
-        } else {
-          addLog('[!] Не удалось получить список приложений с ТВ. Проверьте соединение.');
-        }
-      } catch (e) {
-        addLog(`[!] Ошибка загрузки пакетов: ${e}`);
       }
     }
 
-    async function applyDockConfig() {
-      const resBox = document.getElementById('dockResultView');
-      resBox.style.display = 'block';
-      resBox.style.background = 'rgba(56, 189, 248, 0.08)';
-      resBox.style.border = '1px solid rgba(56, 189, 248, 0.25)';
-      resBox.style.color = '#bae6fd';
-      resBox.innerHTML = '<span class="spinner"></span> Отправка конфигурации в CleanYourTV...';
-
-      const ip = getTargetIp();
-      const cols = currentDockApps.length;
-      addLog(`[>] Сохранение порядка дока CleanYourTV (${cols} колонок, ${currentDockApps.length} приложений)...`);
-
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.set_dock_config) {
-          data = await window.pywebview.api.set_dock_config(currentDockApps, cols, ip);
-        } else {
-          const resp = await fetch('/api/set_dock', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ ip: ip, dock_apps: currentDockApps, columns: cols })
-          });
-          data = await resp.json();
-        }
-
-        if (data && data.success) {
-          resBox.style.background = 'rgba(16, 185, 129, 0.12)';
-          resBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-          resBox.style.color = '#a7f3d0';
-          resBox.innerHTML = '✅ Конфигурация успешно применена! Док на телевизоре обновлен.';
-          addLog('[✓] Конфигурация дока успешно обновлена на ТВ!');
-        } else {
-          resBox.style.background = 'rgba(239, 68, 68, 0.12)';
-          resBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-          resBox.style.color = '#fca5a5';
-          resBox.innerHTML = '❌ ' + (data ? data.message : 'Ошибка применения конфигурации');
-        }
-      } catch (e) {
-        resBox.innerHTML = '❌ Ошибка: ' + e;
-      }
+    // Raw ADB
+    async function sendRawAdb() {
+      const inp = document.getElementById('inputRawAdb');
+      const cmd = inp.value.trim();
+      if (!cmd) return;
+      log(`> ${cmd}`);
+      inp.value = '';
+      const res = await callApi('execute_raw_adb', { command: cmd });
+      log(res.output);
     }
 
-    async function switchLauncherAction(launcherName) {
-      const ip = getTargetIp();
-      addLog(`[>] Назначение лаунчера ${launcherName} по умолчанию...`);
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.switch_launcher) {
-          data = await window.pywebview.api.switch_launcher(launcherName, ip);
-        } else {
-          const resp = await fetch('/api/switch_launcher', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ ip: ip, launcher: launcherName })
-          });
-          data = await resp.json();
-        }
-        if (data && data.success) {
-          alert(`Лаунчер ${launcherName} успешно установлен по умолчанию!`);
-          addLog(`[✓] Лаунчер активирован: ${launcherName}`);
-        }
-      } catch (e) {
-        alert('Ошибка: ' + e);
-      }
+    async function triggerQuickBackup() {
+      log('Создание быстрого слепка состояния пакетов ТВ...');
+      const res = await callApi('create_backup_snapshot');
+      log('✓ Слепок бэкапа успешно сохранен в папку backups/');
     }
 
-    // ================= DNS TOOLS =================
-    function updateDnsBadge(enabled) {
-      const b1 = document.getElementById('dnsBadgeStatus');
-      const b2 = document.getElementById('quickDnsStatus');
-      if (enabled) {
-        if (b1) { b1.style.color = '#34d399'; b1.style.borderColor = 'rgba(52, 211, 153, 0.35)'; b1.innerText = '🟢 Активна (AdGuard DNS)'; }
-        if (b2) { b2.style.color = '#34d399'; b2.style.borderColor = 'rgba(52, 211, 153, 0.35)'; b2.innerText = 'DNS: AdGuard ON'; }
-      } else {
-        if (b1) { b1.style.color = 'var(--text-muted)'; b1.style.borderColor = 'var(--border)'; b1.innerText = '⚪ Стандартный DNS'; }
-        if (b2) { b2.style.color = 'var(--text-dim)'; b2.style.borderColor = 'var(--border)'; b2.innerText = 'DNS: Стандартный'; }
-      }
-    }
-
-    async function checkDnsStatus() {
-      const ip = getTargetIp();
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.get_dns_status) {
-          data = await window.pywebview.api.get_dns_status(ip);
-        } else {
-          const resp = await fetch(`/api/get_dns?ip=${encodeURIComponent(ip || '')}`);
-          data = await resp.json();
-        }
-        if (data && data.success) {
-          updateDnsBadge(data.enabled);
-        }
-      } catch (e) {}
-    }
-
-    async function setDns(enable) {
-      const resBox = document.getElementById('dnsResultView');
-      resBox.style.display = 'block';
-      resBox.style.background = 'rgba(56, 189, 248, 0.08)';
-      resBox.style.border = '1px solid rgba(56, 189, 248, 0.25)';
-      resBox.style.color = '#bae6fd';
-      resBox.innerHTML = '<span class="spinner"></span> Применение настроек Private DNS на ТВ...';
-
-      const ip = getTargetIp();
-      addLog(`[>] Private DNS ➔ ${enable ? 'dns.adguard-dns.com' : 'OFF'}...`);
-
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api && window.pywebview.api.set_dns) {
-          data = await window.pywebview.api.set_dns(enable, ip);
-        } else {
-          const resp = await fetch('/api/set_dns', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ ip: ip, enable: enable })
-          });
-          data = await resp.json();
-        }
-
-        if (data && data.success) {
-          resBox.style.background = 'rgba(16, 185, 129, 0.12)';
-          resBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-          resBox.style.color = '#a7f3d0';
-          resBox.innerHTML = '✅ ' + data.message;
-          updateDnsBadge(data.enabled);
-          addLog(`[✓] ${data.message}`);
-        } else {
-          resBox.style.background = 'rgba(239, 68, 68, 0.12)';
-          resBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-          resBox.style.color = '#fca5a5';
-          resBox.innerHTML = '❌ ' + (data ? data.message : 'Ошибка настройки DNS');
-        }
-      } catch (e) {
-        resBox.innerHTML = '❌ Ошибка: ' + e;
-      }
-    }
-
-    // ================= CUSTOM APK =================
-    async function browseApk() {
-      try {
-        if (window.pywebview && window.pywebview.api) {
-          const path = await window.pywebview.api.browse_file();
-          if (path) document.getElementById('customApkPath').value = path;
-        } else {
-          alert('Выбор файлов через проводник доступен в SmartTV_Control.exe');
-        }
-      } catch (e) {}
-    }
-
-    async function installApk() {
-      const p = document.getElementById('customApkPath').value.trim();
-      const resBox = document.getElementById('customApkResult');
-      if (!p || p.includes('Выберите')) {
-        alert('Пожалуйста, выберите файл .apk через кнопку «Обзор...»');
-        return;
-      }
-      resBox.style.display = 'block';
-      resBox.style.background = 'rgba(56, 189, 248, 0.08)';
-      resBox.style.border = '1px solid rgba(56, 189, 248, 0.25)';
-      resBox.style.color = '#bae6fd';
-      resBox.innerHTML = `<span class="spinner"></span> Установка ${p.split(/[\\\\/]/).pop()}...`;
-      addLog(`[>] Установка APK на ТВ: ${p}...`);
-
-      const ip = getTargetIp();
-      try {
-        let data;
-        if (window.pywebview && window.pywebview.api) {
-          data = await window.pywebview.api.install_custom_apk(p, ip);
-        } else {
-          data = { success: false, message: "Функция доступна в SmartTV_Control.exe" };
-        }
-        if (data.success) {
-          resBox.style.background = 'rgba(16, 185, 129, 0.12)';
-          resBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-          resBox.style.color = '#a7f3d0';
-          resBox.innerHTML = '✅ ' + data.message;
-          addLog(`[✓] ${data.message}`);
-        } else {
-          resBox.style.background = 'rgba(239, 68, 68, 0.12)';
-          resBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-          resBox.style.color = '#fca5a5';
-          resBox.innerHTML = '❌ ' + data.message;
-          addLog(`[✗] Ошибка: ${data.message}`);
-        }
-      } catch (e) {
-        resBox.innerHTML = '❌ Ошибка: ' + e;
-      }
-    }
-
-    // Modal
-    function openInstallModal() {
-      document.getElementById('installModal').style.display = 'flex';
-    }
-
-    function closeInstallModal() {
-      document.getElementById('installModal').style.display = 'none';
-    }
-
-    function closeInstallModalOnBackdrop(e) {
-      if (e.target && e.target.id === 'installModal') closeInstallModal();
-    }
-
-    function runPreset(presetName) {
-      closeInstallModal();
-      const ip = getTargetIp();
-      addLog(`[>] Запуск установки набора ${presetName}...`);
-      if (window.pywebview && window.pywebview.api && window.pywebview.api.run_action) {
-        window.pywebview.api.run_action('install', ip, presetName).then(d => {
-          alert(d.message);
-        });
-      } else {
-        fetch('/api/run_action', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ action: 'install', ip: ip, preset: presetName })
-        }).then(r => r.json()).then(d => alert(d.message));
-      }
-    }
-
-    // Init
+    // Initial Load
     window.addEventListener('DOMContentLoaded', () => {
-      selectBrandGuide('haier');
-      renderDockRows();
+      onProfileChange();
+      log('Интерфейс готов к работе.');
     });
   </script>
 </body>

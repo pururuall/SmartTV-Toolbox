@@ -1,0 +1,197 @@
+{
+  "version": "3.0.0",
+  "critical_stoplist": [
+    "com.android.providers.tv",
+    "com.android.tv.settings",
+    "com.tcl.tvinput",
+    "com.tcl.tv",
+    "com.cvte.tv.api",
+    "com.cvte.tv.provision",
+    "com.xiaomi.mitv.tvplayer",
+    "com.haier.tv.input"
+  ],
+  "profiles": {
+    "yaos": {
+      "title": "Яндекс ТВ (YaOS / CVTE)",
+      "detect_props": ["yandex", "cvte", "cv9632"],
+      "stock_launcher": "com.yandex.tv.launcher",
+      "packages": [
+        {
+          "id": "com.yandex.tv.services",
+          "name": "Фоновые сервисы и реклама Яндекса",
+          "category": "recommended",
+          "ram": 60,
+          "desc": "Сбор телеметрии, загрузка рекламных баннеров и промо-каруселей на главном экране."
+        },
+        {
+          "id": "com.yandex.tv.bugreports",
+          "name": "Служба отчетов об ошибках YaOS",
+          "category": "recommended",
+          "ram": 15,
+          "desc": "Фоновая отправка логов и дампов системы на серверы аналитики."
+        },
+        {
+          "id": "com.yandex.tv.store.promos",
+          "name": "Промо-витрина и рекомендации Кинопоиска",
+          "category": "recommended",
+          "ram": 30,
+          "desc": "Автозапуск тяжелых рекламных карточек поверх интерфейса."
+        },
+        {
+          "id": "com.yandex.tv.alice",
+          "name": "Голосовой ассистент Алиса",
+          "category": "optional",
+          "ram": 85,
+          "desc": "Постоянно держит голосовой демон в ОЗУ. Отключайте, если не пользуетесь микрофоном в пульте."
+        },
+        {
+          "id": "com.yandex.tv.music.overlay",
+          "name": "Фоновый сервис Яндекс Музыки",
+          "category": "optional",
+          "ram": 40,
+          "desc": "Висит в памяти после старта системы даже без активной подписки."
+        }
+      ]
+    },
+    "salut": {
+      "title": "Салют ТВ (SberBox / StarOS)",
+      "detect_props": ["sber", "salut", "staros"],
+      "stock_launcher": "ru.sberdevices.starlauncher",
+      "packages": [
+        {
+          "id": "ru.sberdevices.analytics",
+          "name": "Телеметрия и аналитика StarOS",
+          "category": "recommended",
+          "ram": 25,
+          "desc": "Фоновый сбор статистики использования и показ рекламных блоков."
+        },
+        {
+          "id": "ru.sberdevices.promoservice",
+          "name": "Рекламные баннеры Салют ТВ",
+          "category": "recommended",
+          "ram": 35,
+          "desc": "Подгрузка промо-видео и рекомендаций на домашнем экране."
+        },
+        {
+          "id": "ru.sberdevices.salute",
+          "name": "Голосовой ассистент Салют",
+          "category": "optional",
+          "ram": 90,
+          "desc": "Тяжелый сервис распознавания речи. При отключении освобождает до 90 МБ ОЗУ."
+        }
+      ]
+    },
+    "haier": {
+      "title": "Haier Smart TV (MatrixTV / H-серия)",
+      "detect_props": ["haier"],
+      "stock_launcher": "com.haier.launcher.haiermatrix",
+      "packages": [
+        {
+          "id": "com.haierubic.usmartdevice",
+          "name": "Служба Haier uSmart IoT",
+          "category": "recommended",
+          "ram": 45,
+          "desc": "Постоянный фоновый опрос устройств умного дома Haier. Создает фоновую нагрузку на CPU."
+        },
+        {
+          "id": "com.haier.oemtabprovider",
+          "name": "Вкладка рекомендаций OEM Haier",
+          "category": "recommended",
+          "ram": 30,
+          "desc": "Партнерские рекламные каналы и баннеры на домашнем экране Haier."
+        },
+        {
+          "id": "com.haier.tvhousekeeper",
+          "name": "Служба Haier TV Housekeeper",
+          "category": "recommended",
+          "ram": 25,
+          "desc": "Фоновая телеметрия и системная аналитика от вендора."
+        },
+        {
+          "id": "com.haier.launcher.haiermatrix",
+          "name": "Промо-лаунчер Haier Matrix",
+          "category": "optional",
+          "ram": 80,
+          "desc": "Штатная тяжелая оболочка с рекламой. Отключайте только при установке альтернативного лаунчера."
+        }
+      ]
+    },
+    "xiaomi": {
+      "title": "Xiaomi / Redmi TV (PatchWall)",
+      "detect_props": ["xiaomi", "redmi", "mitv"],
+      "stock_launcher": "com.mitv.tvhome",
+      "packages": [
+        {
+          "id": "com.xiaomi.mitv.advertise",
+          "name": "Рекламный демон Xiaomi AdService",
+          "category": "recommended",
+          "ram": 40,
+          "desc": "Подгрузка баннеров и видеовставок при включении ТВ."
+        },
+        {
+          "id": "com.xiaomi.mitv.upgrade",
+          "name": "Навязчивые автообновления Xiaomi",
+          "category": "recommended",
+          "ram": 20,
+          "desc": "Фоновый чекер обновлений, нагружающий сеть."
+        },
+        {
+          "id": "com.mitv.tvhome",
+          "name": "Оболочка Xiaomi PatchWall",
+          "category": "optional",
+          "ram": 95,
+          "desc": "Тяжелая витрина контента. Отключайте при переходе на легкий лаунчер."
+        }
+      ]
+    },
+    "tcl": {
+      "title": "TCL / iFFALCON TV",
+      "detect_props": ["tcl", "iffalcon"],
+      "stock_launcher": "com.tcl.home",
+      "packages": [
+        {
+          "id": "com.tcl.messagebox",
+          "name": "Сервис промо-уведомлений TCL",
+          "category": "recommended",
+          "ram": 25,
+          "desc": "Всплывающие уведомления и рекламные пуши."
+        },
+        {
+          "id": "com.tcl.recommend",
+          "name": "Сервис рекомендаций TCL",
+          "category": "recommended",
+          "ram": 35,
+          "desc": "Карусели партнерского контента в системе."
+        }
+      ]
+    },
+    "googletv": {
+      "title": "Android TV / Google TV (Стандартный)",
+      "detect_props": ["google", "sony", "philips", "realme"],
+      "stock_launcher": "com.google.android.apps.tv.launcherx",
+      "packages": [
+        {
+          "id": "com.google.android.tvrecommendations",
+          "name": "Рекомендации и рекламный ряд Android TV",
+          "category": "recommended",
+          "ram": 55,
+          "desc": "Отключает спонсорские рекламные карусели в стандартном интерфейсе."
+        },
+        {
+          "id": "com.google.android.katniss",
+          "name": "Google Assistant для Android TV",
+          "category": "optional",
+          "ram": 75,
+          "desc": "Голосовой поиск Google. Занимает значительный объем ОЗУ на ТВ с 1–1.5 ГБ памяти."
+        },
+        {
+          "id": "com.google.android.gms.policy_cast",
+          "name": "Аналитика Google Cast",
+          "category": "optional",
+          "ram": 25,
+          "desc": "Дополнительные метрики Cast (базовая трансляция экрана продолжает работать)."
+        }
+      ]
+    }
+  }
+}
