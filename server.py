@@ -92,6 +92,8 @@ class ToolboxHandler(http.server.SimpleHTTPRequestHandler):
             response = manager.setup_tv_web_remote(enable)
         elif endpoint == "/api/scan":
             response = {"ok": True, "devices": manager.scan_network()}
+        elif endpoint == "/api/apk/install":
+            response = manager.install_apk_file(payload.get("file_path", ""))
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")

@@ -470,6 +470,18 @@ class SmartTVManager:
 
         return {"ok": True, "installed": installed, "errors": errors}
 
+    def install_apk_file(self, apk_path: str) -> Dict[str, Any]:
+        """Установка пользовательского APK файла на подключенный ТВ."""
+        p = Path(apk_path)
+        if not p.exists():
+            return {"ok": False, "error": f"Файл не найден: {apk_path}"}
+        res = self.run_adb(["install", "-r", str(p)], timeout=120)
+        stdout = res.get("stdout", "")
+        stderr = res.get("stderr", "")
+        if "Success" in stdout or "Success" in stderr or res.get("ok", False):
+            return {"ok": True, "msg": f"Приложение {p.name} успешно установлено на ТВ!"}
+        return {"ok": False, "error": stderr or stdout or "Ошибка установки"}
+
     def run_raw_adb(self, cmd_str: str) -> Dict[str, Any]:
         """Выполнение произвольной команды в терминале ADB."""
         parts = cmd_str.strip().split()

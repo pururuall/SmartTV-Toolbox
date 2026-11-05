@@ -63,6 +63,17 @@ class WebViewBridge:
     def install_apps(self, app_keys: list):
         return self.manager.install_batch_apps(app_keys)
 
+    def choose_custom_apk(self):
+        window = webview.windows[0]
+        file_types = ("Android Package (*.apk)", "All files (*.*)")
+        result = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+        if result and len(result) > 0:
+            return {"ok": True, "path": result[0]}
+        return {"ok": False, "error": "Выбор файла отменен"}
+
+    def install_custom_apk(self, file_path: str):
+        return self.manager.install_apk_file(file_path)
+
     def execute_raw_adb(self, command: str):
         return self.manager.run_raw_adb(command)
 

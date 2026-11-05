@@ -918,8 +918,8 @@
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                   <span style="color: #fff; font-weight: 600;">Ссылка для управления со смартфона:</span>
-                  <a id="linkTvWebRemote" href="http://192.168.1.50:8080" target="_blank" style="color: var(--accent); text-decoration: underline; font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700;">
-                    http://192.168.1.50:8080
+                  <a id="linkTvWebRemote" href="http://[IP-адрес-ТВ]:8080" target="_blank" style="color: var(--accent); text-decoration: underline; font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700;">
+                    http://[IP-адрес-ТВ]:8080
                   </a>
                   <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
                     📷 Наведите камеру любого смартфона на QR-код для мгновенного подключения пульта.
@@ -1127,6 +1127,21 @@
             <button id="btnInstallSelectedApps" class="btn btn-primary" onclick="installSelectedApps()">
               🚀 Установить выбранные приложения на ТВ
             </button>
+
+            <!-- Custom APK Installer -->
+            <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border);">
+              <div style="font-weight: 700; font-size: 0.9rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                <span>📦</span> <span>Установка своего APK на телевизор</span>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                Установите любой загруженный файл приложения (.apk) с вашего компьютера прямо на ТВ в один клик.
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="text" id="inputCustomApkPath" class="input-ip" placeholder="Файл .apk не выбран..." readonly style="flex: 1; min-width: 260px; background: rgba(0,0,0,0.3);">
+                <button class="btn btn-secondary" onclick="browseCustomApk()">📁 Обзор...</button>
+                <button class="btn btn-primary" onclick="installCustomApk()">🚀 Установить на ТВ</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1210,7 +1225,11 @@
 
     // Connect TV
     async function connectTv() {
-      const ip = document.getElementById('inputTvIp').value.trim() || '192.168.1.50';
+      let ip = document.getElementById('inputTvIp').value.trim();
+      if (!ip) {
+        log('IP не указан. Запуск автопоиска телевизора в сети...');
+        return scanSubnet();
+      }
       const port = parseInt(document.getElementById('inputTvPort').value.trim()) || 5555;
       log(`Подключение к ТВ: ${ip}:${port}...`);
 
@@ -1566,6 +1585,31 @@
       log('Создание быстрого слепка состояния пакетов ТВ...');
       const res = await callApi('create_backup_snapshot');
       log('✓ Слепок бэкапа успешно сохранен в папку backups/');
+    }
+
+    // Custom APK Installation
+    async function browseCustomApk() {
+      const res = await callApi('choose_custom_apk');
+      if (res && res.ok && res.path) {
+        document.getElementById('inputCustomApkPath').value = res.path;
+        log(`Выбран APK файл: ${res.path}`);
+      }
+    }
+
+    async function installCustomApk() {
+      const p = document.getElementById('inputCustomApkPath').value.trim();
+      if (!p || p === 'Файл .apk не выбран...') {
+        alert('Пожалуйста, сначала выберите файл .apk через кнопку «Обзор...»');
+        return;
+      }
+      const filename = p.split(/[\\/]/).pop();
+      log(`Установка ${filename} на ТВ...`);
+      const res = await callApi('install_custom_apk', { file_path: p });
+      if (res && res.ok) {
+        log(`✓ ${res.msg}`);
+      } else {
+        log(`⚠ Ошибка установки: ${res ? res.error : 'Неизвестная ошибка'}`);
+      }
     }
 
     // Initial Load
