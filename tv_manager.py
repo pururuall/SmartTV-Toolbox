@@ -361,11 +361,25 @@ class SmartTVManager:
         self.run_adb(["shell", "busybox", "httpd", "-p", "8080", "-h", "/data/local/tmp/web_remote"])
 
         url = f"http://{ip_only}:8080"
+        qr_b64 = ""
+        try:
+            import qrcode, io, base64
+            qr = qrcode.QRCode(box_size=6, border=2)
+            qr.add_data(url)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            qr_b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+        except Exception:
+            pass
+
         return {
             "ok": True,
             "enabled": True,
             "port": 8080,
             "url": url,
+            "qr_base64": qr_b64,
             "msg": f"Автономный веб-пульт активен: {url}"
         }
 
