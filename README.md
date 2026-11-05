@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="img/banner_header.png" alt="Smart TV Toolbox v3.0" width="100%">
+<img src="img/banner_header%20v3.0.jpg" alt="Smart TV Toolbox v3.0" width="100%">
 
 <br/><br/>
 
-[![Версия](https://img.shields.io/badge/Версия-v3.0.0-0284c7?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest)
+[![Версия](https://img.shields.io/badge/Версия-v3.0.0_Major-6366f1?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest)
 [![Скачать SmartTV_Control.exe](https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest/download/SmartTV_Control.exe)
 [![Скачать весь ZIP](https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_РЕПОЗИТОРИЙ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip)
 
@@ -18,7 +18,48 @@
 
 ---
 
-Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **3.0.0**) для глубокой очистки, ускорения, тонкой настройки лаунчеров и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
+Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **3.0.0**) для глубокой очистки, ускорения, тонкой настройки лаунчеров и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
+
+---
+
+## 📸 Скриншоты и демонстрация работы
+
+<div align="center">
+
+### 🖥️ Интерфейс приложения Smart TV Toolbox v3.0
+*(5 вкладок, диагностика ОЗУ, попакетный конструктор деблоата и Live ADB-терминал)*
+
+<img src="img/app_showcase.png" alt="Интерфейс программы Smart TV Toolbox v3.0" width="94%">
+
+<br/><br/>
+
+### 📺 1. Лаунчер CleanYourTV (Apple TV Style)
+*(Ультралегкий домашний экран ~500 КБ с настраиваемым доком Топ-6 приложений и нулевой рекламой)*
+
+<img src="img/tv_home_clean.png" alt="Лаунчер CleanYourTV на экране телевизора" width="94%">
+
+<br/><br/>
+
+### 📺 2. Лаунчер «Мой ТВ» (Moy-TV)
+*(Информационный дашборд с виджетами погоды, курсов валют ЦБ РФ, новостей, ярлыками HDMI 1–3 и веб-пультом)*
+
+<img src="img/moytv_screen.png" alt="Лаунчер Мой ТВ на экране телевизора" width="94%">
+
+<br/><br/>
+
+### 📺 3. Лаунчер FLauncher
+*(Классический Open-Source лаунчер под Android TV с настраиваемыми категориями и сеткой)*
+
+<img src="img/flauncher_screen.png" alt="Лаунчер FLauncher на экране телевизора" width="94%">
+
+<br/><br/>
+
+### 📺 4. Заводской интерфейс Яндекс ТВ (YaOS) до оптимизации
+*(Для сравнения: тяжелая витрина с рекламой, промо-каруселями и фоновыми службами телеметрии)*
+
+<img src="img/yaos_home_screen.png" alt="Заводской экран Яндекс ТВ до очистки" width="94%">
+
+</div>
 
 ---
 
@@ -73,6 +114,7 @@
 | `main_webview.py` | 🖥️ Нативный графический интерфейс на WebView2 |
 | `server.py` | 🌐 Локальный HTTP-сервер (строго `127.0.0.1`) для запуска через браузер |
 | `platform-tools/` | Официальные утилиты ADB от Google под Windows |
+| `img/` | Баннеры и скриншоты приложения и всех поддерживаемых лаунчеров |
 
 ---
 

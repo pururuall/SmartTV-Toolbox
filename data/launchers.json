@@ -4,14 +4,14 @@
       "name": "Мой ТВ (Moy-TV)",
       "badge": "Инфо-дашборд для YaOS",
       "apk_path": "apps/launchers/MoyTV.apk",
-      "package": "ru.moytv.launcher",
-      "main_activity": ".HomeActivity",
+      "package": "ru.mikulinskiy.tvhome",
+      "main_activity": ".MainActivity",
       "supports_dock_editor": true,
       "supports_custom_wallpaper": true,
       "supports_web_remote": true,
       "web_remote_port": 8080,
-      "wallpaper_remote_path": "/sdcard/Pictures/MoyTV/custom_bg.jpg",
-      "config_remote_path": "/sdcard/Android/data/ru.moytv.launcher/files/settings.json"
+      "wallpaper_remote_path": "/sdcard/Android/data/ru.mikulinskiy.tvhome/files/wallpaper.jpg",
+      "config_remote_path": "/sdcard/Android/data/ru.mikulinskiy.tvhome/files/settings.json"
     },
     "cleanyourtv": {
       "name": "CleanYourTV Launcher",
