@@ -42,9 +42,14 @@ class WebViewBridge:
         return {"ok": False, "error": "Выбор файла отменен"}
 
     def push_preset_wallpaper(self, launcher_id: str, filename: str):
-        local_path = os.path.join(self.manager.base_dir, "wallpapers", filename)
-        if os.path.exists(local_path):
-            return self.manager.push_launcher_wallpaper(launcher_id, local_path)
+        candidates = [
+            self.manager.exe_dir / "wallpapers" / filename,
+            self.manager.meipass_dir / "wallpapers" / filename,
+            self.manager.base_dir / "wallpapers" / filename,
+        ]
+        for c in candidates:
+            if c.exists():
+                return self.manager.push_launcher_wallpaper(launcher_id, str(c))
         return {"ok": False, "error": f"Обои не найдены: {filename}"}
 
     def update_launcher_settings(self, launcher_id: str, payload: dict):

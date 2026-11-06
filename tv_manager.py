@@ -18,25 +18,45 @@ class SmartTVManager:
     def __init__(self, base_dir: Optional[str] = None):
         if base_dir:
             self.base_dir = Path(base_dir)
+            self.exe_dir = self.base_dir
+            self.meipass_dir = self.base_dir
         elif getattr(sys, 'frozen', False):
-            exe_dir = Path(os.path.dirname(sys.executable))
-            meipass_dir = Path(getattr(sys, '_MEIPASS', exe_dir))
-            self.base_dir = exe_dir if (exe_dir / "data" / "packages.json").exists() else meipass_dir
+            self.exe_dir = Path(os.path.dirname(sys.executable))
+            self.meipass_dir = Path(getattr(sys, '_MEIPASS', self.exe_dir))
+            self.base_dir = self.exe_dir if (self.exe_dir / "data" / "packages.json").exists() else self.meipass_dir
         else:
             self.base_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+            self.exe_dir = self.base_dir
+            self.meipass_dir = self.base_dir
 
         self.adb_bin = self._resolve_adb_binary()
         self.current_device: Optional[str] = None
 
-        self.packages_db = self._load_json(self.base_dir / "data" / "packages.json")
-        self.launchers_db = self._load_json(self.base_dir / "data" / "launchers.json")
-        self.backups_dir = self.base_dir / "backups"
-        self.backups_dir.mkdir(exist_ok=True)
+        self.packages_db = self._load_json(self._resolve_file("data/packages.json"))
+        self.launchers_db = self._load_json(self._resolve_file("data/launchers.json"))
+        self.backups_dir = self.exe_dir / "backups"
+        try:
+            self.backups_dir.mkdir(exist_ok=True)
+        except Exception:
+            self.backups_dir = self.base_dir / "backups"
+            self.backups_dir.mkdir(exist_ok=True)
+
+    def _resolve_file(self, rel_path: str) -> Path:
+        for root in [self.exe_dir, self.meipass_dir, self.base_dir]:
+            p = root / rel_path
+            if p.exists():
+                return p
+        return self.base_dir / rel_path
 
     def _resolve_adb_binary(self) -> str:
-        win_adb = self.base_dir / "platform-tools" / "adb.exe"
-        if win_adb.exists():
-            return str(win_adb)
+        candidates = [
+            self.exe_dir / "platform-tools" / "adb.exe",
+            self.meipass_dir / "platform-tools" / "adb.exe",
+            self.base_dir / "platform-tools" / "adb.exe",
+        ]
+        for c in candidates:
+            if c.exists():
+                return str(c)
         return "adb"
 
     @staticmethod
@@ -45,6 +65,125 @@ class SmartTVManager:
             with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
         return {}
+
+    def is_valid_apk(self, path: Optional[Path]) -> bool:
+        """Проверяет существование файла, минимальный размер (>1000 байт) и сигнатуру zip/apk."""
+        try:
+            if not path:
+                return False
+            p = Path(path)
+            if not p.is_file():
+                return False
+            if p.stat().st_size < 1000:
+                return False
+            with open(p, "rb") as f:
+                return f.read(4) == b"PK\x03\x04"
+        except Exception:
+            return False
+
+    def _notify(self, msg: str, status_cb=None):
+        if status_cb and callable(status_cb):
+            try:
+                status_cb(msg)
+            except Exception:
+                pass
+        try:
+            import webview
+            if getattr(webview, "windows", None) and len(webview.windows) > 0:
+                import json
+                webview.windows[0].evaluate_js(f"log({json.dumps(msg)})")
+        except Exception:
+            pass
+
+    def resolve_apk(self, rel_path: str, status_cb=None) -> Optional[Path]:
+        """
+        Ищет APK в exe_dir, _MEIPASS, base_dir, плоских папках apps,
+        проверяет сигнатуру файла (отсекает 131-байтные Git LFS указатели)
+        и при необходимости автоматически скачивает файл из GitHub-репозитория.
+        """
+        if not rel_path:
+            return None
+
+        clean_rel = rel_path.replace("\\", "/").strip("/")
+        filename = Path(clean_rel).name
+
+        candidates = [
+            self.exe_dir / clean_rel,
+            self.meipass_dir / clean_rel,
+            self.base_dir / clean_rel,
+            self.exe_dir / "apps" / filename,
+            self.base_dir / "apps" / filename,
+            self.meipass_dir / "apps" / filename,
+            Path.cwd() / clean_rel,
+            Path.cwd() / "apps" / filename,
+            Path.cwd() / filename,
+            self.exe_dir / "apps" / filename.lower(),
+            self.base_dir / "apps" / filename.lower(),
+        ]
+
+        for cand in candidates:
+            if self.is_valid_apk(cand):
+                return cand
+
+        # Если локально нет или файл поврежден (например LFS указатель ~131 байт) — скачиваем из GitHub
+        self._notify(f"[Облако] Скачивание {filename} из репозитория...", status_cb)
+
+        target_dir = self.exe_dir / Path(clean_rel).parent
+        try:
+            target_dir.mkdir(parents=True, exist_ok=True)
+            target_path = self.exe_dir / clean_rel
+        except Exception:
+            appdata = Path(os.environ.get("LOCALAPPDATA", os.path.expanduser("~"))) / "SmartTV_Toolbox"
+            target_dir = appdata / Path(clean_rel).parent
+            target_dir.mkdir(parents=True, exist_ok=True)
+            target_path = appdata / clean_rel
+
+        urls = [
+            f"https://media.githubusercontent.com/media/pururuall/SmartTV-Toolbox/main/{clean_rel}",
+            f"https://raw.githubusercontent.com/pururuall/SmartTV-Toolbox/main/{clean_rel}",
+            f"https://github.com/pururuall/SmartTV-Toolbox/raw/main/{clean_rel}",
+        ]
+        if not clean_rel.startswith("apps/"):
+            urls.insert(0, f"https://media.githubusercontent.com/media/pururuall/SmartTV-Toolbox/main/apps/{clean_rel}")
+
+        import urllib.request
+        import shutil
+
+        temp_target = target_path.with_suffix(target_path.suffix + ".downloading")
+        for url in urls:
+            try:
+                req = urllib.request.Request(
+                    url,
+                    headers={
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) SmartTV-Toolbox/3.0",
+                        "Accept": "*/*",
+                    },
+                )
+                with urllib.request.urlopen(req, timeout=45) as resp:
+                    if resp.status == 200:
+                        with open(temp_target, "wb") as f_out:
+                            shutil.copyfileobj(resp, f_out)
+
+                        if self.is_valid_apk(temp_target):
+                            if target_path.exists():
+                                target_path.unlink()
+                            temp_target.replace(target_path)
+                            size_kb = target_path.stat().st_size // 1024
+                            self._notify(f"[Облако] ✓ {filename} успешно загружен ({size_kb} КБ)", status_cb)
+                            return target_path
+                        else:
+                            if temp_target.exists():
+                                temp_target.unlink()
+            except Exception:
+                if temp_target.exists():
+                    try:
+                        temp_target.unlink()
+                    except Exception:
+                        pass
+                continue
+
+        self._notify(f"[Ошибка] Не удалось скачать {filename} из GitHub.", status_cb)
+        return None
 
     def run_adb(self, args: List[str], timeout: int = 20) -> Dict[str, Any]:
         """Безопасный вызов ADB с жестким контролем таймаута."""
@@ -248,13 +387,15 @@ class SmartTVManager:
             return {"ok": False, "error": f"Неизвестный лаунчер: {launcher_id}"}
 
         meta = launchers[launcher_id]
-        apk_full_path = self.base_dir / meta["apk_path"]
-        if not apk_full_path.exists():
-            return {"ok": False, "error": f"Файл APK не найден: {apk_full_path}"}
+        self._notify(f"Поиск APK для лаунчера {meta.get('name', launcher_id)}...")
+        apk_full_path = self.resolve_apk(meta["apk_path"])
+        if not apk_full_path:
+            return {"ok": False, "error": f"Файл APK не найден и не удалось скачать: {meta['apk_path']}"}
 
-        inst_res = self.run_adb(["install", "-r", str(apk_full_path)], timeout=60)
+        self._notify(f"Установка APK на ТВ: {apk_full_path.name}...")
+        inst_res = self.run_adb(["install", "-r", str(apk_full_path)], timeout=90)
         if not inst_res["ok"]:
-            return {"ok": False, "error": f"Ошибка установки APK: {inst_res['stderr']}"}
+            return {"ok": False, "error": f"Ошибка установки APK: {inst_res['stderr'] or inst_res['stdout']}"}
 
         component = f"{meta['package']}/{meta['main_activity']}"
         self.run_adb(["shell", "cmd", "package", "set-home-activity", component])
@@ -375,6 +516,11 @@ class SmartTVManager:
 
         local_remote_dir = self.base_dir / "web_remote"
         if not local_remote_dir.exists():
+            for d in [self.exe_dir / "web_remote", self.meipass_dir / "web_remote"]:
+                if d.exists():
+                    local_remote_dir = d
+                    break
+        if not local_remote_dir.exists():
             return {"ok": False, "error": "Папка web_remote не найдена."}
 
         self.run_adb(["shell", "mkdir", "-p", "/data/local/tmp/web_remote/cgi-bin"])
@@ -390,20 +536,13 @@ class SmartTVManager:
         self.run_adb(["shell", "pkill", "-f", "busybox.*httpd"])
         self.run_adb(["shell", "busybox", "httpd", "-p", "8080", "-h", "/data/local/tmp/web_remote"])
 
-        apk_candidates = [
-            self.base_dir / "apps" / "TVWebRemote.apk",
-            self.base_dir / "apps" / "media" / "TVWebRemote.apk",
-        ]
-        if getattr(sys, '_MEIPASS', None):
-            apk_candidates.append(Path(sys._MEIPASS) / 'apps' / 'TVWebRemote.apk')
-        apk_path = None
-        for cand in apk_candidates:
-            if cand.exists():
-                apk_path = cand
-                break
+        apk_path = self.resolve_apk("apps/TVWebRemote.apk")
+        if not apk_path:
+            apk_path = self.resolve_apk("apps/media/TVWebRemote.apk")
 
         pm_check = self.run_adb(["shell", "pm", "path", remote_pkg])
         if "package:" not in pm_check.get("stdout", "") and apk_path:
+            self._notify("Установка TVWebRemote на ТВ...")
             self.run_adb(["install", "-r", str(apk_path)], timeout=60)
 
         update_cleanyourtv_topbar(add_pkg=True)
@@ -445,15 +584,21 @@ class SmartTVManager:
         smarttube_pkg = "com.liskovsoft.smarttubetv.beta"
 
         if install_smarttube:
-            st_apk = self.base_dir / "apps" / "youtube" / "SmartTube_stable.apk"
-            if st_apk.exists():
-                res = self.run_adb(["install", "-r", str(st_apk)], timeout=60)
+            self._notify("[YouTube] Подготовка SmartTube...")
+            st_apk = self.resolve_apk("apps/youtube/SmartTube_stable.apk")
+            if st_apk and self.is_valid_apk(st_apk):
+                self._notify(f"[YouTube] Установка {st_apk.name} на ТВ...")
+                res = self.run_adb(["install", "-r", str(st_apk)], timeout=90)
                 steps_log.append({"step": "install_smarttube", "ok": res["ok"]})
+            else:
+                steps_log.append({"step": "install_smarttube", "ok": False, "error": "SmartTube APK не найден"})
 
         if bypass_mode == "byedpi":
-            byedpi_apk = self.base_dir / "apps" / "youtube" / "ByeDPI_tv.apk"
-            if byedpi_apk.exists():
-                self.run_adb(["install", "-r", str(byedpi_apk)], timeout=45)
+            self._notify("[ByeDPI] Подготовка ByeDPI...")
+            byedpi_apk = self.resolve_apk("apps/youtube/ByeDPI_tv.apk")
+            if byedpi_apk and self.is_valid_apk(byedpi_apk):
+                self._notify(f"[ByeDPI] Установка {byedpi_apk.name} на ТВ...")
+                self.run_adb(["install", "-r", str(byedpi_apk)], timeout=60)
 
             cfg_dir = "/sdcard/Android/data/io.github.dovecoteescapee.byedpi/files"
             self.run_adb(["shell", "mkdir", "-p", cfg_dir])
@@ -492,29 +637,42 @@ class SmartTVManager:
         """Пакетная установка медиа-приложений из каталога."""
         installed, errors = [], []
         apps_map = {
-            "lampa": self.base_dir / "apps" / "media" / "Lampa.apk",
-            "zona": self.base_dir / "apps" / "media" / "Zona.apk",
-            "hdrezka": self.base_dir / "apps" / "media" / "HDRezka.apk",
-            "filemanager": self.base_dir / "apps" / "media" / "FileManagerPlus.apk",
-            "happ": self.base_dir / "apps" / "media" / "Happ.apk",
-            "spotify": self.base_dir / "apps" / "media" / "SpotifyTV.apk",
-            "smarttube": self.base_dir / "apps" / "youtube" / "SmartTube_stable.apk",
-            "byedpi": self.base_dir / "apps" / "youtube" / "ByeDPI_tv.apk",
-            "cleanyourtv": self.base_dir / "apps" / "launchers" / "CleanYourTV.apk",
-            "moytv": self.base_dir / "apps" / "launchers" / "MoyTV.apk",
-            "flauncher": self.base_dir / "apps" / "launchers" / "FLauncher.apk",
+            "lampa": "apps/media/Lampa.apk",
+            "zona": "apps/media/Zona.apk",
+            "hdrezka": "apps/media/HDRezka.apk",
+            "filemanager": "apps/media/FileManagerPlus.apk",
+            "happ": "apps/media/Happ.apk",
+            "spotify": "apps/media/SpotifyTV.apk",
+            "smarttube": "apps/youtube/SmartTube_stable.apk",
+            "byedpi": "apps/youtube/ByeDPI_tv.apk",
+            "cleanyourtv": "apps/launchers/CleanYourTV.apk",
+            "moytv": "apps/launchers/MoyTV.apk",
+            "flauncher": "apps/launchers/FLauncher.apk",
         }
 
-        for key in app_keys:
-            apk = apps_map.get(key.lower())
-            if apk and apk.exists():
-                res = self.run_adb(["install", "-r", str(apk)], timeout=60)
-                if res["ok"]:
+        total = len(app_keys)
+        for idx, key in enumerate(app_keys, 1):
+            rel_path = apps_map.get(key.lower())
+            if not rel_path:
+                errors.append({"app": key, "error": "Приложение не найдено в каталоге"})
+                continue
+
+            self._notify(f"[{idx}/{total}] Поиск APK: {key} ({Path(rel_path).name})...")
+            apk = self.resolve_apk(rel_path)
+            if apk and self.is_valid_apk(apk):
+                self._notify(f"[{idx}/{total}] Установка {key} на ТВ...")
+                res = self.run_adb(["install", "-r", str(apk)], timeout=120)
+                out = (res.get("stdout", "") + " " + res.get("stderr", "")).strip()
+                if res.get("ok") or "Success" in out:
                     installed.append(key)
+                    self._notify(f"[{idx}/{total}] ✓ {key} успешно установлено!")
                 else:
-                    errors.append({"app": key, "error": res["stderr"] or res["stdout"]})
+                    err_msg = res.get("stderr") or res.get("stdout") or "Ошибка установки"
+                    errors.append({"app": key, "error": err_msg})
+                    self._notify(f"[{idx}/{total}] ⚠ Ошибка установки {key}: {err_msg}")
             else:
-                errors.append({"app": key, "error": "APK файл не найден"})
+                errors.append({"app": key, "error": "APK файл не найден и не удалось скачать"})
+                self._notify(f"[{idx}/{total}] ⚠ Не удалось получить APK для {key}")
 
         return {"ok": True, "installed": installed, "errors": errors}
 
