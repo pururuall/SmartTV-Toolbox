@@ -1,13 +1,14 @@
 <div align="center">
 
-<img src="img/banner_header%20v3.0.jpg" alt="Smart TV Toolbox v3.0" width="100%">
+  <img src="img/banner_header%20v3.0.jpg" alt="Smart TV Toolbox v3.0" width="100%">
 
-<br/><br/>
+  <br/><br/>
 
-[![Версия](https://img.shields.io/badge/Версия-v3.0.0_Major-6366f1?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest)
-[![Скачать SmartTV_Control.exe](https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest/download/SmartTV_Control.exe)
-[![Скачать весь ZIP](https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_РЕПОЗИТОРИЙ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip)
+  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/Версия-v3.0.0_Major-6366f1?style=for-the-badge&logo=github&logoColor=white" alt="Версия"></a>
+  <a href="https://github.com/pururuall/SmartTV-Toolbox/raw/main/SmartTV_Control.exe"><img src="https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white" alt="Скачать SmartTV_Control.exe"></a>
+  <a href="https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip"><img src="https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_РЕПОЗИТОРИЙ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white" alt="Скачать весь ZIP"></a>
 
+</div>
 ---
 
 Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **3.0.0**) для глубокой очистки, ускорения, тонкой настройки лаунчеров и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
