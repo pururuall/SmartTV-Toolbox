@@ -1511,18 +1511,41 @@ class SmartTVManager:
 
 
     
+    
+    def _get_last_known_ip(self) -> Optional[str]:
+        devices = self.get_known_devices()
+        if devices and isinstance(devices, list):
+            for d in devices:
+                if isinstance(d, dict) and d.get("ip"):
+                    return d["ip"]
+        cache_file = self.base_dir / "data" / "last_ip.txt"
+        if cache_file.exists():
+            try:
+                ip = cache_file.read_text(encoding="utf-8").strip()
+                if ip:
+                    return ip
+            except Exception:
+                pass
+        return None
+
     def capture_tv_screenshot(self) -> Dict[str, Any]:
         """Захватывает реальный экран телевизора через ADB screencap и возвращает base64 PNG."""
         if not self.current_device:
-            res = self.run_adb(["devices"])
-            for line in res.get("stdout", "").splitlines():
-                if "\tdevice" in line:
-                    self.current_device = line.split("\t")[0].strip()
-                    break
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                res = self.run_adb(["devices"])
+                for line in res.get("stdout", "").splitlines():
+                    if "\tdevice" in line:
+                        self.current_device = line.split("\t")[0].strip()
+                        break
 
         if not self.current_device:
-            return {"ok": False, "error": "Телевизор не подключен по ADB"}
+            return {"ok": False, "error": "Телевизор не подключен по ADB. Подключитесь во вкладке «Общее»"}
 
+        # Wake up display if screensaver turned screen off
+        self.run_adb(["shell", "input", "keyevent", "224"], timeout=3)
         remote_path = "/sdcard/tv_screenshot.png"
         local_path = self.backups_dir / "tv_current_screen.png"
 
@@ -1549,6 +1572,11 @@ class SmartTVManager:
         local_tmp = self.backups_dir / "cleanyourtv_current.json"
         from_tv = False
         loaded_cfg = None
+
+        if not self.current_device:
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
 
         if self.current_device:
             pull_res = self.run_adb(["pull", remote_cfg, str(local_tmp)], timeout=10)

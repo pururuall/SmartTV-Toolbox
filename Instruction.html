@@ -935,6 +935,483 @@
       100% { transform: rotate(360deg); }
     }
 
+  
+    /* ==================== VIRTUAL TV CANVAS (WYSIWYG INTERACTIVE) ==================== */
+    .tv-mockup-island {
+      width: 100%;
+      max-width: 720px;
+      aspect-ratio: 16 / 9;
+      background: #0d0d12;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px 24px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06);
+      user-select: none;
+    }
+    .tv-mockup-island.live-mode {
+      padding: 0 !important;
+    }
+
+    .tv-mockup-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('wallpapers/01-dusk-peaks.jpg');
+      background-size: cover;
+      background-position: center;
+      transition: background-image 0.4s ease;
+      z-index: 1;
+    }
+
+    .tv-mockup-vignette {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.85) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Top bar */
+    .vtv-topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      color: #fff;
+    }
+
+    .vtv-top-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .vtv-greeting-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vtv-greeting {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.75);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      border-bottom: 1px dashed rgba(255,255,255,0.3);
+      padding-bottom: 1px;
+    }
+    .vtv-greeting:hover {
+      color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    .vtv-clock-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .vtv-clock-time {
+      font-size: 1.85rem;
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .vtv-clock-date {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .vtv-telemetry {
+      font-size: 0.62rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 3px;
+      font-weight: 400;
+    }
+
+    /* Top Right Circular Buttons */
+    .vtv-top-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .vtv-circle-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    .vtv-circle-btn:hover {
+      transform: scale(1.14);
+      background: rgba(255, 255, 255, 0.28);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    .vtv-circle-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Interactive Gear Settings Flyout */
+    .vtv-settings-flyout {
+      position: absolute;
+      top: 56px;
+      right: 20px;
+      width: 290px;
+      background: rgba(18, 18, 24, 0.95);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06);
+      z-index: 100;
+      animation: vtvFlyoutIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes vtvFlyoutIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .vtv-flyout-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 10px;
+    }
+
+    .vtv-flyout-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vtv-flyout-close {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 2px 4px;
+    }
+    .vtv-flyout-close:hover { color: #fff; }
+
+    .vtv-flyout-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.75rem;
+      color: #e2e2e8;
+    }
+
+    /* Flyout HDMI menu */
+    .vtv-inputs-menu {
+      position: absolute;
+      top: 56px;
+      right: 60px;
+      width: 180px;
+      background: rgba(18, 18, 24, 0.95);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      padding: 8px;
+      z-index: 100;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6);
+    }
+    .vtv-input-item {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .vtv-input-item:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* Bottom Matte Dock */
+    .vtv-dock-container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vtv-dock-glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+    }
+
+    .vtv-tile {
+      width: 68px;
+      height: 44px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: grab;
+      position: relative;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      user-select: none;
+    }
+
+    .vtv-tile:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.6), 0 0 0 2px #ffffff;
+      z-index: 20;
+    }
+
+    .vtv-tile:active {
+      cursor: grabbing;
+    }
+
+    .vtv-tile.dragging {
+      opacity: 0.4;
+      transform: scale(0.92);
+    }
+
+    .vtv-tile.drag-over {
+      border: 2px dashed #7c8cf8 !important;
+      transform: scale(1.05);
+    }
+
+    /* Authentic Tile Brand Themes */
+    .vtv-tile-zona {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+    .vtv-tile-hdrezka {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      color: #fff;
+    }
+    .vtv-tile-spotify {
+      background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+      color: #fff;
+    }
+    .vtv-tile-vk {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+    }
+    .vtv-tile-rutube {
+      background: linear-gradient(135deg, #dc2626 0%, #581c87 100%);
+      color: #fff;
+    }
+    .vtv-tile-smarttube {
+      background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+      color: #fff;
+    }
+    .vtv-tile-lampa {
+      background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+      color: #fff;
+    }
+    .vtv-tile-default {
+      background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+      color: #fff;
+    }
+
+    .vtv-tile-add {
+      width: 36px;
+      height: 44px;
+      border-radius: 8px;
+      border: 1px dashed rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+    }
+    .vtv-tile-add:hover {
+      border-color: #fff;
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+      transform: scale(1.08);
+    }
+
+    /* Tile Context Popover */
+    .vtv-tile-popover {
+      position: absolute;
+      bottom: 56px;
+      background: rgba(18, 18, 24, 0.96);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 4px;
+      display: flex;
+      gap: 4px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.6);
+      z-index: 50;
+      animation: vtvFlyoutIn 0.15s ease-out;
+    }
+
+    .vtv-pop-btn {
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.08);
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 0.65rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .vtv-pop-btn:hover { background: rgba(255,255,255,0.2); }
+    .vtv-pop-btn.danger:hover { background: rgba(248, 113, 113, 0.25); color: #f87171; }
+
+    /* Wallpaper Gallery Strip under Mockup */
+    .vtv-wp-strip {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .vtv-wp-thumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .vtv-wp-thumb:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+    .vtv-wp-thumb.active {
+      border-color: var(--accent);
+      color: #fff;
+      background: rgba(124, 140, 248, 0.1);
+    }
+    .vtv-wp-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+  
+    .vtv-dock-wrapper {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+    .vtv-dock-hint {
+      font-size: 0.62rem;
+      color: rgba(255, 255, 255, 0.55);
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+    .vtv-quick-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .vtv-quick-chip:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .vtv-tile .vtv-tile-drag-hint {
+      position: absolute;
+      top: 3px;
+      right: 4px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1;
+    }
+    .vtv-dock-glass.icons-only-mode .vtv-tile-title {
+      display: none !important;
+    }
+    .vtv-dock-glass.icons-only-mode .vtv-tile {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+    }
+
   </style>
 </head>
 <body>
@@ -1287,88 +1764,187 @@
         <section id="tab-launchers" class="tab-pane">
           
           <!-- Showcase: 16:9 TV Screen Live Preview -->
+          <!-- Showcase: 16:9 Virtual TV Canvas & Live Preview -->
           <div class="showcase-box">
             
-            <!-- View Mode Switcher: Home vs Screensaver vs Live -->
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 680px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <!-- View Mode Switcher: tvOS Canvas vs Screensaver vs Live TV -->
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 720px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 0.74rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em;">Интерактивный макет ТВ (16:9)</span>
+                <span style="font-size: 0.74rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em;">ВИРТУАЛЬНЫЙ ЭКРАН ТВ (16:9)</span>
                 <span id="tvMockupConfigBadge" class="badge-tag" style="display: none; font-size: 11px; background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3);">✓ Считано с ТВ</span>
               </div>
-              <div style="display: flex; gap: 8px; align-items: center;">
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <div class="segmented-control">
-                  <button class="segment-btn active" id="btnTvModeHome" onclick="setTvPreviewMode('home')">📺 Главный экран tvOS</button>
+                  <button class="segment-btn active" id="btnTvModeHome" onclick="setTvPreviewMode('home')">📺 Рабочий стол</button>
                   <button class="segment-btn" id="btnTvModeSaver" onclick="setTvPreviewMode('screensaver')">⏰ Заставка</button>
-                  <button class="segment-btn" id="btnTvModeLive" onclick="setTvPreviewMode('live')">📸 Живой экран ТВ</button>
+                  <button class="segment-btn" id="btnTvModeLive" onclick="setTvPreviewMode('live')">📸 Снимок с ТВ</button>
                 </div>
-                <button class="btn-island-secondary" id="btnCaptureLiveScreen" onclick="captureLiveTvScreen()" title="Сделать реальный снимок экрана телевизора через ADB" style="padding: 5px 11px; font-size: 12px;">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 3px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                  Снимок с ТВ
+                <button class="btn-island-secondary" id="btnReadFromTvTop" onclick="loadCleanYourTvConfig()" title="Считать реальную конфигурацию с телевизора" style="padding: 5px 11px; font-size: 12px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 3px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Считать с ТВ
+                </button>
+                <button class="btn-island-primary" id="btnApplyToTvTop" onclick="applyCleanYourTvToTv()" title="Записать текущую конфигурацию на телевизор" style="padding: 5px 12px; font-size: 12px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 3px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  Применить на ТВ
                 </button>
               </div>
             </div>
 
+            <!-- Virtual 16:9 TV Canvas -->
             <div class="tv-mockup-island" id="tvScreenPreview">
+              <div class="tv-mockup-bg" id="tvMockupBg"></div>
+              <div class="tv-mockup-vignette" id="tvMockupVignette"></div>
               <div class="tv-mockup-glow" id="tvMockupGlow"></div>
-              
-              <!-- 1. HOME SCREEN VIEW -->
-              <div id="tvMockupHomeView" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%;">
-                <div class="tv-island-topbar">
-                  <span style="font-weight: 600;" id="tvPreviewGreeting">Семья</span>
-                  <div style="display: flex; gap: 8px; align-items: center;">
-                    <span style="background: rgba(255,255,255,0.1); padding: 2px 7px; border-radius: 10px; font-size: 0.65rem;" id="tvPreviewNetPill">Wi-Fi 5G</span>
-                    <span style="background: rgba(255,255,255,0.1); padding: 2px 7px; border-radius: 10px; font-size: 0.65rem;" id="tvPreviewInputsPill">HDMI 1</span>
-                    <span>12:45</span>
+
+              <!-- 1. HOME SCREEN VIEW (Virtual WYSIWYG Launcher) -->
+              <div id="tvMockupHomeView" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%; position: relative; z-index: 10;">
+                
+                <!-- VTV Top Bar -->
+                <div class="vtv-topbar">
+                  <div class="vtv-top-left">
+                    <div class="vtv-greeting-row">
+                      <span class="vtv-greeting" id="vtvGreeting" onclick="promptVtvGreeting()" title="Нажмите, чтобы изменить имя">ДОБРОЙ НОЧИ</span>
+                    </div>
+                    <div class="vtv-clock-row">
+                      <span class="vtv-clock-time" id="vtvTime">03:30</span>
+                      <span class="vtv-clock-date" id="vtvDate">ВОСКРЕСЕНЬЕ, 8 НОЯБРЯ</span>
+                    </div>
+                    <div class="vtv-telemetry" id="vtvTelemetry">
+                      <span>CPU 4%</span> • <span>ОЗУ 977 / 1385 МБ</span> • <span>Свободно 9.2 ГБ</span>
+                    </div>
+                  </div>
+
+                  <!-- VTV Top Right Round Action Buttons -->
+                  <div class="vtv-top-right">
+                    <button class="vtv-circle-btn" id="vtvBtnInputs" onclick="toggleVtvInputsMenu()" title="Входы телевизора (HDMI 1, HDMI 2, AV)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </button>
+                    <button class="vtv-circle-btn" id="vtvBtnReorder" onclick="toggleVtvReorder()" title="Режим перестановки [ ⇅ ]">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 15 12 20 17 15"></polyline><polyline points="7 9 12 4 17 9"></polyline></svg>
+                    </button>
+                    <button class="vtv-circle-btn" id="vtvBtnSettings" onclick="toggleVtvSettings()" title="Настройки лаунчера CleanYourTV (нажмите для открытия)">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </button>
                   </div>
                 </div>
 
-                <!-- Center Banner -->
-                <div style="text-align: center; z-index: 2;">
-                  <div style="font-size: 0.65rem; color: var(--accent); font-weight: 600; text-transform: uppercase;">Кинорежим tvOS</div>
-                  <div style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-top: 2px;" id="tvPreviewBannerTitle">Apple TV 4K Style</div>
-                  <div style="font-size: 0.68rem; color: rgba(255,255,255,0.6); margin-top: 2px;">Матовое стекло, подсветка и 7 слотов приложений</div>
-                </div>
+                <!-- Floating Settings Flyout (CleanYourTV Quick Config on TV screen) -->
+                <div class="vtv-settings-flyout" id="vtvSettingsFlyout" style="display: none;">
+                  <div class="vtv-flyout-header">
+                    <div class="vtv-flyout-title">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 5px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                      Параметры CleanYourTV
+                    </div>
+                    <button class="vtv-flyout-close" onclick="toggleVtvSettings(false)">✕</button>
+                  </div>
 
-                <!-- Bottom Matte Dock -->
-                <div class="tv-island-dock" id="tvPreviewDockMatte">
-                  <div id="tvPreviewDockTiles" style="display: flex; gap: 8px; justify-content: center;">
-                    <div class="tv-island-tile active">Zona</div>
-                    <div class="tv-island-tile">Rezka</div>
-                    <div class="tv-island-tile">Lampa</div>
-                    <div class="tv-island-tile">Tube</div>
-                    <div class="tv-island-tile">Music</div>
-                    <div class="tv-island-tile">Happ</div>
+                  <div class="vtv-flyout-row">
+                    <span class="vtv-flyout-label">Кнопка входов [ ⇄ ]</span>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="vtvChkInputs" checked onchange="toggleVtvOption('show_inputs', this.checked)">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="vtv-flyout-row">
+                    <span class="vtv-flyout-label">Кнопка сортировки [ ⇅ ]</span>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="vtvChkReorder" checked onchange="toggleVtvOption('show_reorder', this.checked)">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="vtv-flyout-row">
+                    <span class="vtv-flyout-label">Только иконки (без названий)</span>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="vtvChkIconOnly" onchange="toggleVtvOption('icon_only', this.checked)">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="vtv-flyout-row">
+                    <span class="vtv-flyout-label">Мягкие анимации (Lite)</span>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="vtvChkReducedMotion" onchange="toggleVtvOption('reduced_motion', this.checked)">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="vtv-flyout-row" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+                    <span class="vtv-flyout-label">Часы в режиме ожидания:</span>
+                    <div class="segmented-control" style="width: 100%;">
+                      <button class="segment-btn" onclick="setVtvIdleClock(1, this)">1 м</button>
+                      <button class="segment-btn active" onclick="setVtvIdleClock(5, this)">5 м</button>
+                      <button class="segment-btn" onclick="setVtvIdleClock(10, this)">10 м</button>
+                      <button class="segment-btn" onclick="setVtvIdleClock(15, this)">15 м</button>
+                      <button class="segment-btn" onclick="setVtvIdleClock(0, this)">Выкл</button>
+                    </div>
+                  </div>
+
+                  <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end;">
+                    <button class="btn-island-primary" onclick="applyCleanYourTvToTv()" style="padding: 4px 10px; font-size: 11px;">Применить на ТВ</button>
                   </div>
                 </div>
+
+                <!-- Floating Inputs Menu (Opens on Inputs button click) -->
+                <div class="vtv-inputs-menu" id="vtvInputsMenu" style="display: none;">
+                  <div style="font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; margin-bottom: 6px;">Входы телевизора</div>
+                  <div class="vtv-input-item active" onclick="selectVtvInput('HDMI 1')"><span class="vtv-input-dot"></span> 📺 HDMI 1 (Консоль / ТВ)</div>
+                  <div class="vtv-input-item" onclick="selectVtvInput('HDMI 2')"><span class="vtv-input-dot"></span> 🎮 HDMI 2 (ПК / Приставка)</div>
+                  <div class="vtv-input-item" onclick="selectVtvInput('AV')"><span class="vtv-input-dot"></span> 📼 AV (Композитный)</div>
+                </div>
+
+                <!-- Bottom Dock: Interactive Apps Bar -->
+                <div class="vtv-dock-wrapper">
+                  <div class="vtv-dock-hint">✦ Перетаскивайте мышкой для изменения порядка • Кликните по карточке для замены</div>
+                  <div class="vtv-dock-glass" id="tvMockupDock">
+                    <!-- Dynamically populated app tiles -->
+                  </div>
+                </div>
+
               </div>
 
               <!-- 2. SCREENSAVER VIEW -->
-              <div id="tvMockupSaverView" class="tv-screensaver-view">
-                <div class="tv-clock-greeting" id="previewSaverGreeting">Добрый вечер, Семья</div>
-                <div class="tv-clock-time">12:45</div>
-                <div class="tv-clock-date">Воскресенье, 8 ноября</div>
+              <div id="tvMockupSaverView" class="tv-screensaver-view" style="display: none; height: 100%; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10;">
+                <div class="tv-clock-greeting" id="previewSaverGreeting">ДОБРОЙ НОЧИ, СЕМЬЯ</div>
+                <div class="tv-clock-time">03:30</div>
+                <div class="tv-clock-date">ВОСКРЕСЕНЬЕ, 8 НОЯБРЯ</div>
                 <div class="tv-clock-telemetry" id="previewSaverTelemetry">
-                  <span>CPU: 14%</span> • <span>ОЗУ: 410 МБ свободно</span> • <span>Диск: 9.2 ГБ</span>
+                  <span>CPU: 4%</span> • <span>ОЗУ: 410 МБ свободно</span> • <span>Диск: 9.2 ГБ свободно</span>
                 </div>
-
-              <!-- 3. LIVE TV SCREEN VIEW (Real-time ADB capture) -->
-              <div id="tvMockupLiveView" style="display: none; width: 100%; height: 100%; position: relative; z-index: 2; align-items: center; justify-content: center; background: #000; border-radius: 10px; overflow: hidden;">
-                <img id="tvLiveScreenshotImg" src="" alt="Экран телевизора" style="width: 100%; height: 100%; object-fit: contain; display: none;">
-                <div id="tvLivePlaceholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); font-size: 12px; gap: 8px; text-align: center; padding: 20px;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
-                  <span>Нажмите <b>«Снимок с ТВ»</b> для захвата реального изображения экрана телевизора в реальном времени.</span>
-                </div>
-                <div id="tvLiveTimestamp" style="position: absolute; bottom: 8px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; display: none;"></div>
               </div>
 
+              <!-- 3. LIVE TV SCREEN VIEW (Real-time ADB capture) -->
+              <div id="tvMockupLiveView" style="display: none; width: 100%; height: 100%; position: absolute; inset: 0; z-index: 30; align-items: center; justify-content: center; background: #000; overflow: hidden;">
+                <img id="tvLiveScreenshotImg" src="" alt="Снимок телевизора" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                <div id="tvLivePlaceholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); font-size: 12px; gap: 8px; text-align: center; padding: 20px;">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                  <span>Нажмите <b>Снимок с ТВ</b> для захвата реального экрана телевизора.</span>
+                </div>
+                <div id="tvLiveTimestamp" style="position: absolute; bottom: 8px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.85); background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 3px 8px; border-radius: 4px; display: none; font-family: monospace;"></div>
+                <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 6px;">
+                  <button class="btn-island-secondary" onclick="captureLiveTvScreen(false)" style="padding: 4px 8px; font-size: 11px; background: rgba(0,0,0,0.6);">🔄 Обновить</button>
+                  <button class="btn-island-secondary" onclick="setTvPreviewMode('home')" style="padding: 4px 8px; font-size: 11px; background: rgba(0,0,0,0.6);">✕ Закрыть Live</button>
+                </div>
               </div>
 
             </div>
 
-            <span class="showcase-label" id="tvShowcaseLabel">Интерактивный экран-макет 16:9 — Главный экран CleanYourTV</span>
+            <!-- Wallpaper Quick Selection Bar -->
+            <div class="vtv-wp-strip" id="vtvWallpaperStrip">
+              <span style="font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; white-space: nowrap;">Обои ТВ:</span>
+              <button class="vtv-wp-thumb active" onclick="setVtvWallpaper('wallpapers/01-dusk-peaks.jpg', this)"><span class="vtv-wp-dot" style="background-image:url('wallpapers/01-dusk-peaks.jpg');"></span> Dusk Peaks</button>
+              <button class="vtv-wp-thumb" onclick="setVtvWallpaper('wallpapers/04-aurora.jpg', this)"><span class="vtv-wp-dot" style="background-image:url('wallpapers/04-aurora.jpg');"></span> Aurora</button>
+              <button class="vtv-wp-thumb" onclick="setVtvWallpaper('wallpapers/02-golden-coast.jpg', this)"><span class="vtv-wp-dot" style="background-image:url('wallpapers/02-golden-coast.jpg');"></span> Golden Coast</button>
+              <button class="vtv-wp-thumb" onclick="setVtvWallpaper('wallpapers/05-dunes.jpg', this)"><span class="vtv-wp-dot" style="background-image:url('wallpapers/05-dunes.jpg');"></span> Dunes</button>
+              <button class="vtv-wp-thumb" onclick="setVtvWallpaper('wallpapers/10-city-lights.jpg', this)"><span class="vtv-wp-dot" style="background-image:url('wallpapers/10-city-lights.jpg');"></span> City Lights</button>
+              <button class="vtv-wp-thumb" onclick="setVtvWallpaper('wallpapers/07-mirror-lake.jpg', this)"><span class="vtv-wp-dot" style="background-image:url('wallpapers/07-mirror-lake.jpg');"></span> Mirror Lake</button>
+              <button class="vtv-wp-thumb" onclick="setVtvWallpaper('wallpapers/oled_carbon.jpg', this)"><span class="vtv-wp-dot" style="background:#050505;"></span> OLED Dark</button>
+            </div>
+
+            <span class="showcase-label" id="headerShowcaseLabel">Интерактивный экран CleanYourTV с перетаскиванием плиток мыши, обоями и меню настроек шестеренки</span>
           </div>
 
-          <!-- Group: Выбор Стиля CleanYourTV -->
           <div class="group-section-title">Оформление и пресеты CleanYourTV Studio</div>
           <div class="settings-group">
             
@@ -2288,6 +2864,49 @@
       'com.alphainventor.filemanager': 'File Manager+'
     };
 
+    const POPULAR_TV_APPS = [
+      { name: 'Zona', pkg: 'mobi.zona', brand: 'zona' },
+      { name: 'HDRezka', pkg: 'com.falcofemoralis.hdrezkaapp', brand: 'hdrezka' },
+      { name: 'Spotify', pkg: 'com.spotify.tv.android', brand: 'spotify' },
+      { name: 'VK Video', pkg: 'com.vk.tv', brand: 'vk' },
+      { name: 'RuTube', pkg: 'ru.rutube.app', brand: 'rutube' },
+      { name: 'SmartTube', pkg: 'org.smarttube.stable', brand: 'smarttube' },
+      { name: 'Кинопоиск', pkg: 'ru.kinopoisk.tv', brand: 'default' },
+      { name: 'Иви', pkg: 'ru.ivi.tv', brand: 'default' },
+      { name: 'KION', pkg: 'ru.mts.kion', brand: 'default' },
+      { name: 'Lampa', pkg: 'com.lampa.app', brand: 'lampa' },
+      { name: 'VLC', pkg: 'org.videolan.vlc', brand: 'default' },
+      { name: 'Настройки', pkg: 'com.android.tv.settings', brand: 'default' }
+    ];
+
+    function detectBrand(pkg, name = '') {
+      const p = (pkg || '').toLowerCase();
+      const n = (name || '').toLowerCase();
+      if (p.includes('zona') || n.includes('zona')) return 'zona';
+      if (p.includes('hdrezka') || n.includes('rezka')) return 'hdrezka';
+      if (p.includes('spotify') || n.includes('spotify')) return 'spotify';
+      if (p.includes('vk') || n.includes('вк')) return 'vk';
+      if (p.includes('rutube') || n.includes('рутуб')) return 'rutube';
+      if (p.includes('smarttube') || n.includes('youtube') || n.includes('smart tube')) return 'smarttube';
+      if (p.includes('lampa') || n.includes('лампа')) return 'lampa';
+      return 'default';
+    }
+
+    function getAppInfo(app) {
+      if (typeof app === 'string') {
+        const pkg = app;
+        const name = (window.APP_NAMES_MAP && window.APP_NAMES_MAP[pkg]) || pkg.split('.').pop();
+        return { name, pkg, brand: detectBrand(pkg, name) };
+      }
+      if (typeof app === 'object' && app !== null) {
+        const pkg = app.package || app.pkg || '';
+        const name = app.name || (window.APP_NAMES_MAP && window.APP_NAMES_MAP[pkg]) || pkg.split('.').pop() || 'App';
+        const brand = app.brand || detectBrand(pkg, name);
+        return { name, pkg, brand };
+      }
+      return { name: 'App', pkg: '', brand: 'default' };
+    }
+
     function setTvPreviewMode(mode) {
       const btnHome = document.getElementById('btnTvModeHome');
       const btnSaver = document.getElementById('btnTvModeSaver');
@@ -2296,6 +2915,7 @@
       const viewHome = document.getElementById('tvMockupHomeView');
       const viewSaver = document.getElementById('tvMockupSaverView');
       const viewLive = document.getElementById('tvMockupLiveView');
+      const frame = document.getElementById('tvScreenPreview');
       
       if (btnHome) btnHome.classList.remove('active');
       if (btnSaver) btnSaver.classList.remove('active');
@@ -2304,6 +2924,7 @@
       if (viewHome) viewHome.style.display = 'none';
       if (viewSaver) viewSaver.style.display = 'none';
       if (viewLive) viewLive.style.display = 'none';
+      if (frame) frame.classList.remove('live-mode');
       
       if (mode === 'home') {
         if (btnHome) btnHome.classList.add('active');
@@ -2314,6 +2935,7 @@
       } else if (mode === 'live') {
         if (btnLive) btnLive.classList.add('active');
         if (viewLive) viewLive.style.display = 'flex';
+        if (frame) frame.classList.add('live-mode');
         const img = document.getElementById('tvLiveScreenshotImg');
         if (img && (!img.src || img.src === window.location.href)) {
           captureLiveTvScreen(false);
@@ -2338,17 +2960,14 @@
       
       if (placeholder) {
         placeholder.innerHTML = '<span class="spin" style="display:inline-block; margin-bottom:8px;">' +
-          '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span>' +
-          '<span>Захват экрана телевизора по ADB...</span>';
+          '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span>' +
+          '<span>Захват реального экрана телевизора по ADB...</span>';
+        placeholder.style.display = 'flex';
       }
+      if (img) img.style.display = 'none';
       
       try {
         const res = await callApi('capture_tv_screenshot');
-        if (btn) {
-          btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 3px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> Снимок с ТВ';
-          btn.disabled = false;
-        }
-        
         if (res && res.ok && res.image) {
           if (img) {
             img.src = res.image;
@@ -2363,25 +2982,310 @@
           log(`✓ Снимок экрана телевизора успешно получен (${Math.round(res.size / 1024)} КБ)`);
         } else {
           if (placeholder) {
-            placeholder.innerHTML = `<span style="color:var(--danger)">⚠️ ${res ? res.error : 'Ошибка захвата экрана'}</span>` +
-              '<span style="font-size:11px; color:var(--text-dim)">Убедитесь, что телевизор подключен во вкладке «Общее».</span>';
+            placeholder.innerHTML = `<span style="color:var(--danger)">⚠️ ${res ? res.error : 'Не удалось получить снимок'}</span>` +
+              '<span style="font-size:11px; color:var(--text-dim); margin-top:4px;">Убедитесь, что ТВ включен и подключен по ADB во вкладке «Общее».</span>';
             placeholder.style.display = 'flex';
           }
           if (img) img.style.display = 'none';
           log(`⚠️ Не удалось получить снимок экрана: ${res ? res.error : 'Неизвестная ошибка'}`);
         }
       } catch (e) {
-        if (btn) {
-          btn.innerHTML = 'Снимок с ТВ';
-          btn.disabled = false;
+        if (placeholder) {
+          placeholder.innerHTML = `<span style="color:var(--danger)">⚠️ Ошибка: ${e.message}</span>`;
+          placeholder.style.display = 'flex';
         }
         log('Ошибка при захвате снимка ТВ: ' + e);
+      } finally {
+        if (btn) {
+          btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 3px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> Снимок с ТВ';
+          btn.disabled = false;
+        }
       }
+    }
+
+    // Drag-and-Drop Dock Handlers
+    let dragSrcIndex = null;
+    function handleDockDragStart(e, idx) {
+      dragSrcIndex = idx;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', idx);
+      e.currentTarget.classList.add('dragging');
+    }
+    function handleDockDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      e.currentTarget.classList.add('drag-over');
+    }
+    function handleDockDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+    function handleDockDrop(e, targetIdx) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      if (dragSrcIndex === null || dragSrcIndex === targetIdx) return;
+      if (!studioConfig.dock_apps) return;
+      const moved = studioConfig.dock_apps.splice(dragSrcIndex, 1)[0];
+      studioConfig.dock_apps.splice(targetIdx, 0, moved);
+      dragSrcIndex = null;
+      renderVtvDock();
+      const appInfo = getAppInfo(moved);
+      log(`Порядок в Dock изменен: ${appInfo.name} перемещен на позицию ${targetIdx + 1}`);
+    }
+
+    // Slot Editor Modal Handlers
+    let editingSlotIndex = null;
+    function openSlotEditor(idx) {
+      editingSlotIndex = idx;
+      const app = studioConfig.dock_apps ? studioConfig.dock_apps[idx] : null;
+      const appInfo = getAppInfo(app);
+      
+      const modal = document.getElementById('vtvSlotModal');
+      const title = document.getElementById('vtvSlotModalTitle');
+      const nameInp = document.getElementById('vtvModalAppName');
+      const pkgInp = document.getElementById('vtvModalAppPkg');
+      const btnDel = document.getElementById('vtvBtnDeleteSlot');
+      
+      if (title) title.innerText = `Настройка приложения (Слот №${idx + 1})`;
+      if (nameInp) nameInp.value = appInfo.name;
+      if (pkgInp) pkgInp.value = appInfo.pkg;
+      if (btnDel) btnDel.style.display = (studioConfig.dock_apps && studioConfig.dock_apps.length > 1) ? 'block' : 'none';
+      
+      const grid = document.getElementById('vtvQuickAppGrid');
+      if (grid) {
+        grid.innerHTML = POPULAR_TV_APPS.map(a => `
+          <div class="vtv-quick-chip" onclick="selectQuickApp('${a.name}', '${a.pkg}')">
+            <span>${a.brand === 'spotify' ? '🟢' : a.brand === 'zona' ? '🔵' : a.brand === 'hdrezka' ? '🔴' : '▶'}</span>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;">${a.name}</span>
+          </div>
+        `).join('');
+      }
+      
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeSlotEditor() {
+      const modal = document.getElementById('vtvSlotModal');
+      if (modal) modal.style.display = 'none';
+      editingSlotIndex = null;
+    }
+
+    function selectQuickApp(name, pkg) {
+      const nameInp = document.getElementById('vtvModalAppName');
+      const pkgInp = document.getElementById('vtvModalAppPkg');
+      if (nameInp) nameInp.value = name;
+      if (pkgInp) pkgInp.value = pkg;
+    }
+
+    function saveCurrentSlotApp() {
+      if (editingSlotIndex === null) return;
+      const name = (document.getElementById('vtvModalAppName').value || '').trim();
+      const pkg = (document.getElementById('vtvModalAppPkg').value || '').trim();
+      if (!pkg) {
+        alert('Укажите package name приложения!');
+        return;
+      }
+      if (!studioConfig.dock_apps) studioConfig.dock_apps = [];
+      studioConfig.dock_apps[editingSlotIndex] = {
+        name: name || pkg.split('.').pop(),
+        package: pkg,
+        brand: detectBrand(pkg, name)
+      };
+      renderVtvDock();
+      closeSlotEditor();
+      log(`Слот №${editingSlotIndex + 1} обновлен: ${name} (${pkg})`);
+    }
+
+    function removeCurrentSlotApp() {
+      if (editingSlotIndex === null) return;
+      const removed = studioConfig.dock_apps.splice(editingSlotIndex, 1)[0];
+      renderVtvDock();
+      closeSlotEditor();
+      const appInfo = getAppInfo(removed);
+      log(`Приложение удалено из Dock: ${appInfo.name}`);
+    }
+
+    function addNewAppSlot() {
+      if (!studioConfig.dock_apps) studioConfig.dock_apps = [];
+      studioConfig.dock_apps.push({
+        name: 'Настройки',
+        package: 'com.android.tv.settings',
+        brand: 'default'
+      });
+      renderVtvDock();
+      openSlotEditor(studioConfig.dock_apps.length - 1);
+    }
+
+    // Top Right Buttons & Flyout
+    function toggleVtvSettings(force) {
+      const flyout = document.getElementById('vtvSettingsFlyout');
+      if (!flyout) return;
+      const show = force !== undefined ? force : (flyout.style.display === 'none' || !flyout.style.display);
+      flyout.style.display = show ? 'block' : 'none';
+      if (show) {
+        const inputs = document.getElementById('vtvInputsMenu');
+        if (inputs) inputs.style.display = 'none';
+      }
+    }
+
+    function toggleVtvInputsMenu() {
+      const menu = document.getElementById('vtvInputsMenu');
+      if (!menu) return;
+      const show = menu.style.display === 'none' || !menu.style.display;
+      menu.style.display = show ? 'block' : 'none';
+      if (show) {
+        const flyout = document.getElementById('vtvSettingsFlyout');
+        if (flyout) flyout.style.display = 'none';
+      }
+    }
+
+    function selectVtvInput(inputName) {
+      const menu = document.getElementById('vtvInputsMenu');
+      if (menu) menu.style.display = 'none';
+      log(`Выбран видеовход: ${inputName}`);
+    }
+
+    function toggleVtvReorder() {
+      const hint = document.querySelector('.vtv-dock-hint');
+      if (hint) {
+        hint.style.color = '#7c8cf8';
+        hint.innerText = '⚡ РЕЖИМ СОРТИРОВКИ: перетащите карточки приложений влево/вправо';
+        setTimeout(() => {
+          hint.style.color = 'rgba(255,255,255,0.55)';
+          hint.innerText = '✦ Перетаскивайте мышкой для изменения порядка • Кликните по карточке для замены';
+        }, 4000);
+      }
+      log('Включен режим перестановки карточек в Dock.');
+    }
+
+    function toggleVtvOption(key, val) {
+      studioConfig[key] = val;
+      if (key === 'show_inputs') {
+        const btn = document.getElementById('vtvBtnInputs');
+        if (btn) btn.style.display = val ? 'flex' : 'none';
+      } else if (key === 'show_reorder') {
+        const btn = document.getElementById('vtvBtnReorder');
+        if (btn) btn.style.display = val ? 'flex' : 'none';
+      } else if (key === 'icon_only') {
+        const dock = document.getElementById('tvMockupDock');
+        if (dock) dock.classList.toggle('icons-only-mode', val);
+      }
+      log(`Параметр ${key} установлен: ${val}`);
+    }
+
+    function setVtvWallpaper(path, btn) {
+      const bg = document.getElementById('tvMockupBg');
+      if (bg) {
+        bg.style.backgroundImage = `url('${path}')`;
+      }
+      studioConfig.wallpaper_path = path;
+      document.querySelectorAll('.vtv-wp-thumb').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      log(`Обои телевизора изменены: ${path}`);
+    }
+
+    function setVtvIdleClock(mins, btn) {
+      studioConfig.home_idle_clock_minutes = mins;
+      if (btn && btn.parentElement) {
+        btn.parentElement.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      log(`Часы в режиме ожидания установлены на: ${mins === 0 ? 'Выключено' : mins + ' мин'}`);
+    }
+
+    function promptVtvGreeting() {
+      const cur = studioConfig.greeting_name || 'Семья';
+      const val = prompt('Введите имя или обращение на телевизоре (например: Семья, Алексей, Гостиная):', cur);
+      if (val !== null && val.trim()) {
+        studioConfig.greeting_name = val.trim();
+        updateTvPreview();
+        log(`Обращение на ТВ обновлено: ${val.trim()}`);
+      }
+    }
+
+    // Render Dock
+    function renderVtvDock() {
+      const dock = document.getElementById('tvMockupDock');
+      if (!dock) return;
+      dock.innerHTML = '';
+      
+      const apps = (studioConfig && studioConfig.dock_apps && studioConfig.dock_apps.length > 0)
+        ? studioConfig.dock_apps
+        : [
+            { name: 'Zona', pkg: 'mobi.zona', brand: 'zona' },
+            { name: 'HDRezka', pkg: 'com.falcofemoralis.hdrezkaapp', brand: 'hdrezka' },
+            { name: 'Spotify', pkg: 'com.spotify.tv.android', brand: 'spotify' },
+            { name: 'VK Video', pkg: 'com.vk.tv', brand: 'vk' },
+            { name: 'RuTube', pkg: 'ru.rutube.app', brand: 'rutube' },
+            { name: 'SmartTube', pkg: 'org.smarttube.stable', brand: 'smarttube' }
+          ];
+      
+      apps.forEach((app, idx) => {
+        const info = getAppInfo(app);
+        const tile = document.createElement('div');
+        tile.className = `vtv-tile vtv-tile-${info.brand}`;
+        tile.draggable = true;
+        tile.title = `${info.name} (${info.pkg})\nПеретащите для смены порядка • Кликните для настройки`;
+        
+        tile.addEventListener('dragstart', (e) => handleDockDragStart(e, idx));
+        tile.addEventListener('dragover', handleDockDragOver);
+        tile.addEventListener('dragleave', handleDockDragLeave);
+        tile.addEventListener('drop', (e) => handleDockDrop(e, idx));
+        tile.addEventListener('dragend', (e) => e.currentTarget.classList.remove('dragging'));
+        tile.addEventListener('click', () => openSlotEditor(idx));
+        
+        tile.innerHTML = `
+          <span class="vtv-tile-drag-hint">⋮⋮</span>
+          <div class="vtv-tile-title">${escapeHtml(info.name)}</div>
+        `;
+        dock.appendChild(tile);
+      });
+
+      // Add slot button
+      const addTile = document.createElement('div');
+      addTile.className = 'vtv-tile-add';
+      addTile.title = 'Добавить приложение в Dock';
+      addTile.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
+      addTile.addEventListener('click', addNewAppSlot);
+      dock.appendChild(addTile);
+    }
+
+    function updateTvPreview() {
+      const greeting = document.getElementById('vtvGreeting');
+      if (greeting) greeting.innerText = studioConfig.greeting_name ? studioConfig.greeting_name.toUpperCase() : 'ДОБРОЙ НОЧИ';
+
+      const saverGreeting = document.getElementById('previewSaverGreeting');
+      if (saverGreeting) saverGreeting.innerText = `ДОБРОЙ НОЧИ, ${(studioConfig.greeting_name || 'СЕМЬЯ').toUpperCase()}`;
+
+      const glow = document.getElementById('tvMockupGlow');
+      if (glow) {
+        const acc = studioConfig.accent_color || '#7c8cf8';
+        glow.style.background = `radial-gradient(circle, ${acc}44 0%, transparent 70%)`;
+      }
+
+      if (studioConfig.wallpaper_path) {
+        const bg = document.getElementById('tvMockupBg');
+        if (bg) bg.style.backgroundImage = `url('${studioConfig.wallpaper_path}')`;
+      }
+
+      // Checkbox sync
+      const chkInputs = document.getElementById('vtvChkInputs');
+      if (chkInputs && studioConfig.show_inputs !== undefined) chkInputs.checked = studioConfig.show_inputs;
+      const chkReorder = document.getElementById('vtvChkReorder');
+      if (chkReorder && studioConfig.show_reorder !== undefined) chkReorder.checked = studioConfig.show_reorder;
+      const chkIconOnly = document.getElementById('vtvChkIconOnly');
+      if (chkIconOnly && studioConfig.icon_only !== undefined) chkIconOnly.checked = studioConfig.icon_only;
+
+      const btnInputs = document.getElementById('vtvBtnInputs');
+      if (btnInputs && studioConfig.show_inputs !== undefined) btnInputs.style.display = studioConfig.show_inputs ? 'flex' : 'none';
+      const btnReorder = document.getElementById('vtvBtnReorder');
+      if (btnReorder && studioConfig.show_reorder !== undefined) btnReorder.style.display = studioConfig.show_reorder ? 'flex' : 'none';
+
+      renderVtvDock();
     }
 
     async function initCleanYourTvStudio(force = false) {
       if (studioInitialized && !force) return;
-      log('Загрузка параметров CleanYourTV Studio...');
+      log('Инициализация CleanYourTV Studio...');
       try {
         const [cfgRes, appsRes] = await Promise.all([
           callApi('get_cleanyourtv_config'),
@@ -2406,7 +3310,7 @@
         }
         updateTvPreview();
         studioInitialized = true;
-        log('✓ CleanYourTV Studio готова к настройке.');
+        log('✓ CleanYourTV Studio готова к использованию.');
       } catch (e) {
         console.error('Error init CleanYourTV studio:', e);
       }
@@ -2426,69 +3330,42 @@
       updateTvPreview();
     }
 
-    function updateTvPreview() {
-      const greeting = document.getElementById('tvPreviewGreeting');
-      if (greeting) greeting.innerText = studioConfig.greeting_name || 'Семья';
-
-      const saverGreeting = document.getElementById('previewSaverGreeting');
-      if (saverGreeting) saverGreeting.innerText = `Добрый вечер, ${studioConfig.greeting_name || 'Семья'}`;
-
-      const bannerTitle = document.getElementById('tvPreviewBannerTitle');
-      if (bannerTitle) {
-        bannerTitle.innerText = studioConfig.cinematic_home ? 'Кинорежим Apple TV 4K' : 'Классический стиль';
-      }
-
-      const glow = document.getElementById('tvMockupGlow');
-      if (glow) {
-        const acc = studioConfig.accent_color || '#7c8cf8';
-        glow.style.background = `radial-gradient(circle, ${acc}44 0%, transparent 70%)`;
-      }
-
-      // Dynamic Dock rendering
-      const dock = document.getElementById('tvMockupDock');
-      if (dock) {
-        dock.innerHTML = '';
-        const apps = studioConfig.dock_apps || ['mobi.zona', 'com.falcofemoralis.hdrezkaapp', 'com.spotify.tv.android', 'com.vk.tv', 'org.smarttube.stable'];
-        apps.forEach((pkg, idx) => {
-          const tile = document.createElement('div');
-          tile.className = `tv-island-tile ${idx === 0 ? 'active' : ''}`;
-          const shortName = APP_NAMES_MAP[pkg] || pkg.split('.').pop();
-          tile.innerText = shortName;
-          tile.title = pkg;
-          dock.appendChild(tile);
-        });
-      }
-    }
-
     async function loadCleanYourTvConfig() {
-      const btn = document.getElementById('btnLoadTvConfig') || event.target;
-      const origText = btn ? btn.innerText : 'Считать с ТВ';
+      const btn = document.getElementById('btnReadFromTvTop') || document.getElementById('btnLoadTvConfig');
+      const origText = btn ? btn.innerHTML : 'Считать с ТВ';
       if (btn) {
-        btn.innerText = '⏳ Считывание...';
+        btn.innerHTML = '<span class="spin" style="display:inline-block; margin-right:4px;">⏳</span> Чтение...';
         btn.disabled = true;
       }
 
       log('Считывание конфигурации CleanYourTV с подключенного телевизора...');
       try {
         const res = await callApi('get_cleanyourtv_config');
-        if (btn) {
-          btn.disabled = false;
-        }
+        if (btn) btn.disabled = false;
         
-        if (res && res.ok) {
-          studioConfig = res.config || {};
+        if (res && res.ok && res.config) {
+          studioConfig = res.config;
           studioPresets = res.presets || {};
           studioSchema = res.schema || [];
+          
+          if (res.config.apps && Array.isArray(res.config.apps) && res.config.apps.length > 0) {
+            studioConfig.dock_apps = res.config.apps.map(a => {
+              if (typeof a === 'string') {
+                return { name: (window.APP_NAMES_MAP && window.APP_NAMES_MAP[a]) || a.split('.').pop(), package: a, brand: detectBrand(a) };
+              }
+              return a;
+            });
+          }
           
           updateTvPreview();
           
           const appsCount = (studioConfig.dock_apps || []).length;
           if (btn) {
-            btn.innerText = '✓ Конфиг считан!';
+            btn.innerHTML = '✓ Считано с ТВ!';
             btn.style.borderColor = 'var(--success)';
             btn.style.color = 'var(--success)';
             setTimeout(() => {
-              btn.innerText = origText;
+              btn.innerHTML = origText;
               btn.style.borderColor = '';
               btn.style.color = '';
             }, 2500);
@@ -2496,28 +3373,54 @@
           
           const badge = document.getElementById('tvMockupConfigBadge');
           if (badge) {
-            badge.style.display = 'inline-block';
-            badge.innerText = `✓ Считано с ТВ (${appsCount} прилож. в Доке)`;
+            badge.style.display = 'inline-flex';
+            badge.innerText = `✓ Считано с ${res.device || 'ТВ'} (${appsCount} прилож.)`;
           }
           
-          log(`✓ Конфигурация CleanYourTV успешно считана с ТВ! Загружено ${appsCount} приложений в Доке.`);
-          
-          // Также захватываем свежий скриншот экрана
-          captureLiveTvScreen(false);
+          log(`✓ Конфигурация CleanYourTV успешно считана с ТВ! Загружено ${appsCount} приложений в Dock.`);
         } else {
-          if (btn) btn.innerText = origText;
-          log(`⚠️ Не удалось считать конфигурацию: ${res ? res.error : 'Проверьте подключение ТВ'}`);
-          alert('Не удалось считать конфигурацию. Убедитесь, что телевизор подключен во вкладке «Общее».');
+          if (btn) btn.innerHTML = origText;
+          log(`⚠️ Не удалось считать конфигурацию: ${res ? res.error : 'проверьте соединение с ТВ'}`);
+          alert('Не удалось считать конфигурацию. Проверьте, что телевизор включен и соединен во вкладке «Общее».');
         }
       } catch (e) {
         if (btn) {
-          btn.innerText = origText;
+          btn.innerHTML = origText;
           btn.disabled = false;
         }
         log('Ошибка при считывании конфигурации CleanYourTV: ' + e);
       }
     }
 
+    async function applyCleanYourTvToTv() {
+      const btn = document.getElementById('btnApplyToTvTop');
+      const orig = btn ? btn.innerHTML : 'Применить на ТВ';
+      if (btn) {
+        btn.innerHTML = '<span class="spin" style="display:inline-block; margin-right:4px;">⏳</span> Запись...';
+        btn.disabled = true;
+      }
+      log('Запись и применение конфигурации CleanYourTV на телевизор...');
+      try {
+        const res = await callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true });
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '✓ Применено на ТВ!';
+          setTimeout(() => { btn.innerHTML = orig; }, 3000);
+        }
+        if (res && res.ok) {
+          log('✓ Конфигурация успешно записана на ТВ! Лаунчер перезапущен с новыми параметрами.');
+        } else {
+          log(`⚠️ Результат применения: ${res ? res.error : 'ОК'}`);
+        }
+        setTimeout(() => captureLiveTvScreen(false), 2000);
+      } catch (e) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = orig;
+        }
+        log(`⚠️ Ошибка применения на ТВ: ${e.message}`);
+      }
+    }
 
     function selectLauncher(id, btn) {
       currentSelectedLauncher = id;
@@ -2634,5 +3537,39 @@
       log('Интерфейс Smart TV Toolbox v4.2.1 готов к работе.');
     });
   </script>
+
+  <!-- Slot Editor Modal (Click on Dock App to Swap / Configure) -->
+  <div id="vtvSlotModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-hover); border-radius: 14px; width: 440px; max-width: 92vw; padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: vtvFlyoutIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;" id="vtvSlotModalTitle">Настройка приложения в Dock</h4>
+        <button onclick="closeSlotEditor()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px;">✕</button>
+      </div>
+
+      <div style="font-size: 0.74rem; color: var(--text-dim); margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">Быстрый выбор популярного ТВ-приложения:</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;" id="vtvQuickAppGrid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Название приложения:</label>
+        <input type="text" id="vtvModalAppName" class="input-island" style="width: 100%;" placeholder="Например: Zona, YouTube, Kion">
+      </div>
+
+      <div style="margin-bottom: 18px;">
+        <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Имя пакета (Package Name):</label>
+        <input type="text" id="vtvModalAppPkg" class="input-island" style="width: 100%;" placeholder="mobi.zona, org.smarttube.stable">
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+        <button class="btn-island-danger" onclick="removeCurrentSlotApp()" id="vtvBtnDeleteSlot" style="padding: 6px 12px; font-size: 12px;">Удалить</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-island-secondary" onclick="closeSlotEditor()" style="padding: 6px 14px; font-size: 12px;">Отмена</button>
+          <button class="btn-island-primary" onclick="saveCurrentSlotApp()" style="padding: 6px 16px; font-size: 12px;">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

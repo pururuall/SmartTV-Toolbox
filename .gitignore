@@ -7,5 +7,9 @@ dist/
 home_screen.png
 *.log
 data/last_ip.txt
-backups/*_tmp.json
-
+backups/
+iphone_screenshots/
+*.tmp
+temp_*.html
+validate_*.js
+test_*.js
