@@ -4,14 +4,41 @@
 
   <br/><br/>
 
-  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/Версия-v3.0.0_Major-6366f1?style=for-the-badge&logo=github&logoColor=white" alt="Версия"></a>
+  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/Версия-v4.0.0_Major-6366f1?style=for-the-badge&logo=github&logoColor=white" alt="Версия"></a>
   <a href="https://github.com/pururuall/SmartTV-Toolbox/raw/main/SmartTV_Control.exe"><img src="https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white" alt="Скачать SmartTV_Control.exe"></a>
   <a href="https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip"><img src="https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_РЕПОЗИТОРИЙ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white" alt="Скачать весь ZIP"></a>
 
 </div>
 ---
 
-Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **3.0.0**) для глубокой очистки, ускорения, тонкой настройки лаунчеров и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
+Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **4.0.0**) для глубокой очистки, ускорения, тонкой настройки лаунчеров, управления процессами в реальном времени и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
+
+---
+
+## 🚀 Что нового в версии 4.0.0 (Live Process Manager & Full Offline Bundle)
+
+### 1. ⚡ Диспетчер процессов и ОЗУ в реальном времени (Tab 2 «Очистка ТВ»)
+- **Живое сканирование памяти через ADB (`dumpsys meminfo` / `ps`):** Одно нажатие кнопки «⚡ Сканировать процессы в ОЗУ» анализирует все работающие в данный момент приложения и системные демоны.
+- **Точный замер памяти в МБ:** Отображение реального потребления ОЗУ для каждого процесса и сводный счетчик: сколько всего ОЗУ занято и сколько МБ можно безопасно вернуть системе.
+- **Человеческие описания для ВСЕХ процессов:** 76+ детализированных описаний на русском языке не только системных демонов, но и установленных пользовательских стримингов (ВК Видео, Кинопоиск, Иви, Wink, Premier, OKKO, KION, Zona, Lampa, SmartTube, HDRezka, Telegram и др.).
+- **Цветовая классификация безопасности:**
+  - 🟢 **Безопасно (Не влияет на систему):** фоновые промо-демоны вендоров (Haier `usmartdevice`, `oemtabprovider`, `tvhousekeeper`), магазины приложений и тяжелые пользовательские стриминги, висящие в фоне.
+  - 🟡 **Внимание / Опционально (Влияет на доп. функции):** Google Play Services, штатные лаунчеры вендоров, трансляция экрана Miracast/Cast.
+  - 🔴 **Критический модуль (Аппаратная часть ТВ):** HDMI/AV видеовходы, эфирный ТВ-тюнер, системные настройки шасси. Чекбоксы аппаратно заблокированы от случайной остановки.
+- **Управление процессами на лету:**
+  - **«⏹️ Выгрузить из ОЗУ сейчас» (`am force-stop`):** мгновенно освобождает десятки и сотни мегабайт памяти без перезагрузки ТВ.
+  - **«❄️ Заморозить навсегда» (`pm disable-user --user 0`):** отключает автозапуск процесса даже после перезагрузки телевизора.
+  - **«▶️ Разморозить» (`pm enable`):** возвращает процесс к нормальной работе в 1 клик.
+- **Интерактивные фильтры:** быстрое переключение между категориями «Все», «Безопасно», «Внимание», «Сторонние приложения», «Замороженные».
+
+### 2. 📦 Полный автономный пакет (Все 13 APK встроены в EXE)
+- Все приложения каталога (CleanYourTV, MoyTV, FLauncher, Projectivy, Lampa, Zona, HDRezka, FileManagerPlus, Happ, SpotifyTV, SmartTube, ByeDPI, TVWebRemote) теперь запакованы прямо внутрь `SmartTV_Control.exe`.
+- Установка лаунчеров и приложений работает полностью автономно без необходимости скачивания файлов из интернета и без ошибок «Файл APK не найден».
+
+### 3. 📺 Расширенная оптимизация для телевизоров Haier
+- База пакетов дополнена 12 специализированными службами Haier Matrix / uSmart (фоновые сборщики логов, промо-вкладки, магазины, автоапдейтеры) с защитой физических HDMI и ТВ-тюнеров.
+
+---
 
 ---
 

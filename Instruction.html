@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart TV Toolbox v3.0 — Custom TV Optimizer</title>
+  <title>Smart TV Toolbox v4.0.0 — Custom TV Optimizer & Live Process Manager</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -405,6 +405,109 @@
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
+    /* Live Process Manager (Tab 2) */
+    .proc-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #141f32;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-bottom: 7px;
+      transition: all 0.15s ease;
+    }
+    .proc-item:hover {
+      border-color: #3b82f6;
+      background: #17243b;
+    }
+    .proc-item.critical {
+      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.04);
+    }
+    .proc-name-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .proc-desc-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+    .proc-pkg-text {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .badge-safety {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .badge-safe {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+    .badge-warning {
+      background: rgba(234, 179, 8, 0.15);
+      color: #eab308;
+      border: 1px solid rgba(234, 179, 8, 0.35);
+    }
+    .badge-critical {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+    .badge-userapp {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      font-size: 0.7rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .proc-ram-badge {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .btn-stop-single {
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      font-size: 0.74rem;
+      padding: 3px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-stop-single:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
+    }
+
     /* Launchers Grid (Tab 3) */
     .launchers-grid {
       display: grid;
@@ -591,7 +694,7 @@
         <div class="header-text">
           <div class="brand-title">
             <h1>Smart TV Toolbox</h1>
-            <span class="tag">v3.0</span>
+            <span class="tag">v4.0.0</span>
           </div>
           <div class="header-desc">
             Кастомизированный центр оптимизации Smart TV, конструктор лаунчеров и обход замедлений YouTube
@@ -728,8 +831,74 @@
           </div>
         </section>
 
-        <!-- ==================== TAB 2: CUSTOM DEBLOAT ==================== -->
+        <!-- ==================== TAB 2: LIVE PROCESS OPTIMIZER & DEBLOAT ==================== -->
         <section id="tab-debloat" class="tab-section">
+          <!-- LIVE PROCESS MANAGER PANEL -->
+          <div class="panel" style="border-color: #3b82f6; box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 10px;">
+              <div class="panel-title">
+                <span class="panel-num" style="background: #1e3a8a; color: #60a5fa;">⚡</span>
+                <span>Диспетчер процессов и ОЗУ в реальном времени (Haier & Android TV)</span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button id="btnScanProcesses" class="btn btn-primary" onclick="scanLiveProcesses()" style="background: #2563eb; padding: 7px 14px;">
+                  <span id="scanSpinner" style="display: none;">⏳</span>
+                  <span>🔍 Сканировать запущенные процессы ТВ</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats Bar (Visible after scan) -->
+            <div id="liveProcStatsBar" style="display: none; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                  📊 Всего в памяти: <strong id="statTotalProc" style="color: #fff;">0</strong> процессов (<strong id="statTotalRam" style="color: #38bdf8;">0 МБ</strong>)
+                </span>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                  🟢 Безопасно освободить: <strong id="statSafeRam" style="color: #34d399;">0 МБ ОЗУ</strong>
+                </span>
+              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.78rem;" onclick="selectProcFilter('all')">Все</button>
+                <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.78rem; border-color: #22c55e;" onclick="selectProcFilter('safe')">🟢 Безопасные</button>
+                <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.78rem; border-color: #38bdf8;" onclick="selectProcFilter('user_app')">📱 Пользовательские (ВК и др.)</button>
+                <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.78rem; border-color: #f59e0b;" onclick="selectProcFilter('haier_bloat')">📺 Haier мусор</button>
+                <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.78rem;" onclick="selectProcFilter('warning')">🟡 Опциональные</button>
+              </div>
+            </div>
+
+            <!-- Process Selection Controls & Actions -->
+            <div id="liveProcActionsBar" style="display: none; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; background: #141f32; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="toggleSelectAllProcs(true)">☑️ Выбрать все безопасные</button>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="toggleSelectAllProcs(false)">Снять выбор</button>
+                <span id="selectedProcCount" style="font-size: 0.8rem; color: var(--text-muted); margin-left: 6px;">Выбрано: 0</span>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn" style="background: #0284c7; color: #fff; padding: 5px 12px; font-size: 0.82rem;" onclick="stopSelectedProcs()">
+                  <span>⏹️ Выгрузить из ОЗУ сейчас (force-stop)</span>
+                </button>
+                <button class="btn" style="background: #475569; color: #f1f5f9; padding: 5px 12px; font-size: 0.82rem;" onclick="freezeSelectedProcs()">
+                  <span>❄️ Заморозить навсегда (pm disable)</span>
+                </button>
+                <button class="btn btn-secondary" style="padding: 5px 12px; font-size: 0.82rem;" onclick="unfreezeSelectedProcs()">
+                  <span>▶️ Разморозить (pm enable)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Process List Container -->
+            <div id="liveProcessListContainer" style="max-height: 420px; overflow-y: auto; padding-right: 4px;">
+              <div id="liveProcPlaceholder" style="text-align: center; padding: 30px 20px; color: var(--text-muted); background: #0f172a; border: 1px dashed var(--border); border-radius: 8px;">
+                <div style="font-size: 1.8rem; margin-bottom: 8px;">🔍</div>
+                <div style="font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 4px;">Поиск процессов телевизора в реальном времени</div>
+                <div style="font-size: 0.82rem; max-width: 540px; margin: 0 auto;">
+                  Нажмите <strong>«Сканировать запущенные процессы ТВ»</strong>, чтобы получить полный список активных служб Haier, Android TV и установленных приложений (ВК Видео, Zona, Lampa и др.) с их точным расходом памяти и плашками влияния на систему.
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="panel">
             <div class="panel-header">
               <div class="panel-title">
@@ -1158,7 +1327,7 @@
           </button>
         </div>
 
-        <div id="adbConsoleOutput" class="console-box">[*] Smart TV Toolbox v3.0 инициализирован.
+        <div id="adbConsoleOutput" class="console-box">[*] Smart TV Toolbox v4.0.0 инициализирован. Диспетчер процессов и ОЗУ активен.
 [*] Готов к подключению к ТВ по локальной сети...</div>
 
         <div class="console-input-bar">
@@ -1172,7 +1341,7 @@
     </div>
 
     <footer>
-      <span>Smart TV Toolbox v3.0 • Open Source</span>
+      <span>Smart TV Toolbox v4.0.0 • Open Source</span>
       <span>Jipok/tv-cleaner • andrewm8888/moy-tv • by-sonic/chistytv</span>
     </footer>
   </div>
@@ -1299,6 +1468,190 @@
       }
     }
 
+    // Live Process Manager (Tab 2)
+    let liveProcessesData = [];
+    let currentProcFilter = 'all';
+
+    async function scanLiveProcesses() {
+      const btn = document.getElementById('btnScanProcesses');
+      const spinner = document.getElementById('scanSpinner');
+      if (btn) btn.disabled = true;
+      if (spinner) spinner.style.display = 'inline-block';
+      log('🔍 Сканирование запущенных процессов и расхода памяти ТВ...');
+
+      try {
+        const res = await callApi('scan_running_processes');
+        if (res && res.ok) {
+          liveProcessesData = res.processes || [];
+          const statTotalProc = document.getElementById('statTotalProc');
+          const statTotalRam = document.getElementById('statTotalRam');
+          const statSafeRam = document.getElementById('statSafeRam');
+
+          if (statTotalProc) statTotalProc.innerText = res.total_processes || 0;
+          if (statTotalRam) statTotalRam.innerText = `${res.total_ram_mb || 0} МБ`;
+          if (statSafeRam) statSafeRam.innerText = `${res.safe_ram_mb || 0} МБ ОЗУ`;
+
+          const statsBar = document.getElementById('liveProcStatsBar');
+          const actionsBar = document.getElementById('liveProcActionsBar');
+          if (statsBar) statsBar.style.display = 'flex';
+          if (actionsBar) actionsBar.style.display = 'flex';
+
+          renderLiveProcesses();
+          log(`✓ Найдено процессов: ${liveProcessesData.length}. Занято ОЗУ: ${res.total_ram_mb} МБ, безопасно к выгрузке: ${res.safe_ram_mb} МБ`);
+        } else {
+          log(`Ошибка сканирования: ${res ? res.error : 'Неизвестная ошибка'}`);
+        }
+      } catch (err) {
+        log(`Исключение при сканировании: ${err}`);
+      } finally {
+        if (btn) btn.disabled = false;
+        if (spinner) spinner.style.display = 'none';
+      }
+    }
+
+    function renderLiveProcesses() {
+      const container = document.getElementById('liveProcessListContainer');
+      if (!container) return;
+
+      const filtered = liveProcessesData.filter(p => {
+        if (currentProcFilter === 'safe') return p.safety === 'safe';
+        if (currentProcFilter === 'user_app') return p.is_user_app;
+        if (currentProcFilter === 'haier_bloat') return p.category === 'haier_bloat';
+        if (currentProcFilter === 'warning') return p.safety === 'warning';
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 25px; color: var(--text-muted); background: #0f172a; border-radius: 8px;">В выбранной категории процессов не обнаружено.</div>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(p => {
+        const isCritical = p.safety === 'critical';
+        let safetyBadgeHtml = '';
+        if (p.safety === 'safe') {
+          safetyBadgeHtml = `<span class="badge-safety badge-safe">🟢 Безопасно (не влияет на систему)</span>`;
+        } else if (p.safety === 'warning') {
+          safetyBadgeHtml = `<span class="badge-safety badge-warning">🟡 Внимание (опционально)</span>`;
+        } else {
+          safetyBadgeHtml = `<span class="badge-safety badge-critical">🔴 Критический (HDMI / Тюнер / Защита)</span>`;
+        }
+
+        const userTag = p.is_user_app ? `<span class="badge-userapp">📱 Пользовательское</span>` : '';
+        const chkDisabled = isCritical ? 'disabled' : '';
+        const chkClass = isCritical ? 'proc-chk-crit' : 'proc-chk';
+        const chkDefault = (p.safety === 'safe' && !isCritical) ? 'checked' : '';
+
+        html += `
+          <div class="proc-item ${isCritical ? 'critical' : ''}">
+            <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1;">
+              <input type="checkbox" class="${chkClass}" value="${p.pkg}" data-safety="${p.safety}" data-ram="${p.ram_mb}" ${chkDisabled} ${chkDefault} onchange="updateSelectedProcCount()" style="margin-top: 4px;">
+              <div style="flex: 1;">
+                <div class="proc-name-title">
+                  <span>${p.name}</span>
+                  ${userTag}
+                  ${safetyBadgeHtml}
+                </div>
+                <div class="proc-desc-text">${p.desc}</div>
+                <div class="proc-pkg-text">${p.pkg} • PID: ${p.pid}</div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="proc-ram-badge">${p.ram_mb} МБ ОЗУ</span>
+              ${!isCritical ? `<button class="btn-stop-single" onclick="stopSingleProcess('${p.pkg}', '${p.name}')" title="Выгрузить из оперативной памяти прямо сейчас">⏹️ Выгрузить</button>` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      updateSelectedProcCount();
+    }
+
+    function selectProcFilter(cat) {
+      currentProcFilter = cat;
+      renderLiveProcesses();
+    }
+
+    function toggleSelectAllProcs(selectSafeOnly = true) {
+      document.querySelectorAll('.proc-chk').forEach(cb => {
+        if (selectSafeOnly) {
+          cb.checked = (cb.dataset.safety === 'safe');
+        } else {
+          cb.checked = false;
+        }
+      });
+      updateSelectedProcCount();
+    }
+
+    function updateSelectedProcCount() {
+      const selected = document.querySelectorAll('.proc-chk:checked');
+      let totalRam = 0;
+      selected.forEach(cb => totalRam += parseFloat(cb.dataset.ram || 0));
+      const el = document.getElementById('selectedProcCount');
+      if (el) {
+        el.innerText = `Выбрано: ${selected.length} (${totalRam.toFixed(1)} МБ ОЗУ)`;
+      }
+    }
+
+    async function stopSingleProcess(pkg, name) {
+      log(`⏹️ Выгрузка процесса [${name || pkg}] из оперативной памяти...`);
+      const res = await callApi('stop_running_processes', { packages: [pkg] });
+      if (res && res.ok) {
+        log(`✓ Процесс ${pkg} успешно выгружен.`);
+        scanLiveProcesses();
+      } else {
+        log(`Ошибка выгрузки: ${res ? res.error : 'Неизвестная ошибка'}`);
+      }
+    }
+
+    async function stopSelectedProcs() {
+      const checked = Array.from(document.querySelectorAll('.proc-chk:checked')).map(cb => cb.value);
+      if (checked.length === 0) {
+        alert('Выберите хотя бы один процесс для выгрузки!');
+        return;
+      }
+      log(`⏹️ Выгрузка выбранных процессов (${checked.length} шт) из оперативной памяти...`);
+      const res = await callApi('stop_running_processes', { packages: checked });
+      if (res && res.ok) {
+        log(`✓ Успешно выгружено процессов: ${res.stopped.length}. Память ТВ освобождена.`);
+        scanLiveProcesses();
+      }
+    }
+
+    async function freezeSelectedProcs() {
+      const checked = Array.from(document.querySelectorAll('.proc-chk:checked')).map(cb => cb.value);
+      if (checked.length === 0) {
+        alert('Выберите хотя бы один процесс для заморозки!');
+        return;
+      }
+      if (!confirm(`Вы действительно хотите заморозить ${checked.length} процессов? Они перестанут запускаться в фоне при включении ТВ.`)) {
+        return;
+      }
+      log(`❄️ Заморозка служб (${checked.length} шт) через pm disable...`);
+      const res = await callApi('freeze_processes', { packages: checked });
+      if (res && res.ok) {
+        log(`✓ Заморожено: ${res.frozen.length} служб.`);
+        scanLiveProcesses();
+      }
+    }
+
+    async function unfreezeSelectedProcs() {
+      const checked = Array.from(document.querySelectorAll('.proc-chk:checked')).map(cb => cb.value);
+      if (checked.length === 0) {
+        alert('Выберите процессы для включения/разморозки!');
+        return;
+      }
+      log(`▶️ Разморозка служб (${checked.length} шт) через pm enable...`);
+      const res = await callApi('unfreeze_processes', { packages: checked });
+      if (res && res.ok) {
+        log(`✓ Разморожено: ${res.unfrozen.length} служб.`);
+        scanLiveProcesses();
+      }
+    }
+
     // Debloat Module
     const profileDb = {
       yaos: [
@@ -1316,7 +1669,16 @@
       haier: [
         { id: 'com.haierubic.usmartdevice', name: 'Служба Haier uSmart IoT', ram: 45, desc: 'Постоянный фоновый опрос устройств умного дома Haier.', rec: true },
         { id: 'com.haier.oemtabprovider', name: 'Вкладка OEM Haier', ram: 30, desc: 'Рекламные промо-каналы на домашнем экране.', rec: true },
-        { id: 'com.haier.tvhousekeeper', name: 'Haier TV Housekeeper', ram: 25, desc: 'Фоновая системная телеметрия.', rec: true }
+        { id: 'com.haier.tvhousekeeper', name: 'Haier TV Housekeeper', ram: 25, desc: 'Фоновая системная телеметрия.', rec: true },
+        { id: 'com.haier.appstore', name: 'Магазин приложений Haier Store', ram: 35, desc: 'Штатный магазин с автообновлениями и рекламными рекомендациями в фоне.', rec: true },
+        { id: 'com.haier.tvmarket', name: 'Каталог Haier TV Market', ram: 30, desc: 'Партнерский промо-каталог приложений Haier.', rec: true },
+        { id: 'com.haier.browser', name: 'Штатный браузер Haier', ram: 55, desc: 'Тяжелый встроенный браузер от вендора.', rec: true },
+        { id: 'com.haier.launcher.haiermatrix', name: 'Промо-лаунчер Haier Matrix', ram: 80, desc: 'Штатная тяжелая оболочка с рекламой.', rec: false },
+        { id: 'com.haier.cast', name: 'Трансляция экрана Haier Cast', ram: 40, desc: 'Беспроводная трансляция дисплея со смартфонов Haier.', rec: false },
+        { id: 'com.haier.screenshare', name: 'Служба Haier ScreenShare', ram: 35, desc: 'Фоновый сервис Miracast дублирования дисплея.', rec: false },
+        { id: 'com.haier.systemupgrade', name: 'Haier OTA Updater', ram: 25, desc: 'Фоновая служба проверки обновлений прошивки вендора.', rec: false },
+        { id: 'com.iflytek.xiri', name: 'Голосовой движок Xunfei / iFlyTek', ram: 45, desc: 'Китайский голосовой сервис на системных платах Haier.', rec: false },
+        { id: 'com.google.android.gms', name: 'Службы Google Play Services', ram: 95, desc: 'Фоновые службы Google Play.', rec: false }
       ],
       xiaomi: [
         { id: 'com.xiaomi.mitv.advertise', name: 'Демон рекламы Xiaomi', ram: 40, desc: 'Заставки и баннеры при запуске.', rec: true },

@@ -94,6 +94,14 @@ class ToolboxHandler(http.server.SimpleHTTPRequestHandler):
             response = {"ok": True, "devices": manager.scan_network()}
         elif endpoint == "/api/apk/install":
             response = manager.install_apk_file(payload.get("file_path", ""))
+        elif endpoint in ("/api/processes/scan", "/api/scan_running_processes"):
+            response = manager.scan_running_processes()
+        elif endpoint in ("/api/processes/stop", "/api/stop_running_processes"):
+            response = manager.stop_running_processes(payload.get("packages", []))
+        elif endpoint in ("/api/processes/freeze", "/api/freeze_processes"):
+            response = manager.freeze_processes(payload.get("packages", []))
+        elif endpoint in ("/api/processes/unfreeze", "/api/unfreeze_processes"):
+            response = manager.unfreeze_processes(payload.get("packages", []))
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
