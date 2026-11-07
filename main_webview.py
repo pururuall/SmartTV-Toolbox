@@ -167,7 +167,7 @@ def _apply_dwm_caption_theming(window):
 
         # 2. Native Titlebar background: #141415 (COLORREF 0x00BBGGRR = 0x00151414)
         DWMWA_CAPTION_COLOR = 35
-        caption_color = ctypes.c_int(0x00151414)
+        caption_color = ctypes.c_int(0x00141111)
         dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, ctypes.byref(caption_color), ctypes.sizeof(caption_color))
 
         # 3. Native Titlebar text: #ededed (0x00ededed)
@@ -177,7 +177,7 @@ def _apply_dwm_caption_theming(window):
 
         # 4. Native Border color: #141415 (0x00151414)
         DWMWA_BORDER_COLOR = 34
-        border_color = ctypes.c_int(0x00151414)
+        border_color = ctypes.c_int(0x00141111)
         dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ctypes.byref(border_color), ctypes.sizeof(border_color))
     except Exception:
         pass
@@ -196,14 +196,14 @@ if __name__ == "__main__":
         ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_ui.html")
 
     window = webview.create_window(
-        title="Smart TV Toolbox v4.1.0 — Custom TV Optimizer, Live Process Manager & CleanYourTV Studio",
+        title="Smart TV Toolbox v4.2.1 — Custom TV Optimizer, Live Process Manager & CleanYourTV Studio",
         url=ui_path,
         js_api=bridge,
         width=1240,
         height=840,
         min_size=(980, 680),
         resizable=True,
-        background_color="#141415",
+        background_color="#111114",
     )
     window.events.before_show += lambda: _apply_dwm_caption_theming(window)
     window.events.shown += lambda: _apply_dwm_caption_theming(window)

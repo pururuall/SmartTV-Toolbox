@@ -1,21 +1,28 @@
 <div align="center">
 
-  <img src="img/banner_header.jpg" alt="Smart TV Toolbox v4.1.0" width="100%">
+  <img src="img/banner_header.jpg" alt="Smart TV Toolbox v4.2.1" width="100%">
 
   <br/><br/>
 
-  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/Версия-v4.1.0_Major-6366f1?style=for-the-badge&logo=github&logoColor=white" alt="Версия"></a>
+  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/Версия-v4.2.1_Release-6366f1?style=for-the-badge&logo=github&logoColor=white" alt="Версия"></a>
   <a href="https://github.com/pururuall/SmartTV-Toolbox/raw/main/SmartTV_Control.exe"><img src="https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white" alt="Скачать SmartTV_Control.exe"></a>
   <a href="https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip"><img src="https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_РЕПОЗИТОРИЙ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white" alt="Скачать весь ZIP"></a>
 
 </div>
 ---
 
-Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **4.1.0**) для глубокой очистки, ускорения, тонкой настройки лаунчеров, управления процессами в реальном времени, визуального конфигурирования CleanYourTV Studio и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
+Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **4.2.1**) для глубокой очистки, ускорения, тонкой настройки лаунчеров, управления процессами в реальном времени, визуального конфигурирования CleanYourTV Studio и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
 
 ---
 
-## 🚀 Что нового в версии 4.1.0 (CleanYourTV Studio, Live Process Manager & Full Offline Bundle)
+## 🚀 Что нового в версии 4.2.1 (Island Interface, Live Screensaver Preview & Process Manager)
+
+### 1. 🏝️ Интерфейс нового поколения (формат Island)
+- **Эргономичный боковой сайдбар:** Быстрая навигация по разделам, постоянный статус подключения ТВ (`● 192.168.3.54`), подпись сохранения и кнопка выхода.
+- **Однородная цветовая гамма:** Единые благородные тёмные поверхности без резких перепадов и визуального шума.
+- **Интерактивные инструкции по включению отладки (ADB):** Прямо во вкладке «Общее» встроен удобный селектор марок (Haier & Android TV, Яндекс ТВ, Салют ТВ, Toshiba) с пошаговыми действиями и подсвеченными кнопками пульта (`Menu`, `OK ×7`, `Factory`, `3195`).
+- **Выдвижная консоль ADB (Slide-over):** Кнопка «Журнал ADB» в шапке открывает аккуратную панель логов поверх экрана, а также доступна полноценная полноэкранная вкладка «Терминал ADB».
+- **Интерактивный экран-макет 16:9 с двумя режимами:** Переключение в 1 клик между **«📺 Главный экран tvOS»** (кинорежим, Док с приложениями, ambient glow) и **«⏰ Заставка (Screensaver)»** (плавающие часы, персональное приветствие, строка телеметрии CPU/ОЗУ/диска и мягкое свечение).
 
 ### 1. 📺 CleanYourTV Studio с интерактивным предпросмотром экрана ТВ на ПК (Вкладка 3 «Лаунчеры»)
 Полная реализация возможностей кастомизации лаунчера по мотивам iOS-компаньона CleanYourTV:
@@ -70,7 +77,7 @@
 
 <div align="center">
 
-### 🖥️ Интерфейс приложения Smart TV Toolbox v4.1.0
+### 🖥️ Интерфейс приложения Smart TV Toolbox v4.2.1
 
 *(Полнофункциональный центр управления: 5 специализированных вкладок, интерактивный калькулятор ОЗУ и Live ADB-терминал)*
 
@@ -148,7 +155,7 @@
 
 ## 🧭 Архитектура и функционал приложения (5 вкладок)
 
-Проект объединяет базы знаний и архитектурные решения из четырёх профильных экосистем: **SmartTV-Toolbox**, **[Jipok/tv-cleaner](https://github.com/Jipok/tv-cleaner)**, **[andrewm8888/moy-tv](https://github.com/andrewm8888/moy-tv)** и **[by-sonic/chistytv](https://github.com/by-sonic/chistytv)**.
+Проект представляет собой единый автономный программный комплекс для тонкой оптимизации, ускорения, деблоата и визуального конфигурирования телевизоров Smart TV.
 
 ### 1. 📡 Вкладка 1: Подключение, беспроводное сопряжение и ОЗУ
 - **Автоопределение шасси:** Система считывает вендора, модель, версию Android и рекомендуемый профиль очистки.
@@ -158,7 +165,7 @@
 ### 2. 🧹 Вкладка 2: Попакетный конструктор очистки
 - **Выбор профилей по брендам:** Яндекс ТВ (YaOS), Салют ТВ, Haier, Toshiba (REGZA / Android TV), Xiaomi, TCL, Google TV.
 - **Калькулятор ОЗУ:** Динамический подсчет освобождаемой оперативной памяти (в МБ) перед применением деблоата.
-- **Hardware Guard (tv-cleaner):** Критические службы HDMI, ТВ-тюнера и кнопок пульта защищены аппаратным стоп-листом и заблокированы от случайного отключения.
+- **Аппаратная защита Hardware Guard:** Критические службы HDMI, ТВ-тюнера и кнопок пульта защищены аппаратным стоп-листом и заблокированы от случайного отключения.
 - **100% обратимость:** Автоматический слепок состояния перед отключением и кнопка «Откат: Включить всё назад» в 1 клик.
 
 ### 3. 🍎 Вкладка 3: Лаунчеры и Обои прямо с ПК
@@ -189,8 +196,8 @@
 
 | Файл / Папка | Назначение |
 |---|---|
-| **`SmartTV_Control.exe`** | 🚀 **Главное приложение (v4.1.0):** 5-вкладочная панель, конструктор лаунчеров, Live ADB консоль |
-| `data/packages.json` | 📋 Единая декларативная база пакетов по брендам со стоп-листами (tv-cleaner + chistytv) |
+| **`SmartTV_Control.exe`** | 🚀 **Главное приложение (v4.2.1):** 5-вкладочная панель, конструктор лаунчеров, Live ADB консоль |
+| `data/packages.json` | 📋 Единая декларативная база пакетов по брендам со стоп-листами (встроенные стоп-листы) |
 | `data/launchers.json` | 🍎 Метаданные лаунчеров (Moy-TV, CleanYourTV, Projectivy, FLauncher) и пути к конфигам |
 | `wallpapers/` | 🖼️ Встроенная коллекция оптимизированных обоев для ТВ |
 | `apps/` | 📦 Структурированный каталог APK (лаунчеры, youtube, медиа) |
