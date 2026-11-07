@@ -1,21 +1,50 @@
 <div align="center">
 
-  <img src="img/banner_header.jpg" alt="Smart TV Toolbox" width="100%">
+  <img src="img/banner_header.jpg" alt="Smart TV Toolbox v3.0" width="100%">
 
   <br/><br/>
 
-  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/Версия-v4.0.0_Major-6366f1?style=for-the-badge&logo=github&logoColor=white" alt="Версия"></a>
+  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/Версия-v4.1.0_Major-6366f1?style=for-the-badge&logo=github&logoColor=white" alt="Версия"></a>
   <a href="https://github.com/pururuall/SmartTV-Toolbox/raw/main/SmartTV_Control.exe"><img src="https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white" alt="Скачать SmartTV_Control.exe"></a>
   <a href="https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip"><img src="https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_РЕПОЗИТОРИЙ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white" alt="Скачать весь ZIP"></a>
 
 </div>
 ---
 
-Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **4.0.0**) для глубокой очистки, ускорения, тонкой настройки лаунчеров, управления процессами в реальном времени и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
+Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **4.1.0**) для глубокой очистки, ускорения, тонкой настройки лаунчеров, управления процессами в реальном времени, визуального конфигурирования CleanYourTV Studio и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
 
 ---
 
-## 🚀 Что нового в версии 4.0.0 (Live Process Manager & Full Offline Bundle)
+## 🚀 Что нового в версии 4.1.0 (CleanYourTV Studio & iPhone Companion Sync)
+
+### 1. 🍎 CleanYourTV Studio — Визуальный конфигуратор tvOS (Вкладка 3 «Лаунчеры»)
+Полная реализация возможностей кастомизации по мотивам официального iOS-компаньона CleanYourTV:
+- **🎨 Готовые темы и стили оформления (в 1 клик):**
+  - **Apple TV Classic:** оригинальный минималистичный стиль tvOS с белым фокусом и сеткой 6 колонок.
+  - **Aurora (Cinematic):** полноэкранный кинорежим с постерами фильмов и подсветкой ambient glow.
+  - **Night Dark (OLED Guard):** глубокий черный фон (`#000000`), затемнение обоев 70%, защита от выгорания OLED.
+  - **Minimalist (1GB RAM):** ультрабыстрый режим без размытий и заставок для бюджетных ТВ.
+- **📱 Док и сетка приложений:**
+  - Интерактивное управление слотами дока (до 7 приложений): перемещение `↑`/`↓`, удаление `✕`, добавление любых приложений, установленных на телевизоре, через выпадающий список.
+  - Настройка числа колонок (4–8), рядов под доком (0–3), имя приветствия («Семья», «Зал» и т.д.), переключатели уменьшенного движения и постоянного показа названий.
+- **🎬 Кинорежим (Cinematic Shelf) и визуальные эффекты:**
+  - Переключатель Cinematic tvOS, точки-индикаторы страниц, белый контур фокуса, непрозрачность постеров, затемнение градиента.
+  - Стили стекла: `glass` (матовое стекло), `rim` (контурная рамка), `halo` (ореол).
+  - Стили подсветки: `radial` (круговое сияние), `horizon` (горизонтальная полоса), ambient glow.
+  - Цветовая палитра: колорпикеры фонового и акцентного цвета, слайдер прозрачности Дока (30%–100%).
+- **⏰ Верхняя панель (Шапка) и заставка-часы:**
+  - Пилюли статуса сети и видеовходов (HDMI 1, 2, 3), круглые кнопки меню, центральная шестеренка.
+  - Заставка-часы при бездействии (1, 2, 5, 10, 15, 30 минут), плавающий дрейф часов для защиты матриц OLED от выгорания, строка показателей CPU/RAM/Диск.
+- **🎛️ Экспертный каталог всех 58 параметров CleanYourTV:**
+  - Живой поиск по ключам и описаниям, фильтры по категориям (Док, Кинорежим, Визуал, Шапка, Часы, Железо), переключатель «Только изменённые».
+- **🔄 Полная синхронизация с ТВ:**
+  - «📥 Считать с ТВ» (чтение `/sdcard/Android/data/com.gathin.tvhome/files/config.json`).
+  - «🚀 Применить на ТВ» (отправка JSON, выставление прав и перезапуск лаунчера).
+  - «🔄 Сброс к заводским» (возврат к дефолту).
+
+---
+
+## ⚡ Что нового в версии 4.0.0 (Live Process Manager & Full Offline Bundle)
 
 ### 1. ⚡ Диспетчер процессов и ОЗУ в реальном времени (Tab 2 «Очистка ТВ»)
 - **Живое сканирование памяти через ADB (`dumpsys meminfo` / `ps`):** Одно нажатие кнопки «⚡ Сканировать процессы в ОЗУ» анализирует все работающие в данный момент приложения и системные демоны.
