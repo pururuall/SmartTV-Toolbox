@@ -102,6 +102,16 @@ class ToolboxHandler(http.server.SimpleHTTPRequestHandler):
             response = manager.freeze_processes(payload.get("packages", []))
         elif endpoint in ("/api/processes/unfreeze", "/api/unfreeze_processes"):
             response = manager.unfreeze_processes(payload.get("packages", []))
+        elif endpoint in ("/api/cleanyourtv/config", "/api/get_cleanyourtv_config"):
+            response = manager.get_cleanyourtv_config()
+        elif endpoint in ("/api/cleanyourtv/save", "/api/save_cleanyourtv_config"):
+            cfg = payload.get("config", payload.get("payload", payload))
+            restart = payload.get("restart", True)
+            response = manager.save_cleanyourtv_config(cfg, restart)
+        elif endpoint in ("/api/cleanyourtv/reset", "/api/reset_cleanyourtv_config"):
+            response = manager.reset_cleanyourtv_config()
+        elif endpoint in ("/api/cleanyourtv/apps", "/api/get_installed_tv_apps"):
+            response = manager.get_installed_tv_apps()
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")

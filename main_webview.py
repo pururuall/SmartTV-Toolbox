@@ -39,6 +39,18 @@ class WebViewBridge:
     def unfreeze_processes(self, packages: list):
         return self.manager.unfreeze_processes(packages)
 
+    def get_cleanyourtv_config(self):
+        return self.manager.get_cleanyourtv_config()
+
+    def save_cleanyourtv_config(self, payload: dict, restart: bool = True):
+        return self.manager.save_cleanyourtv_config(payload, restart)
+
+    def reset_cleanyourtv_config(self):
+        return self.manager.reset_cleanyourtv_config()
+
+    def get_installed_tv_apps(self):
+        return self.manager.get_installed_tv_apps()
+
     def restore_tv(self):
         return self.manager.restore_from_backup()
 
@@ -104,71 +116,6 @@ class WebViewBridge:
     def list_third_party(self):
         return self.manager.list_installed_third_party()
 
-    def window_minimize(self):
-        if webview.windows:
-            webview.windows[0].minimize()
-        return {"ok": True}
-
-    def window_toggle_maximize(self):
-        if webview.windows:
-            w = webview.windows[0]
-            try:
-                from webview.platforms import winforms
-                form = winforms.BrowserView.instances.get(w.uid)
-                if form and str(form.WindowState) == "Maximized":
-                    w.restore()
-                    return {"ok": True, "maximized": False}
-                else:
-                    w.maximize()
-                    return {"ok": True, "maximized": True}
-            except Exception:
-                w.toggle_fullscreen()
-                return {"ok": True}
-        return {"ok": False}
-
-    def window_close(self):
-        if webview.windows:
-            webview.windows[0].destroy()
-        return {"ok": True}
-
-
-def _apply_dwm_caption_theming(window):
-    """
-    Natively colors the Windows titlebar to #141415 (matching the unslop graphite background),
-    sets text to #ededed, enables dark mode caption controls, and sets the window border.
-    This maintains 100% native window resizing, snapping, and controls without any frame glitches.
-    """
-    try:
-        import ctypes
-        from webview.platforms import winforms
-        form = winforms.BrowserView.instances.get(window.uid)
-        if not form:
-            return
-        hwnd = form.Handle.ToInt32()
-        dwmapi = ctypes.windll.dwmapi
-
-        # 1. Enable immersive dark mode
-        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-        dark = ctypes.c_int(1)
-        dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ctypes.byref(dark), ctypes.sizeof(dark))
-
-        # 2. Native Titlebar background: #141415 (COLORREF 0x00BBGGRR = 0x00151414)
-        DWMWA_CAPTION_COLOR = 35
-        caption_color = ctypes.c_int(0x00151414)
-        dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, ctypes.byref(caption_color), ctypes.sizeof(caption_color))
-
-        # 3. Native Titlebar text: #ededed (0x00ededed)
-        DWMWA_TEXT_COLOR = 36
-        text_color = ctypes.c_int(0x00ededed)
-        dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_TEXT_COLOR, ctypes.byref(text_color), ctypes.sizeof(text_color))
-
-        # 4. Native Border color: #141415 (0x00151414)
-        DWMWA_BORDER_COLOR = 34
-        border_color = ctypes.c_int(0x00151414)
-        dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ctypes.byref(border_color), ctypes.sizeof(border_color))
-    except Exception:
-        pass
-
 
 if __name__ == "__main__":
     bridge = WebViewBridge()
@@ -189,9 +136,5 @@ if __name__ == "__main__":
         width=1240,
         height=840,
         min_size=(980, 680),
-        resizable=True,
-        background_color="#141415",
     )
-    window.events.before_show += lambda: _apply_dwm_caption_theming(window)
-    window.events.shown += lambda: _apply_dwm_caption_theming(window)
-    webview.start(_apply_dwm_caption_theming, window, debug=False)
+    webview.start(debug=False)
