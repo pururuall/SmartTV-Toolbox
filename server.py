@@ -122,6 +122,8 @@ class ToolboxHandler(http.server.SimpleHTTPRequestHandler):
             response = manager.save_cleanyourtv_config(cfg, restart)
         elif endpoint in ("/api/cleanyourtv/reset", "/api/reset_cleanyourtv_config"):
             response = manager.reset_cleanyourtv_config()
+        elif endpoint in ("/api/cleanyourtv/factory_reset", "/api/reset_cleanyourtv_to_factory"):
+            response = manager.reset_cleanyourtv_to_factory()
         elif endpoint in ("/api/cleanyourtv/apps", "/api/get_installed_tv_apps"):
             response = manager.get_installed_tv_apps()
 

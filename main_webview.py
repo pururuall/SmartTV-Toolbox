@@ -46,8 +46,11 @@ class WebViewBridge:
     def save_cleanyourtv_config(self, payload: dict, restart: bool = True):
         return self.manager.save_cleanyourtv_config(payload, restart)
 
+    def reset_cleanyourtv_to_factory(self):
+        return self.manager.reset_cleanyourtv_to_factory()
+
     def reset_cleanyourtv_config(self):
-        return self.manager.reset_cleanyourtv_config()
+        return self.manager.reset_cleanyourtv_to_factory()
 
     def get_installed_tv_apps(self):
         return self.manager.get_installed_tv_apps()
@@ -211,7 +214,7 @@ if __name__ == "__main__":
         ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_ui.html")
 
     window = webview.create_window(
-        title="Smart TV Toolbox v4.2.1 — Custom TV Optimizer, Live Process Manager & CleanYourTV Studio",
+        title="Smart TV Toolbox v4.4.2 — Custom TV Optimizer, Live Process Manager & CleanYourTV Studio",
         url=ui_path,
         js_api=bridge,
         width=1240,

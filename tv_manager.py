@@ -1600,34 +1600,137 @@ class SmartTVManager:
         }
 
     def save_cleanyourtv_config(self, config_payload: Dict[str, Any], restart_home: bool = True) -> Dict[str, Any]:
-        """Отправляет кастомную конфигурацию CleanYourTV на ТВ и перезапускает домашний экран."""
+        """Сохраняет измененную конфигурацию CleanYourTV на ТВ, пушит обои и перезапускает главный экран."""
         if not self.current_device:
-            return {"ok": False, "error": "Телевизор не подключен по ADB"}
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
 
         remote_dir = "/sdcard/Android/data/com.gathin.tvhome/files"
+        remote_wp_dir = f"{remote_dir}/wallpapers"
         remote_cfg = f"{remote_dir}/config.json"
         local_cfg = self.backups_dir / "cleanyourtv_pushed.json"
 
+        # 1. Clean payload and ensure dock_apps is a list of package strings
+        clean_cfg = dict(config_payload)
+        
+        # Handle dock_apps
+        dock_apps = clean_cfg.get("dock_apps", [])
+        clean_dock_apps = []
+        for app in dock_apps:
+            if isinstance(app, dict):
+                pkg = app.get("package") or app.get("pkg") or ""
+                if pkg:
+                    clean_dock_apps.append(pkg)
+            elif isinstance(app, str) and app:
+                clean_dock_apps.append(app)
+        clean_dock_apps = [p for p in clean_dock_apps if p]
+        if clean_dock_apps:
+            clean_cfg["dock_apps"] = clean_dock_apps
+
+        # 2. Handle Wallpaper & Themes
+        wp_choice = clean_cfg.get("wallpaper_choice")
+        wp_path = clean_cfg.get("wallpaper_path", "")
+        theme_key = clean_cfg.get("theme_key", "")
+        is_oled_black = (
+            theme_key == "oled_guard" or 
+            clean_cfg.get("oled_guard") is True or 
+            clean_cfg.get("wallpaper") is False or 
+            "oled_carbon" in wp_path or
+            wp_choice == "none"
+        )
+        
+        self.run_adb(["shell", "mkdir", "-p", remote_wp_dir])
+
+        if is_oled_black:
+            clean_cfg["wallpaper"] = False
+            clean_cfg["wallpaper_choice"] = "none"
+            oled_file = self._resolve_file("wallpapers/oled_carbon.jpg")
+            if oled_file.exists():
+                self.run_adb(["push", str(oled_file), f"{remote_wp_dir}/01-dusk-peaks.jpg"], timeout=15)
+                self.run_adb(["push", str(oled_file), f"{remote_dir}/wallpaper.jpg"], timeout=15)
+        else:
+            clean_cfg["wallpaper"] = True
+            target_wp = None
+            if wp_path:
+                wp_basename = os.path.basename(wp_path)
+                local_wp = self._resolve_file(f"wallpapers/{wp_basename}")
+                if local_wp.exists():
+                    target_wp = local_wp
+                    clean_cfg["wallpaper_choice"] = wp_basename
+            elif wp_choice and wp_choice != "none":
+                local_wp = self._resolve_file(f"wallpapers/{wp_choice}")
+                if local_wp.exists():
+                    target_wp = local_wp
+
+            if not target_wp or not target_wp.exists():
+                target_wp = self._resolve_file("wallpapers/01-dusk-peaks.jpg")
+
+            if target_wp and target_wp.exists():
+                self.run_adb(["push", str(target_wp), f"{remote_wp_dir}/01-dusk-peaks.jpg"], timeout=15)
+                self.run_adb(["push", str(target_wp), f"{remote_dir}/wallpaper.jpg"], timeout=15)
+
+        # 3. Top Buttons mapping
+        if "show_inputs" in clean_cfg:
+            clean_cfg["show_inputs_pill"] = bool(clean_cfg.get("show_inputs"))
+        if "show_reorder" in clean_cfg:
+            clean_cfg["reorder_button"] = bool(clean_cfg.get("show_reorder"))
+        if "show_settings" in clean_cfg:
+            clean_cfg["launcher_settings_button"] = bool(clean_cfg.get("show_settings"))
+        if "show_library" in clean_cfg:
+            clean_cfg["library_button"] = bool(clean_cfg.get("show_library"))
+            clean_cfg["show_library_pill"] = bool(clean_cfg.get("show_library"))
+        if "show_network" in clean_cfg:
+            clean_cfg["show_network_pill"] = bool(clean_cfg.get("show_network"))
+        if "show_home_settings" in clean_cfg:
+            clean_cfg["show_home_settings_shortcut"] = bool(clean_cfg.get("show_home_settings"))
+
+        # 4. Save and push config.json
         try:
             with open(local_cfg, "w", encoding="utf-8") as f:
-                json.dump(config_payload, f, ensure_ascii=False, indent=2)
+                json.dump(clean_cfg, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            return {"ok": False, "error": f"Ошибка сохранения локального JSON: {e}"}
+            return {"ok": False, "error": f"Ошибка сохранения JSON: {e}"}
 
-        self.run_adb(["shell", "mkdir", "-p", remote_dir])
         push_res = self.run_adb(["push", str(local_cfg), remote_cfg], timeout=15)
         if not push_res.get("ok"):
-            return {"ok": False, "error": f"Ошибка передачи на ТВ: {push_res.get('stderr')}"}
+            return {"ok": False, "error": f"Ошибка отправки на ТВ: {push_res.get('stderr')}"}
 
         self.run_adb(["shell", "chmod", "666", remote_cfg])
 
+        # 5. Restart Home Screen
         if restart_home:
-            self._notify("[CleanYourTV] Перезапуск домашнего экрана для применения новой темы...")
+            self._notify("[CleanYourTV] Перезапуск домашнего экрана для применения изменений...")
             self.run_adb(["shell", "am", "force-stop", "com.gathin.tvhome"], timeout=10)
             self.run_adb(["shell", "am", "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME"], timeout=10)
 
-        self._notify("[CleanYourTV] ✓ Конфигурация темы и параметров успешно применена на телевизоре!")
-        return {"ok": True, "msg": "Конфигурация успешно применена!"}
+        self._notify("[CleanYourTV] ✓ Конфигурация и обои успешно применены на ТВ!")
+        return {"ok": True, "msg": "Конфигурация и обои успешно применены на ТВ!"}
+
+    def reset_cleanyourtv_to_factory(self) -> Dict[str, Any]:
+        """Полный сброс лаунчера CleanYourTV к заводским настройкам (pm clear + восстановление стандартных обоев)."""
+        if not self.current_device:
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
+
+        self._notify("[CleanYourTV] Полный сброс лаунчера к заводским настройкам...")
+        self.run_adb(["shell", "pm", "clear", "com.gathin.tvhome"], timeout=10)
+        
+        remote_files = "/sdcard/Android/data/com.gathin.tvhome/files"
+        self.run_adb(["shell", "mkdir", "-p", f"{remote_files}/wallpapers"])
+        default_wp = self._resolve_file("wallpapers/01-dusk-peaks.jpg")
+        if default_wp.exists():
+            self.run_adb(["push", str(default_wp), f"{remote_files}/wallpapers/01-dusk-peaks.jpg"], timeout=15)
+            self.run_adb(["push", str(default_wp), f"{remote_files}/wallpaper.jpg"], timeout=15)
+        
+        self.run_adb(["shell", "am", "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME"], timeout=10)
+        self._notify("[CleanYourTV] ✓ Лаунчер полностью сброшен к заводским настройкам!")
+        return {"ok": True, "msg": "Лаунчер CleanYourTV сброшен к заводским настройкам"}
 
     def reset_cleanyourtv_config(self) -> Dict[str, Any]:
         """Сбрасывает конфигурацию CleanYourTV к заводским настройкам (удаляет кастомный config.json с ТВ)."""
