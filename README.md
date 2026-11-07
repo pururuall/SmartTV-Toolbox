@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="img/banner_header%20v3.0.jpg" alt="Smart TV Toolbox v3.0" width="100%">
+  <img src="img/banner_header.jpg" alt="Smart TV Toolbox" width="100%">
 
   <br/><br/>
 
