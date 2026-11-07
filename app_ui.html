@@ -234,6 +234,234 @@
       stroke: var(--accent);
     }
 
+    
+    /* ==================== INTERACTIVE TV LIVE PREVIEW (UNSLOP) ==================== */
+    .tv-mockup-wrapper {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .tv-frame-outer {
+      position: relative;
+      background: #09090b;
+      border: 2px solid #27272a;
+      border-radius: 10px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.06);
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: background-color 0.25s ease;
+    }
+
+    /* Ambient glow behind preview */
+    .tv-ambient-glow {
+      position: absolute;
+      top: 10%;
+      left: 15%;
+      right: 15%;
+      bottom: 20%;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+      filter: blur(24px);
+      z-index: 1;
+      transition: background 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* TV Topbar */
+    .tv-preview-topbar {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.85);
+      background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%);
+    }
+
+    .tv-greeting {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #fff;
+    }
+
+    .tv-topbar-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tv-mini-pill {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 0.62rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .tv-mini-circle {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.58rem;
+    }
+
+    .tv-mini-clock {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: #e4e4e7;
+      margin-left: 4px;
+    }
+
+    /* Center Cinematic Shelf / Wallpaper Showcase */
+    .tv-shelf-showcase {
+      position: relative;
+      z-index: 4;
+      padding: 4px 16px;
+      text-align: left;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .tv-shelf-badge {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .tv-shelf-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+    }
+
+    .tv-shelf-desc {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.75);
+      margin-top: 3px;
+      max-width: 380px;
+      line-height: 1.3;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    }
+
+    .tv-shelf-dots {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .tv-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+    }
+    .tv-dot.active {
+      background: #fff;
+      width: 12px;
+      border-radius: 3px;
+    }
+
+    /* Bottom Dock Bar */
+    .tv-dock-shelf {
+      position: relative;
+      z-index: 5;
+      padding: 0 12px 10px 12px;
+    }
+
+    .tv-dock-matte {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 6px 10px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      transition: all 0.2s ease;
+    }
+
+    .tv-app-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .tv-app-icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #18181b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .tv-app-tile.focused .tv-app-icon-box {
+      transform: translateY(-4px) scale(1.12);
+      border: 2px solid #ffffff;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.7), 0 0 14px rgba(255,255,255,0.4);
+    }
+
+    .tv-app-label {
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.8);
+      max-width: 44px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.15s ease;
+    }
+
+    .tv-preview-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
     /* Layout: Main content + persistent right ADB console */
     .content-layout {
       display: grid;
@@ -1062,10 +1290,10 @@
 
             <!-- Quick Instructions Box -->
             <div class="note-box" style="margin-top: 14px;">
-              <strong>ℹ️ Как включить отладку:</strong>
+              <strong>Как включить отладку:</strong>
               <div style="margin-top: 4px; font-size: 0.82rem; line-height: 1.4;">
-                • <strong>Яндекс ТВ / CVTE:</strong> Зажмите <code>Menu</code> (1-2 сек) ➔ <code>Влево</code> ➔ <code>Вверх</code> ➔ <code>Влево</code> ➔ <code>Вверх</code> ➔ <code>Назад</code> ➔ Factory Menu ➔ other options ➔ <strong>ADB: ON</strong>.<br/>
-                • <strong>Haier / Xiaomi / TCL:</strong> Настройки ➔ Об устройстве ➔ <strong>Номер сборки</strong> (кликнуть 7 раз) ➔ Для разработчиков ➔ <strong>Отладка по USB: ON</strong>.
+                — <strong>Яндекс ТВ / CVTE:</strong> Зажмите <code>Menu</code> (1-2 сек) &rarr; <code>Влево</code> &rarr; <code>Вверх</code> &rarr; <code>Влево</code> &rarr; <code>Вверх</code> &rarr; <code>Назад</code> &rarr; Factory Menu &rarr; other options &rarr; <strong>ADB: ON</strong>.<br/>
+                — <strong>Haier / Xiaomi / TCL:</strong> Настройки &rarr; Об устройстве &rarr; <strong>Номер сборки</strong> (кликнуть 7 раз) &rarr; Для разработчиков &rarr; <strong>Отладка по USB: ON</strong>.
               </div>
             </div>
           </div>
@@ -1073,16 +1301,17 @@
 
         <!-- ==================== TAB 2: LIVE PROCESS OPTIMIZER & DEBLOAT ==================== -->
         <section id="tab-debloat" class="tab-section">
-          <!-- LIVE PROCESS MANAGER PANEL -->
-          <div class="panel" style="border-color: var(--accent); box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);">
+          <!-- LIVE PROCESS MANAGER PANEL (UNSLOP) -->
+          <div class="panel">
             <div class="panel-header" style="flex-wrap: wrap; gap: 10px;">
               <div class="panel-title">
-                <span class="panel-num" style="background: #1e3a8a; color: #60a5fa;">⚡</span>
+                <span class="panel-num"><svg class="icon-sm"><use href="#icon-activity"></use></svg></span>
                 <span>Диспетчер процессов и ОЗУ в реальном времени (Haier & Android TV)</span>
               </div>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <button id="btnScanProcesses" class="btn btn-primary" onclick="scanLiveProcesses()" style="background: #2563eb; padding: 7px 14px;">
-                  <span id="scanSpinner" style="display: none;">⏳</span>
+                <button id="btnScanProcesses" class="btn btn-primary" onclick="scanLiveProcesses()" style="padding: 6px 14px; font-weight: 600;">
+                  <span id="scanSpinner" class="spinner-sm" style="display: none;"></span>
+                  <svg class="icon-sm" id="scanBtnIcon"><use href="#icon-search"></use></svg>
                   <span>Сканировать запущенные процессы</span>
                 </button>
               </div>
@@ -1110,19 +1339,15 @@
             <!-- Process Selection Controls & Actions -->
             <div id="liveProcActionsBar" style="display: none; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px;">
               <div style="display: flex; gap: 6px; align-items: center;">
-                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="toggleSelectAllProcs(true)">☑️ Выбрать все безопасные</button>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="toggleSelectAllProcs(true)">Выбрать безопасные</button>
                 <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="toggleSelectAllProcs(false)">Снять выбор</button>
                 <span id="selectedProcCount" style="font-size: 0.8rem; color: var(--text-muted); margin-left: 6px;">Выбрано: 0</span>
               </div>
               <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="btn" style="background: #0284c7; color: #fff; padding: 5px 12px; font-size: 0.82rem;" onclick="stopSelectedProcs()">
-                  <span>⏹️ Выгрузить из ОЗУ сейчас (force-stop)</span>
-                </button>
-                <button class="btn" style="background: #475569; color: #f1f5f9; padding: 5px 12px; font-size: 0.82rem;" onclick="freezeSelectedProcs()">
-                  <span>❄️ Заморозить навсегда (pm disable)</span>
-                </button>
+                <button class="btn btn-primary" style="padding: 5px 12px; font-size: 0.82rem; font-weight: 600;" onclick="stopSelectedProcs()"><svg class="icon-sm"><use href="#icon-stop"></use></svg> <span>Выгрузить из ОЗУ</span></button>
+                <button class="btn btn-secondary" style="padding: 5px 12px; font-size: 0.82rem;" onclick="freezeSelectedProcs()"><svg class="icon-sm"><use href="#icon-freeze"></use></svg> <span>Заморозить</span></button>
                 <button class="btn btn-secondary" style="padding: 5px 12px; font-size: 0.82rem;" onclick="unfreezeSelectedProcs()">
-                  <span>▶️ Разморозить (pm enable)</span>
+                  <span><svg class="icon-sm"><use href="#icon-unfreeze"></use></svg> <span>Разморозить</span> (pm enable)</span>
                 </button>
               </div>
             </div>
@@ -1163,7 +1388,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
               <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                 <button id="btnPresetRecommended" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="applyPreset('recommended')">
-                  ⭐ Рекомендуемое
+                   Рекомендуемое
                 </button>
                 <button id="btnPresetAllSafe" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="applyPreset('all')">
                   Выбрать все
@@ -1212,21 +1437,21 @@
 
             <!-- Launcher Selection Grid -->
             <div id="launcherCardsGrid" class="launchers-grid">
-              <div class="launcher-card selected" data-launcher="moytv" onclick="selectLauncher('moytv')">
+              <div class="launcher-card" data-launcher="moytv" onclick="selectLauncher('moytv')">
                 <div class="launcher-name">Мой ТВ (Moy-TV)</div>
-                <div class="launcher-badge">ОЗУ: ~50–70 МБ • Диск: ~20 МБ</div>
+                <div class="launcher-badge">ОЗУ: ~50–70 МБ — Диск: ~20 МБ</div>
               </div>
-              <div class="launcher-card" data-launcher="cleanyourtv" onclick="selectLauncher('cleanyourtv')">
-                <div class="launcher-name">CleanYourTV</div>
-                <div class="launcher-badge">ОЗУ: ~15–25 МБ • Диск: ~500 КБ</div>
+              <div class="launcher-card selected" data-launcher="cleanyourtv" onclick="selectLauncher('cleanyourtv')">
+                <div class="launcher-name" style="display: flex; align-items: center; justify-content: space-between;"><span>CleanYourTV</span> <span class="tag tag-accent" style="font-size: 0.65rem;">Конфигуратор tvOS</span></div>
+                <div class="launcher-badge">ОЗУ: ~15–25 МБ — Диск: ~500 КБ</div>
               </div>
               <div class="launcher-card" data-launcher="projectivy" onclick="selectLauncher('projectivy')">
                 <div class="launcher-name">Projectivy</div>
-                <div class="launcher-badge">ОЗУ: ~65–95 МБ • Диск: ~10 МБ</div>
+                <div class="launcher-badge">ОЗУ: ~65–95 МБ — Диск: ~10 МБ</div>
               </div>
               <div class="launcher-card" data-launcher="flauncher" onclick="selectLauncher('flauncher')">
                 <div class="launcher-name">FLauncher</div>
-                <div class="launcher-badge">ОЗУ: ~45–60 МБ • Диск: ~26 МБ</div>
+                <div class="launcher-badge">ОЗУ: ~45–60 МБ — Диск: ~26 МБ</div>
               </div>
             </div>
 
@@ -1241,9 +1466,9 @@
             </div>
 
             <!-- MoyTV Config Panel -->
-            <div id="panelConfigMoyTv" style="background: var(--bg-deep); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+            <div id="panelConfigMoyTv" style="display: none; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
               <div style="font-weight: 700; font-size: 0.9rem; color: #fff; margin-bottom: 8px;">
-                ⚙️ Настройки лаунчера «Мой ТВ»:
+                 Настройки лаунчера «Мой ТВ»:
               </div>
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
                 <div>
@@ -1285,7 +1510,7 @@
             </div>
 
                         <!-- ==================== CLEAN YOUR TV STUDIO (UNSLOP) ==================== -->
-            <div id="panelConfigDock" style="display: none; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+            <div id="panelConfigDock" style="display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
               <!-- Studio Header -->
               <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
                 <div>
@@ -1312,6 +1537,58 @@
                 </div>
               </div>
 
+                            <!-- ==================== LIVE INTERACTIVE TV SCREEN PREVIEW ==================== -->
+              <div class="tv-mockup-wrapper">
+                <div class="tv-frame-outer" id="tvScreenPreview">
+                  <!-- Ambient glow behind active focus -->
+                  <div class="tv-ambient-glow" id="tvPreviewAmbientGlow"></div>
+
+                  <!-- TV Topbar -->
+                  <div class="tv-preview-topbar">
+                    <span class="tv-greeting" id="tvPreviewGreeting">Семья</span>
+                    <div class="tv-topbar-pills">
+                      <span class="tv-mini-pill" id="tvPreviewNetPill"><svg class="icon-xs" style="width:10px;height:10px;"><use href="#icon-wifi"></use></svg> Wi-Fi</span>
+                      <span class="tv-mini-pill" id="tvPreviewInputsPill">HDMI 1</span>
+                      <span class="tv-mini-circle" id="tvPreviewTopMenu"><svg class="icon-xs" style="width:10px;height:10px;"><use href="#icon-settings"></use></svg></span>
+                      <span class="tv-mini-clock" id="tvPreviewClock">12:45</span>
+                    </div>
+                  </div>
+
+                  <!-- TV Center: Cinematic Shelf Showcase -->
+                  <div class="tv-shelf-showcase" id="tvPreviewShelfArea">
+                    <div class="tv-shelf-badge" id="tvPreviewShelfBadge">Кинорежим tvOS</div>
+                    <div class="tv-shelf-title" id="tvPreviewBannerTitle">Apple TV 4K</div>
+                    <div class="tv-shelf-desc" id="tvPreviewBannerDesc">Полноэкранные постеры, матовое стекло и фокус с подсветкой</div>
+                    <div class="tv-shelf-dots" id="tvPreviewDots">
+                      <span class="tv-dot active"></span>
+                      <span class="tv-dot"></span>
+                      <span class="tv-dot"></span>
+                      <span class="tv-dot"></span>
+                    </div>
+                  </div>
+
+                  <!-- TV Bottom: Apple TV Dock Shelf -->
+                  <div class="tv-dock-shelf">
+                    <div class="tv-dock-matte" id="tvPreviewDockMatte">
+                      <div id="tvPreviewDockTiles" style="display: flex; gap: 8px; justify-content: center;">
+                        <!-- Generated in real time from studioConfig.dock_apps -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Preview Actions Bar -->
+                <div class="tv-preview-toolbar">
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 0.76rem; color: var(--text-muted);">
+                    <span class="dot-indicator dot-safe"></span>
+                    <span>Интерактивный экран-макет (16:9 Live Preview) — обновляется в реальном времени</span>
+                  </div>
+                  <button class="btn btn-primary" onclick="applyCleanYourTvConfig()" style="font-weight: 600; padding: 6px 14px;">
+                    <svg class="icon-sm"><use href="#icon-send"></use></svg>
+                    <span>Отправить лаунчер мечты на ТВ</span>
+                  </button>
+                </div>
+              </div>
               <!-- Sub-tabs navigation -->
               <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--border);">
                 <button id="subtab-btn-themes" class="btn btn-secondary subtab-btn active" style="padding: 4px 10px; font-size: 0.76rem;" onclick="switchStudioSubtab('themes')">Темы и пресеты</button>
@@ -1670,7 +1947,7 @@
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 12px;">
               <button class="btn btn-secondary bypass-mode-btn active" data-bypass="byedpi" onclick="selectBypassMode('byedpi', this)">
-                ⚡ ByeDPI на ТВ
+                 ByeDPI на ТВ
               </button>
               <button class="btn btn-secondary bypass-mode-btn" data-bypass="custom_proxy" onclick="selectBypassMode('custom_proxy', this)">
                 Внешний Прокси
@@ -1734,7 +2011,7 @@
               </div>
               <div style="display: flex; gap: 6px;">
                 <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.78rem;" onclick="selectTop6Apps()">
-                  ⭐ Топ-6
+                   Топ-6
                 </button>
                 <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.78rem;" onclick="toggleAllApps(true)">
                   Выбрать все
@@ -1856,8 +2133,8 @@
     </div>
 
     <footer>
-      <span>Smart TV Toolbox v4.0.0 • Open Source</span>
-      <span>Jipok/tv-cleaner • andrewm8888/moy-tv • by-sonic/chistytv</span>
+      <span>Smart TV Toolbox v4.0.0 — Open Source</span>
+      <span>Jipok/tv-cleaner — andrewm8888/moy-tv — by-sonic/chistytv</span>
     </footer>
   </div>
 
@@ -1867,7 +2144,7 @@
 
     // Global State
     let currentBypassMode = 'byedpi';
-    let currentSelectedLauncher = 'moytv';
+    let currentSelectedLauncher = 'cleanyourtv';
     let catalogPackages = {};
 
     function log(msg) {
@@ -1886,6 +2163,10 @@
       document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
       
       const target = document.getElementById(tabId);
+      if (tabId === 'tab-launchers' && currentSelectedLauncher === 'cleanyourtv') {
+        initCleanYourTvStudio();
+        if (typeof updateTvPreview === 'function') updateTvPreview();
+      }
       if (target) target.classList.add('active');
       if (btn) btn.classList.add('active');
     }
@@ -2072,13 +2353,13 @@
                   ${safetyBadgeHtml}
                 </div>
                 <div class="proc-desc-text">${p.desc}</div>
-                <div class="proc-pkg-text">${p.pkg} • PID: ${p.pid}</div>
+                <div class="proc-pkg-text">${p.pkg} — PID: ${p.pid}</div>
               </div>
             </div>
 
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="proc-ram-badge">${p.ram_mb} МБ ОЗУ</span>
-              ${!isCritical ? `<button class="btn-stop-single" onclick="stopSingleProcess('${p.pkg}', '${p.name}')" title="Выгрузить из оперативной памяти прямо сейчас">⏹️ Выгрузить</button>` : ''}
+              ${!isCritical ? `<button class="btn-stop-single" onclick="stopSingleProcess('${p.pkg}', '${p.name}')" title="Выгрузить из оперативной памяти прямо сейчас">Выгрузить</button>` : ''}
             </div>
           </div>
         `;
@@ -2115,7 +2396,7 @@
     }
 
     async function stopSingleProcess(pkg, name) {
-      log(`⏹️ Выгрузка процесса [${name || pkg}] из оперативной памяти...`);
+      log(`[*] Выгрузка процесса [${name || pkg}] из оперативной памяти...`);
       const res = await callApi('stop_running_processes', { packages: [pkg] });
       if (res && res.ok) {
         log(`✓ Процесс ${pkg} успешно выгружен.`);
@@ -2131,7 +2412,7 @@
         alert('Выберите хотя бы один процесс для выгрузки!');
         return;
       }
-      log(`⏹️ Выгрузка выбранных процессов (${checked.length} шт) из оперативной памяти...`);
+      log(`[*] Выгрузка выбранных процессов (${checked.length} шт) из оперативной памяти...`);
       const res = await callApi('stop_running_processes', { packages: checked });
       if (res && res.ok) {
         log(`✓ Успешно выгружено процессов: ${res.stopped.length}. Память ТВ освобождена.`);
@@ -2148,7 +2429,7 @@
       if (!confirm(`Вы действительно хотите заморозить ${checked.length} процессов? Они перестанут запускаться в фоне при включении ТВ.`)) {
         return;
       }
-      log(`❄️ Заморозка служб (${checked.length} шт) через pm disable...`);
+      log(`[*] Заморозка служб (${checked.length} шт) через pm disable...`);
       const res = await callApi('freeze_processes', { packages: checked });
       if (res && res.ok) {
         log(`✓ Заморожено: ${res.frozen.length} служб.`);
@@ -2162,7 +2443,7 @@
         alert('Выберите процессы для включения/разморозки!');
         return;
       }
-      log(`▶️ Разморозка служб (${checked.length} шт) через pm enable...`);
+      log(`[*] Разморозка служб (${checked.length} шт) через pm enable...`);
       const res = await callApi('unfreeze_processes', { packages: checked });
       if (res && res.ok) {
         log(`✓ Разморожено: ${res.unfrozen.length} служб.`);
@@ -2383,6 +2664,7 @@
         updateStudioFormFields();
         renderStudioDock();
         renderStudioKeysCatalog();
+        if (typeof updateTvPreview === 'function') updateTvPreview();
         studioInitialized = true;
         log('✓ CleanYourTV Studio готова к настройке.');
       } catch (e) {
@@ -2401,7 +2683,7 @@
 
     function selectStudioPreset(presetKey) {
       document.querySelectorAll('.studio-theme-card').forEach(c => {
-        c.style.border = (c.dataset.preset === presetKey) ? '1.5px solid #6366f1' : '1.5px solid rgba(255,255,255,0.1)';
+        c.style.border = (c.dataset.preset === presetKey) ? '1.5px solid var(--accent)' : '1.5px solid rgba(255,255,255,0.1)';
       });
 
       if (studioPresets && studioPresets[presetKey]) {
@@ -2409,6 +2691,7 @@
         updateStudioFormFields();
         renderStudioDock();
         renderStudioKeysCatalog();
+        if (typeof updateTvPreview === 'function') updateTvPreview();
         const badge = document.getElementById('cleanConfigSourceBadge');
         if (badge) {
           badge.innerText = `Пресет: ${presetKey.toUpperCase()}`;
@@ -2451,7 +2734,7 @@
       const bgLbl = document.getElementById('lblStudioBgColor');
       if (bgLbl) bgLbl.innerText = bg;
 
-      const acc = getVal('accent_color', '#6366f1');
+      const acc = getVal('accent_color', 'var(--accent)');
       setVal('pickerStudioAccentColor', acc);
       const accLbl = document.getElementById('lblStudioAccentColor');
       if (accLbl) accLbl.innerText = acc;
@@ -2477,7 +2760,116 @@
       const badge = document.getElementById('cleanConfigSourceBadge');
       if (badge) {
         badge.innerText = 'Изменено пользователем';
-        badge.style.color = '#fbbf24';
+        badge.style.color = '#f59e0b';
+      }
+      if (typeof updateTvPreview === 'function') updateTvPreview();
+    }
+
+    
+    function updateTvPreview() {
+      const screen = document.getElementById('tvScreenPreview');
+      if (!screen) return;
+
+      const bg = studioConfig.background_color || '#121212';
+      const accent = studioConfig.accent_color || '#f97316';
+      const isCinematic = !!studioConfig.cinematic_home;
+      const isNight = (bg.toLowerCase() === '#000000');
+
+      // 1. Background
+      if (isCinematic) {
+        screen.style.background = `linear-gradient(180deg, #18181b 0%, ${bg} 60%)`;
+      } else {
+        screen.style.background = bg;
+      }
+
+      // 2. Ambient Glow
+      const glow = document.getElementById('tvPreviewAmbientGlow');
+      if (glow) {
+        if (studioConfig.ambient_glow) {
+          glow.style.display = 'block';
+          glow.style.background = `radial-gradient(circle, ${accent}33 0%, transparent 70%)`;
+        } else {
+          glow.style.display = 'none';
+        }
+      }
+
+      // 3. Topbar
+      const greeting = document.getElementById('tvPreviewGreeting');
+      if (greeting) greeting.innerText = studioConfig.greeting_name || 'Семья';
+
+      const netPill = document.getElementById('tvPreviewNetPill');
+      if (netPill) netPill.style.display = studioConfig.show_network_pill ? 'flex' : 'none';
+
+      const inputsPill = document.getElementById('tvPreviewInputsPill');
+      if (inputsPill) inputsPill.style.display = studioConfig.show_inputs_pill ? 'flex' : 'none';
+
+      const topMenu = document.getElementById('tvPreviewTopMenu');
+      if (topMenu) topMenu.style.display = studioConfig.top_menu ? 'flex' : 'none';
+
+      // 4. Shelf Area
+      const shelfArea = document.getElementById('tvPreviewShelfArea');
+      const dots = document.getElementById('tvPreviewDots');
+      const shelfTitle = document.getElementById('tvPreviewBannerTitle');
+      const shelfDesc = document.getElementById('tvPreviewBannerDesc');
+      if (shelfArea) {
+        if (isCinematic) {
+          shelfArea.style.opacity = '1';
+          if (shelfTitle) shelfTitle.innerText = isNight ? 'Ночной режим OLED' : 'Apple TV 4K';
+          if (shelfDesc) shelfDesc.innerText = isNight ? 'Глубокий черный цвет без выгорания матриц' : 'Полноэкранные постеры и подсветка ambient glow';
+          if (dots) dots.style.display = studioConfig.cinematic_dots ? 'flex' : 'none';
+        } else {
+          shelfArea.style.opacity = '0.65';
+          if (shelfTitle) shelfTitle.innerText = 'Лаконичный домашний экран';
+          if (shelfDesc) shelfDesc.innerText = 'Минималистичный вид без тяжелых постеров';
+          if (dots) dots.style.display = 'none';
+        }
+      }
+
+      // 5. Dock Matte & Tiles
+      const dockMatte = document.getElementById('tvPreviewDockMatte');
+      if (dockMatte) {
+        const opacity = (studioConfig.dock_opacity !== undefined ? studioConfig.dock_opacity : 85) / 100;
+        if (studioConfig.dock_glass === false || studioConfig.glass_style === 'rim') {
+          dockMatte.style.background = `rgba(35, 35, 37, ${opacity * 0.7})`;
+          dockMatte.style.borderColor = `rgba(255, 255, 255, 0.25)`;
+        } else {
+          dockMatte.style.background = `rgba(255, 255, 255, ${opacity * 0.16})`;
+          dockMatte.style.borderColor = `rgba(255, 255, 255, 0.18)`;
+        }
+      }
+
+      const tilesContainer = document.getElementById('tvPreviewDockTiles');
+      if (tilesContainer) {
+        const dockApps = studioConfig.dock_apps || [];
+        const showNames = !!studioConfig.always_show_names;
+        let html = '';
+
+        const appNamesMap = {
+          'mobi.zona': { name: 'Zona', color: '#f59e0b', initial: 'Z' },
+          'com.falcofemoralis.hdrezkaapp': { name: 'Rezka', color: '#38bdf8', initial: 'R' },
+          'ru.twicker.lampa': { name: 'Lampa', color: '#e5484d', initial: 'L' },
+          'com.spotify.tv.android': { name: 'Spotify', color: '#4cc38a', initial: 'S' },
+          'su.happ.proxyutility': { name: 'Happ', color: '#a855f7', initial: 'H' },
+          'com.alphainventor.filemanager': { name: 'FM+', color: '#3b82f6', initial: 'F' },
+          'com.teamsmart.videomanager.tv': { name: 'SmartTube', color: '#ef4444', initial: 'ST' },
+          'com.vkontakte.android': { name: 'VK', color: '#0284c7', initial: 'VK' },
+          'ru.kinopoisk': { name: 'Кино', color: '#ea580c', initial: 'KP' },
+        };
+
+        dockApps.forEach((pkg, i) => {
+          const info = appNamesMap[pkg] || { name: pkg.split('.').pop(), color: '#71717a', initial: pkg[0].toUpperCase() };
+          const isFocused = (i === 0);
+          html += `
+            <div class="tv-app-tile ${isFocused ? 'focused' : ''}">
+              <div class="tv-app-icon-box" style="background: ${isFocused ? info.color : '#232325'}; color: #fff;">
+                <span>${info.initial}</span>
+              </div>
+              <span class="tv-app-label" style="display: ${showNames || isFocused ? 'block' : 'none'};">${info.name}</span>
+            </div>
+          `;
+        });
+
+        tilesContainer.innerHTML = html;
       }
     }
 
@@ -2565,6 +2957,7 @@
       dockApps[target] = tmp;
       updateStudioConfigKey('dock_apps', dockApps);
       renderStudioDock();
+      updateTvPreview();
     }
 
     function removeStudioDockApp(index) {
@@ -2572,6 +2965,7 @@
       dockApps.splice(index, 1);
       updateStudioConfigKey('dock_apps', dockApps);
       renderStudioDock();
+      updateTvPreview();
     }
 
     function renderStudioKeysCatalog() {
@@ -2610,7 +3004,7 @@
         if (item.type === 'boolean') {
           const valBool = (currentVal !== undefined) ? currentVal : item.default;
           html += `
-            <div style="background: rgba(255,255,255,0.025); border: 1px solid ${isModified ? '#6366f1' : 'rgba(255,255,255,0.06)'}; border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <div style="background: rgba(255,255,255,0.025); border: 1px solid ${isModified ? 'var(--accent)' : 'rgba(255,255,255,0.06)'}; border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
               <div style="flex: 1;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <span style="font-weight: 700; font-size: 0.86rem; color: #fff;">${item.label}</span>
@@ -2622,7 +3016,7 @@
               <div style="display: flex; align-items: center; gap: 8px;">
                 <label style="position: relative; display: inline-block; width: 42px; height: 22px;">
                   <input type="checkbox" ${valBool ? 'checked' : ''} onchange="updateStudioConfigKey('${item.key}', this.checked)" style="opacity: 0; width: 0; height: 0;">
-                  <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${valBool ? '#6366f1' : '#334155'}; transition: .3s; border-radius: 22px;"></span>
+                  <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${valBool ? 'var(--accent)' : '#334155'}; transition: .3s; border-radius: 22px;"></span>
                   <span style="position: absolute; content: ''; height: 16px; width: 16px; left: ${valBool ? '23px' : '3px'}; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%;"></span>
                 </label>
               </div>
@@ -2658,7 +3052,7 @@
         }
 
         html += `
-          <div style="background: rgba(255,255,255,0.025); border: 1px solid ${isModified ? '#6366f1' : 'rgba(255,255,255,0.06)'}; border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+          <div style="background: rgba(255,255,255,0.025); border: 1px solid ${isModified ? 'var(--accent)' : 'rgba(255,255,255,0.06)'}; border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
             <div style="flex: 1;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-weight: 700; font-size: 0.86rem; color: #fff;">${item.label}</span>
@@ -2688,7 +3082,7 @@
     }
 
     async function applyCleanYourTvConfig() {
-      log('🚀 Отправка конфигурации CleanYourTV на телевизор...');
+      log(' Отправка конфигурации CleanYourTV на телевизор...');
       try {
         const res = await callApi('save_cleanyourtv_config', {
           config_payload: studioConfig,
@@ -2711,7 +3105,7 @@
 
     async function resetCleanYourTvConfig() {
       if (!confirm('Сбросить оформление CleanYourTV к заводским настройкам (удалить config.json с ТВ)?')) return;
-      log('🔄 Сброс настроек CleanYourTV на телевизоре...');
+      log('Сброс настроек CleanYourTV на телевизоре...');
       try {
         const res = await callApi('reset_cleanyourtv_config');
         if (res && res.ok) {
@@ -2855,6 +3249,7 @@
     // Initial Load
     window.addEventListener('DOMContentLoaded', () => {
       onProfileChange();
+      initCleanYourTvStudio();
       log('Интерфейс готов к работе.');
     });
   </script>
