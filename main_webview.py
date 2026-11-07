@@ -132,22 +132,40 @@ class WebViewBridge:
         return {"ok": True}
 
 
-def _configure_frameless_window(window):
+def _apply_dwm_caption_theming(window):
+    """
+    Natively colors the Windows titlebar to #141415 (matching the unslop graphite background),
+    sets text to #ededed, enables dark mode caption controls, and sets the window border.
+    This maintains 100% native window resizing, snapping, and controls without any frame glitches.
+    """
     try:
         import ctypes
         from webview.platforms import winforms
         form = winforms.BrowserView.instances.get(window.uid)
-        if form:
-            hwnd = form.Handle.ToInt32()
-            GWL_STYLE = -16
-            WS_THICKFRAME = 0x00040000
-            style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_STYLE)
-            ctypes.windll.user32.SetWindowLongW(hwnd, GWL_STYLE, style | WS_THICKFRAME)
-            SWP_FRAMECHANGED = 0x0020
-            SWP_NOMOVE = 0x0002
-            SWP_NOSIZE = 0x0001
-            SWP_NOZORDER = 0x0004
-            ctypes.windll.user32.SetWindowPos(hwnd, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER)
+        if not form:
+            return
+        hwnd = form.Handle.ToInt32()
+        dwmapi = ctypes.windll.dwmapi
+
+        # 1. Enable immersive dark mode
+        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        dark = ctypes.c_int(1)
+        dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ctypes.byref(dark), ctypes.sizeof(dark))
+
+        # 2. Native Titlebar background: #141415 (COLORREF 0x00BBGGRR = 0x00151414)
+        DWMWA_CAPTION_COLOR = 35
+        caption_color = ctypes.c_int(0x00151414)
+        dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, ctypes.byref(caption_color), ctypes.sizeof(caption_color))
+
+        # 3. Native Titlebar text: #ededed (0x00ededed)
+        DWMWA_TEXT_COLOR = 36
+        text_color = ctypes.c_int(0x00ededed)
+        dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_TEXT_COLOR, ctypes.byref(text_color), ctypes.sizeof(text_color))
+
+        # 4. Native Border color: #141415 (0x00151414)
+        DWMWA_BORDER_COLOR = 34
+        border_color = ctypes.c_int(0x00151414)
+        dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ctypes.byref(border_color), ctypes.sizeof(border_color))
     except Exception:
         pass
 
@@ -171,9 +189,9 @@ if __name__ == "__main__":
         width=1240,
         height=840,
         min_size=(980, 680),
-        frameless=True,
-        easy_drag=False,
-        shadow=True,
+        resizable=True,
         background_color="#141415",
     )
-    webview.start(_configure_frameless_window, window, debug=False)
+    window.events.before_show += lambda: _apply_dwm_caption_theming(window)
+    window.events.shown += lambda: _apply_dwm_caption_theming(window)
+    webview.start(_apply_dwm_caption_theming, window, debug=False)
