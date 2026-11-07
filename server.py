@@ -90,6 +90,8 @@ class ToolboxHandler(http.server.SimpleHTTPRequestHandler):
         elif endpoint == "/api/web_remote":
             enable = payload.get("enable", True)
             response = manager.setup_tv_web_remote(enable)
+        elif endpoint in ("/api/screenshot", "/api/tv/screenshot", "/api/capture_tv_screenshot"):
+            response = manager.capture_tv_screenshot()
         elif endpoint in ("/api/scan", "/api/scan_network"):
             devices = manager.scan_network()
             response = {

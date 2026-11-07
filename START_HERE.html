@@ -1289,12 +1289,22 @@
           <!-- Showcase: 16:9 TV Screen Live Preview -->
           <div class="showcase-box">
             
-            <!-- View Mode Switcher: Home vs Screensaver -->
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 680px; margin-bottom: 12px;">
-              <span style="font-size: 0.74rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em;">Режим предпросмотра экрана ТВ</span>
-              <div class="segmented-control">
-                <button class="segment-btn active" id="btnTvModeHome" onclick="setTvPreviewMode('home')">📺 Главный экран tvOS</button>
-                <button class="segment-btn" id="btnTvModeSaver" onclick="setTvPreviewMode('screensaver')">⏰ Заставка (Screensaver)</button>
+            <!-- View Mode Switcher: Home vs Screensaver vs Live -->
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 680px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 0.74rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em;">Интерактивный макет ТВ (16:9)</span>
+                <span id="tvMockupConfigBadge" class="badge-tag" style="display: none; font-size: 11px; background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3);">✓ Считано с ТВ</span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <div class="segmented-control">
+                  <button class="segment-btn active" id="btnTvModeHome" onclick="setTvPreviewMode('home')">📺 Главный экран tvOS</button>
+                  <button class="segment-btn" id="btnTvModeSaver" onclick="setTvPreviewMode('screensaver')">⏰ Заставка</button>
+                  <button class="segment-btn" id="btnTvModeLive" onclick="setTvPreviewMode('live')">📸 Живой экран ТВ</button>
+                </div>
+                <button class="btn-island-secondary" id="btnCaptureLiveScreen" onclick="captureLiveTvScreen()" title="Сделать реальный снимок экрана телевизора через ADB" style="padding: 5px 11px; font-size: 12px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 3px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  Снимок с ТВ
+                </button>
               </div>
             </div>
 
@@ -1340,6 +1350,17 @@
                 <div class="tv-clock-telemetry" id="previewSaverTelemetry">
                   <span>CPU: 14%</span> • <span>ОЗУ: 410 МБ свободно</span> • <span>Диск: 9.2 ГБ</span>
                 </div>
+
+              <!-- 3. LIVE TV SCREEN VIEW (Real-time ADB capture) -->
+              <div id="tvMockupLiveView" style="display: none; width: 100%; height: 100%; position: relative; z-index: 2; align-items: center; justify-content: center; background: #000; border-radius: 10px; overflow: hidden;">
+                <img id="tvLiveScreenshotImg" src="" alt="Экран телевизора" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                <div id="tvLivePlaceholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); font-size: 12px; gap: 8px; text-align: center; padding: 20px;">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                  <span>Нажмите <b>«Снимок с ТВ»</b> для захвата реального изображения экрана телевизора в реальном времени.</span>
+                </div>
+                <div id="tvLiveTimestamp" style="position: absolute; bottom: 8px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; display: none;"></div>
+              </div>
+
               </div>
 
             </div>
@@ -1410,7 +1431,7 @@
               </div>
               <div class="setting-control" style="display: flex; gap: 8px;">
                 <button class="btn-island-secondary" onclick="resetCleanYourTvConfig()">Сброс</button>
-                <button class="btn-island-secondary" onclick="loadCleanYourTvConfig()">Считать с ТВ</button>
+                <button class="btn-island-secondary" id="btnLoadTvConfig" onclick="loadCleanYourTvConfig()">Считать с ТВ</button>
                 <button class="btn-island-primary" onclick="applyCleanYourTvConfig()">Отправить на ТВ</button>
               </div>
             </div>
@@ -2250,25 +2271,111 @@
     }
 
     // ==================== TAB 3: CLEAN YOUR TV STUDIO & 16:9 PREVIEW ====================
+
+    const APP_NAMES_MAP = {
+      'mobi.zona': 'Zona',
+      'com.falcofemoralis.hdrezkaapp': 'HDRezka',
+      'com.spotify.tv.android': 'Spotify',
+      'com.vk.tv': 'VK Video',
+      'ru.rutube.app': 'RuTube',
+      'org.smarttube.stable': 'SmartTube',
+      'com.lampa': 'Lampa',
+      'ru.kinopoisk.tv': 'Кинопоиск',
+      'ru.ivi.client': 'Иви',
+      'ru.okko.tv': 'Okko',
+      'com.google.android.youtube.tv': 'YouTube',
+      'com.lonelycatgames.Xplore': 'X-plore',
+      'com.alphainventor.filemanager': 'File Manager+'
+    };
+
     function setTvPreviewMode(mode) {
-      const homeView = document.getElementById('tvMockupHomeView');
-      const saverView = document.getElementById('tvMockupSaverView');
       const btnHome = document.getElementById('btnTvModeHome');
       const btnSaver = document.getElementById('btnTvModeSaver');
-      const label = document.getElementById('tvShowcaseLabel');
+      const btnLive = document.getElementById('btnTvModeLive');
+      
+      const viewHome = document.getElementById('tvMockupHomeView');
+      const viewSaver = document.getElementById('tvMockupSaverView');
+      const viewLive = document.getElementById('tvMockupLiveView');
+      
+      if (btnHome) btnHome.classList.remove('active');
+      if (btnSaver) btnSaver.classList.remove('active');
+      if (btnLive) btnLive.classList.remove('active');
+      
+      if (viewHome) viewHome.style.display = 'none';
+      if (viewSaver) viewSaver.style.display = 'none';
+      if (viewLive) viewLive.style.display = 'none';
+      
+      if (mode === 'home') {
+        if (btnHome) btnHome.classList.add('active');
+        if (viewHome) viewHome.style.display = 'flex';
+      } else if (mode === 'screensaver') {
+        if (btnSaver) btnSaver.classList.add('active');
+        if (viewSaver) viewSaver.style.display = 'flex';
+      } else if (mode === 'live') {
+        if (btnLive) btnLive.classList.add('active');
+        if (viewLive) viewLive.style.display = 'flex';
+        const img = document.getElementById('tvLiveScreenshotImg');
+        if (img && (!img.src || img.src === window.location.href)) {
+          captureLiveTvScreen(false);
+        }
+      }
+    }
 
-      if (mode === 'screensaver') {
-        homeView.style.display = 'none';
-        saverView.classList.add('active');
-        btnHome.classList.remove('active');
-        btnSaver.classList.add('active');
-        label.innerText = 'Интерактивный экран-макет 16:9 — Заставка телевизора (Screensaver)';
-      } else {
-        homeView.style.display = 'flex';
-        saverView.classList.remove('active');
-        btnHome.classList.add('active');
-        btnSaver.classList.remove('active');
-        label.innerText = 'Интерактивный экран-макет 16:9 — Главный экран CleanYourTV';
+    async function captureLiveTvScreen(switchMode = true) {
+      const btn = document.getElementById('btnCaptureLiveScreen');
+      if (btn) {
+        btn.innerHTML = '<span class="spin" style="display:inline-block; margin-right:4px;">⏳</span> Захват...';
+        btn.disabled = true;
+      }
+      
+      if (switchMode) {
+        setTvPreviewMode('live');
+      }
+      
+      const img = document.getElementById('tvLiveScreenshotImg');
+      const placeholder = document.getElementById('tvLivePlaceholder');
+      const timestamp = document.getElementById('tvLiveTimestamp');
+      
+      if (placeholder) {
+        placeholder.innerHTML = '<span class="spin" style="display:inline-block; margin-bottom:8px;">' +
+          '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span>' +
+          '<span>Захват экрана телевизора по ADB...</span>';
+      }
+      
+      try {
+        const res = await callApi('capture_tv_screenshot');
+        if (btn) {
+          btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 3px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> Снимок с ТВ';
+          btn.disabled = false;
+        }
+        
+        if (res && res.ok && res.image) {
+          if (img) {
+            img.src = res.image;
+            img.style.display = 'block';
+          }
+          if (placeholder) placeholder.style.display = 'none';
+          if (timestamp) {
+            const now = new Date();
+            timestamp.style.display = 'block';
+            timestamp.innerText = `Снимок: ${now.toLocaleTimeString()} (${res.device || 'ТВ'})`;
+          }
+          log(`✓ Снимок экрана телевизора успешно получен (${Math.round(res.size / 1024)} КБ)`);
+        } else {
+          if (placeholder) {
+            placeholder.innerHTML = `<span style="color:var(--danger)">⚠️ ${res ? res.error : 'Ошибка захвата экрана'}</span>` +
+              '<span style="font-size:11px; color:var(--text-dim)">Убедитесь, что телевизор подключен во вкладке «Общее».</span>';
+            placeholder.style.display = 'flex';
+          }
+          if (img) img.style.display = 'none';
+          log(`⚠️ Не удалось получить снимок экрана: ${res ? res.error : 'Неизвестная ошибка'}`);
+        }
+      } catch (e) {
+        if (btn) {
+          btn.innerHTML = 'Снимок с ТВ';
+          btn.disabled = false;
+        }
+        log('Ошибка при захвате снимка ТВ: ' + e);
       }
     }
 
@@ -2284,6 +2391,15 @@
           studioConfig = cfgRes.config || {};
           studioPresets = cfgRes.presets || {};
           studioSchema = cfgRes.schema || [];
+          
+          if (cfgRes.from_tv) {
+            const badge = document.getElementById('tvMockupConfigBadge');
+            if (badge) {
+              const appsCount = (studioConfig.dock_apps || []).length;
+              badge.style.display = 'inline-block';
+              badge.innerText = `✓ Считано с ТВ (${appsCount} прилож.)`;
+            }
+          }
         }
         if (appsRes && appsRes.ok && appsRes.apps) {
           studioInstalledApps = appsRes.apps;
@@ -2327,35 +2443,81 @@
         const acc = studioConfig.accent_color || '#7c8cf8';
         glow.style.background = `radial-gradient(circle, ${acc}44 0%, transparent 70%)`;
       }
-    }
 
-    async function applyCleanYourTvConfig() {
-      log('Отправка конфигурации CleanYourTV на телевизор...');
-      try {
-        const res = await callApi('save_cleanyourtv_config', {
-          config_payload: studioConfig,
-          restart: true
+      // Dynamic Dock rendering
+      const dock = document.getElementById('tvMockupDock');
+      if (dock) {
+        dock.innerHTML = '';
+        const apps = studioConfig.dock_apps || ['mobi.zona', 'com.falcofemoralis.hdrezkaapp', 'com.spotify.tv.android', 'com.vk.tv', 'org.smarttube.stable'];
+        apps.forEach((pkg, idx) => {
+          const tile = document.createElement('div');
+          tile.className = `tv-island-tile ${idx === 0 ? 'active' : ''}`;
+          const shortName = APP_NAMES_MAP[pkg] || pkg.split('.').pop();
+          tile.innerText = shortName;
+          tile.title = pkg;
+          dock.appendChild(tile);
         });
-        if (res && res.ok) {
-          log('✓ Конфигурация CleanYourTV успешно отправлена и применена на ТВ!');
-        } else {
-          log(`Ошибка применения: ${res ? res.error : 'Неизвестная ошибка'}`);
-        }
-      } catch (e) {
-        log(`Исключение: ${e}`);
       }
     }
 
-    async function resetCleanYourTvConfig() {
-      if (!confirm('Сбросить оформление CleanYourTV к заводским настройкам?')) return;
-      log('Сброс настроек CleanYourTV на телевизоре...');
-      const res = await callApi('reset_cleanyourtv_config');
-      log(res.ok ? '✓ Настройки сброшены к дефолту.' : `Ошибка: ${res.error}`);
+    async function loadCleanYourTvConfig() {
+      const btn = document.getElementById('btnLoadTvConfig') || event.target;
+      const origText = btn ? btn.innerText : 'Считать с ТВ';
+      if (btn) {
+        btn.innerText = '⏳ Считывание...';
+        btn.disabled = true;
+      }
+
+      log('Считывание конфигурации CleanYourTV с подключенного телевизора...');
+      try {
+        const res = await callApi('get_cleanyourtv_config');
+        if (btn) {
+          btn.disabled = false;
+        }
+        
+        if (res && res.ok) {
+          studioConfig = res.config || {};
+          studioPresets = res.presets || {};
+          studioSchema = res.schema || [];
+          
+          updateTvPreview();
+          
+          const appsCount = (studioConfig.dock_apps || []).length;
+          if (btn) {
+            btn.innerText = '✓ Конфиг считан!';
+            btn.style.borderColor = 'var(--success)';
+            btn.style.color = 'var(--success)';
+            setTimeout(() => {
+              btn.innerText = origText;
+              btn.style.borderColor = '';
+              btn.style.color = '';
+            }, 2500);
+          }
+          
+          const badge = document.getElementById('tvMockupConfigBadge');
+          if (badge) {
+            badge.style.display = 'inline-block';
+            badge.innerText = `✓ Считано с ТВ (${appsCount} прилож. в Доке)`;
+          }
+          
+          log(`✓ Конфигурация CleanYourTV успешно считана с ТВ! Загружено ${appsCount} приложений в Доке.`);
+          
+          // Также захватываем свежий скриншот экрана
+          captureLiveTvScreen(false);
+        } else {
+          if (btn) btn.innerText = origText;
+          log(`⚠️ Не удалось считать конфигурацию: ${res ? res.error : 'Проверьте подключение ТВ'}`);
+          alert('Не удалось считать конфигурацию. Убедитесь, что телевизор подключен во вкладке «Общее».');
+        }
+      } catch (e) {
+        if (btn) {
+          btn.innerText = origText;
+          btn.disabled = false;
+        }
+        log('Ошибка при считывании конфигурации CleanYourTV: ' + e);
+      }
     }
 
-    async function loadCleanYourTvConfig() {
-      await initCleanYourTvStudio(true);
-    }
 
     function selectLauncher(id, btn) {
       currentSelectedLauncher = id;

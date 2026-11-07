@@ -1510,6 +1510,39 @@ class SmartTVManager:
         return device_cards
 
 
+    
+    def capture_tv_screenshot(self) -> Dict[str, Any]:
+        """Захватывает реальный экран телевизора через ADB screencap и возвращает base64 PNG."""
+        if not self.current_device:
+            res = self.run_adb(["devices"])
+            for line in res.get("stdout", "").splitlines():
+                if "\tdevice" in line:
+                    self.current_device = line.split("\t")[0].strip()
+                    break
+
+        if not self.current_device:
+            return {"ok": False, "error": "Телевизор не подключен по ADB"}
+
+        remote_path = "/sdcard/tv_screenshot.png"
+        local_path = self.backups_dir / "tv_current_screen.png"
+
+        self.run_adb(["shell", "screencap", "-p", remote_path], timeout=10)
+        pull_res = self.run_adb(["pull", remote_path, str(local_path)], timeout=10)
+        self.run_adb(["shell", "rm", remote_path], timeout=5)
+
+        if pull_res.get("ok") and local_path.exists() and local_path.stat().st_size > 1000:
+            import base64
+            with open(local_path, "rb") as f:
+                b64 = base64.b64encode(f.read()).decode("ascii")
+            return {
+                "ok": True,
+                "image": f"data:image/png;base64,{b64}",
+                "size": local_path.stat().st_size,
+                "device": self.current_device
+            }
+
+        return {"ok": False, "error": "Не удалось получить снимок экрана ТВ"}
+
     def get_cleanyourtv_config(self) -> Dict[str, Any]:
         """Считывает config.json лаунчера CleanYourTV с телевизора или возвращает дефолтный пресет."""
         remote_cfg = "/sdcard/Android/data/com.gathin.tvhome/files/config.json"

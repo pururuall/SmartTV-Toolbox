@@ -110,6 +110,10 @@ class WebViewBridge:
     def setup_web_remote(self, enable: bool = True):
         return self.manager.setup_tv_web_remote(enable)
 
+    
+    def capture_tv_screenshot(self):
+        return self.manager.capture_tv_screenshot()
+
     def scan_network(self):
         devices = self.manager.scan_network()
         return {
