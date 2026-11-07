@@ -90,8 +90,18 @@ class ToolboxHandler(http.server.SimpleHTTPRequestHandler):
         elif endpoint == "/api/web_remote":
             enable = payload.get("enable", True)
             response = manager.setup_tv_web_remote(enable)
-        elif endpoint == "/api/scan":
-            response = {"ok": True, "devices": manager.scan_network()}
+        elif endpoint in ("/api/scan", "/api/scan_network"):
+            devices = manager.scan_network()
+            response = {
+                "ok": True,
+                "devices": devices,
+                "found": [d["ip"] if isinstance(d, dict) else d for d in devices]
+            }
+        elif endpoint in ("/api/devices/known", "/api/get_known_devices"):
+            response = {"ok": True, "devices": manager.get_known_devices()}
+        elif endpoint in ("/api/devices/set_nickname", "/api/set_device_nickname"):
+            ok = manager.set_device_nickname(payload.get("ip", ""), payload.get("nickname", ""))
+            response = {"ok": ok, "devices": manager.get_known_devices()}
         elif endpoint == "/api/apk/install":
             response = manager.install_apk_file(payload.get("file_path", ""))
         elif endpoint in ("/api/processes/scan", "/api/scan_running_processes"):

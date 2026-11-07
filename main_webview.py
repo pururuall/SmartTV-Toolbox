@@ -112,7 +112,18 @@ class WebViewBridge:
 
     def scan_network(self):
         devices = self.manager.scan_network()
-        return {"ok": True, "devices": devices}
+        return {
+            "ok": True,
+            "devices": devices,
+            "found": [d["ip"] if isinstance(d, dict) else d for d in devices]
+        }
+
+    def get_known_devices(self):
+        return {"ok": True, "devices": self.manager.get_known_devices()}
+
+    def set_device_nickname(self, ip: str, nickname: str):
+        ok = self.manager.set_device_nickname(ip, nickname)
+        return {"ok": ok, "devices": self.manager.get_known_devices()}
 
     def list_third_party(self):
         return self.manager.list_installed_third_party()

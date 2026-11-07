@@ -1,0 +1,14 @@
+{
+  "192.168.3.3": {
+    "ip": "192.168.3.3",
+    "port": 5555,
+    "brand": "TUVIO",
+    "model": "TD43UFBSV1",
+    "name": "TUVIO TD43UFBSV1",
+    "nickname": "Гостиная",
+    "android_version": "",
+    "last_connected": "2026-11-08 02:17",
+    "is_active": false,
+    "status": "online"
+  }
+}
