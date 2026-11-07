@@ -5,10 +5,15 @@
   <br/><br/>
 
   <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/Версия-v4.2.1_Release-6366f1?style=for-the-badge&logo=github&logoColor=white" alt="Версия"></a>
-  <a href="https://github.com/pururuall/SmartTV-Toolbox/raw/main/SmartTV_Control.exe"><img src="https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white" alt="Скачать SmartTV_Control.exe"></a>
-  <a href="https://github.com/pururuall/SmartTV-Toolbox/archive/refs/heads/main.zip"><img src="https://img.shields.io/badge/СКАЧАТЬ_ВЕСЬ_РЕПОЗИТОРИЙ-(ZIP)-3b82f6?style=for-the-badge&logo=github&logoColor=white" alt="Скачать весь ZIP"></a>
+  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest/download/SmartTV_Control.exe"><img src="https://img.shields.io/badge/СКАЧАТЬ_SmartTV__Control.exe-22c55e?style=for-the-badge&logo=windows&logoColor=white" alt="Скачать SmartTV_Control.exe"></a>
+  <a href="https://github.com/pururuall/SmartTV-Toolbox/releases/latest"><img src="https://img.shields.io/badge/СТРАНИЦА_РЕЛИЗА-(GitHub)-3b82f6?style=for-the-badge&logo=github&logoColor=white" alt="Страница релиза"></a>
 
 </div>
+
+> [!IMPORTANT]
+> **Для запуска приложения скачивайте готовый `SmartTV_Control.exe` по зелёной кнопке выше или из [Раздела Релизов (v4.2.1)](https://github.com/pururuall/SmartTV-Toolbox/releases/latest).**  
+> Стандартный архив GitHub (*«Download ZIP»*) **не содержит** сам исполняемый файл — из-за системы хранения Git LFS в ZIP-архив попадает лишь текстовый указатель весом 130 байт, который Windows запустить не может. Полноценный 421 МБ EXE со всеми встроенными APK скачивается напрямую из Релизов.
+
 ---
 
 Комплект скриптов, утилит и официальное приложение **SmartTV_Control.exe** (версия **4.2.1**) для глубокой очистки, ускорения, тонкой настройки лаунчеров, управления процессами в реальном времени, визуального конфигурирования CleanYourTV Studio и обхода замедлений YouTube на любых Smart TV под управлением Android 9–14: **Яндекс ТВ (YaOS / CVTE)** (Tuvio, Hartens, DEXP, Novex, Hi), **Салют ТВ (StarOS / SberBox)**, **Haier** (MatrixTV / uSmart), **Xiaomi / Redmi** (PatchWall), **TCL / iFFALCON** и стандартных **Android TV / Google TV**.
