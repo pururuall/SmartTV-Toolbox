@@ -27,6 +27,18 @@ class WebViewBridge:
     def run_custom_debloat(self, selected_packages: list):
         return self.manager.apply_custom_debloat(selected_packages)
 
+    def scan_running_processes(self):
+        return self.manager.scan_running_processes()
+
+    def stop_running_processes(self, packages: list):
+        return self.manager.stop_running_processes(packages)
+
+    def freeze_processes(self, packages: list):
+        return self.manager.freeze_processes(packages)
+
+    def unfreeze_processes(self, packages: list):
+        return self.manager.unfreeze_processes(packages)
+
     def restore_tv(self):
         return self.manager.restore_from_backup()
 
@@ -106,7 +118,7 @@ if __name__ == "__main__":
         ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_ui.html")
 
     window = webview.create_window(
-        title="Smart TV Toolbox v3.0 — Custom TV Optimizer",
+        title="Smart TV Toolbox v4.0.0 — Custom TV Optimizer & Live Process Manager",
         url=ui_path,
         js_api=bridge,
         width=1240,

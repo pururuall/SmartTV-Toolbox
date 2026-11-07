@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "4.0.0",
   "critical_stoplist": [
     "com.android.providers.tv",
     "com.android.tv.settings",
@@ -9,6 +9,10 @@
     "com.cvte.tv.provision",
     "com.xiaomi.mitv.tvplayer",
     "com.haier.tv.input",
+    "com.haier.settings",
+    "com.haier.tv.service",
+    "com.mstar.tv.service",
+    "com.mediatek.tv",
     "com.toshiba.tv.tvinput",
     "com.toshiba.tv.tvsettings",
     "com.hisense.tv.input"
@@ -121,11 +125,67 @@
           "desc": "Фоновая телеметрия и системная аналитика от вендора."
         },
         {
+          "id": "com.haier.appstore",
+          "name": "Магазин приложений Haier Store",
+          "category": "recommended",
+          "ram": 35,
+          "desc": "Штатный магазин с автообновлениями и рекламными рекомендациями в фоне."
+        },
+        {
+          "id": "com.haier.tvmarket",
+          "name": "Каталог Haier TV Market",
+          "category": "recommended",
+          "ram": 30,
+          "desc": "Партнерский промо-каталог приложений Haier."
+        },
+        {
+          "id": "com.haier.browser",
+          "name": "Штатный браузер Haier",
+          "category": "recommended",
+          "ram": 55,
+          "desc": "Тяжелый встроенный браузер от вендора. Рекомендуется отключать при наличии ТВ-плееров."
+        },
+        {
           "id": "com.haier.launcher.haiermatrix",
           "name": "Промо-лаунчер Haier Matrix",
           "category": "optional",
           "ram": 80,
           "desc": "Штатная тяжелая оболочка с рекламой. Отключайте только при установке альтернативного лаунчера."
+        },
+        {
+          "id": "com.haier.cast",
+          "name": "Трансляция экрана Haier Cast",
+          "category": "optional",
+          "ram": 40,
+          "desc": "Беспроводная трансляция дисплея со смартфонов Haier. Отключайте, если не пользуетесь дублированием экрана."
+        },
+        {
+          "id": "com.haier.screenshare",
+          "name": "Служба Haier ScreenShare",
+          "category": "optional",
+          "ram": 35,
+          "desc": "Фоновый сервис Miracast дублирования дисплея."
+        },
+        {
+          "id": "com.haier.systemupgrade",
+          "name": "Haier OTA Updater",
+          "category": "optional",
+          "ram": 25,
+          "desc": "Фоновая служба проверки обновлений прошивки вендора."
+        },
+        {
+          "id": "com.iflytek.xiri",
+          "name": "Голосовой движок Xunfei / iFlyTek",
+          "category": "optional",
+          "ram": 45,
+          "desc": "Китайский голосовой сервис на системных платах Haier. Постоянно держит фоновые потоки микрофона."
+        },
+        {
+          "id": "com.google.android.gms",
+          "name": "Службы Google Play Services",
+          "category": "optional",
+          "ram": 95,
+          "desc": "Фоновые службы Google Play. На слабых телевизорах Haier (1 ГБ ОЗУ) постоянно занимают до 100-150 МБ памяти."
         }
       ]
     },
