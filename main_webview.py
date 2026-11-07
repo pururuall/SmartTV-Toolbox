@@ -104,6 +104,53 @@ class WebViewBridge:
     def list_third_party(self):
         return self.manager.list_installed_third_party()
 
+    def window_minimize(self):
+        if webview.windows:
+            webview.windows[0].minimize()
+        return {"ok": True}
+
+    def window_toggle_maximize(self):
+        if webview.windows:
+            w = webview.windows[0]
+            try:
+                from webview.platforms import winforms
+                form = winforms.BrowserView.instances.get(w.uid)
+                if form and str(form.WindowState) == "Maximized":
+                    w.restore()
+                    return {"ok": True, "maximized": False}
+                else:
+                    w.maximize()
+                    return {"ok": True, "maximized": True}
+            except Exception:
+                w.toggle_fullscreen()
+                return {"ok": True}
+        return {"ok": False}
+
+    def window_close(self):
+        if webview.windows:
+            webview.windows[0].destroy()
+        return {"ok": True}
+
+
+def _configure_frameless_window(window):
+    try:
+        import ctypes
+        from webview.platforms import winforms
+        form = winforms.BrowserView.instances.get(window.uid)
+        if form:
+            hwnd = form.Handle.ToInt32()
+            GWL_STYLE = -16
+            WS_THICKFRAME = 0x00040000
+            style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_STYLE)
+            ctypes.windll.user32.SetWindowLongW(hwnd, GWL_STYLE, style | WS_THICKFRAME)
+            SWP_FRAMECHANGED = 0x0020
+            SWP_NOMOVE = 0x0002
+            SWP_NOSIZE = 0x0001
+            SWP_NOZORDER = 0x0004
+            ctypes.windll.user32.SetWindowPos(hwnd, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER)
+    except Exception:
+        pass
+
 
 if __name__ == "__main__":
     bridge = WebViewBridge()
@@ -124,5 +171,9 @@ if __name__ == "__main__":
         width=1240,
         height=840,
         min_size=(980, 680),
+        frameless=True,
+        easy_drag=False,
+        shadow=True,
+        background_color="#141415",
     )
-    webview.start(debug=False)
+    webview.start(_configure_frameless_window, window, debug=False)
