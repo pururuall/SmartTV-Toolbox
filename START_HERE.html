@@ -1971,30 +1971,30 @@
                     </div>
                   </div>
 
-                  <!-- VTV Top Right Round Action Buttons -->
+                  <!-- VTV Top Right Round Action Buttons (Exact Replica of CleanYourTV on TV) -->
                   <div class="vtv-top-right" id="vtvTopRight">
                     <!-- 1. Inputs HDMI [ ⇄ ] -->
                     <button class="vtv-circle-btn" id="vtvBtnInputs" onclick="toggleVtvInputsMenu()" title="Входы телевизора (HDMI 1, HDMI 2, AV)">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                     </button>
-                    <!-- 2. Reorder [ ⇅ ] -->
+                    <!-- 2. Wi-Fi status [ 📶 ] -->
+                    <button class="vtv-circle-btn" id="vtvBtnNetwork" onclick="log('Wi-Fi 5G: сигнал отличный')" title="Индикатор сети Wi-Fi">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                    </button>
+                    <!-- 3. Reorder [ ⇅ ] -->
                     <button class="vtv-circle-btn" id="vtvBtnReorder" onclick="toggleVtvReorder()" title="Режим перестановки [ ⇅ ]">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 15 12 20 17 15"></polyline><polyline points="7 9 12 4 17 9"></polyline></svg>
                     </button>
-                    <!-- 3. All Apps / Library [ ▦ ] -->
+                    <!-- 4. All Apps / Library [ ▦ ] -->
                     <button class="vtv-circle-btn" id="vtvBtnLibrary" onclick="toggleVtvLibrary()" title="Все установленные приложения [ ▦ ]" style="display: none;">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     </button>
-                    <!-- 4. Wi-Fi status [ 📶 ] -->
-                    <button class="vtv-circle-btn" id="vtvBtnNetwork" onclick="log('Wi-Fi 5G: сигнал отличный')" title="Индикатор сети Wi-Fi" style="display: none;">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-                    </button>
-                    <!-- 5. Android TV Settings [ 🛠️ ] -->
-                    <button class="vtv-circle-btn" id="vtvBtnTvSettings" onclick="log('Открытие системных настроек Android TV')" title="Системные настройки Android TV [ 🛠️ ]" style="display: none;">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    <!-- 5. VPN status [ 🛡️ ] -->
+                    <button class="vtv-circle-btn" id="vtvBtnVpn" onclick="log('Кнопка VPN: открытие клиента')" title="Кнопка VPN туннеля" style="display: none;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     </button>
                     <!-- 6. CleanYourTV Gear [ ⚙️ ] -->
-                    <button class="vtv-circle-btn" id="vtvBtnSettings" onclick="toggleVtvSettings()" title="Настройки CleanYourTV (нажмите для открытия меню)">
+                    <button class="vtv-circle-btn" id="vtvBtnSettings" onclick="toggleVtvSettings()" title="Настройки CleanYourTV (нажмите для открытия выпадающего меню)">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </button>
                   </div>
@@ -2506,9 +2506,55 @@
 
           </div>
 
-          <!-- SECTION 5: Кнопки в шапке (Кружочки) -->
-          <div class="group-section-title">Кнопки-кружочки в шапке экрана (Top Bar)</div>
+          <!-- SECTION 5: Кнопки в шапке (Кружочки и Шестерёнка) -->
+          <div class="group-section-title">Кнопки в шапке экрана (Кружочки и выпадающее меню шестеренки)</div>
           <div class="settings-group">
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Режим размещения кнопок в шапке</span>
+                <span class="setting-desc">«Схлопнуть» убирает кнопки в выезжающий список шестерёнки [ ⚙️ ]. «Стандарт» оставляет основные 4 кружка.</span>
+              </div>
+              <div class="setting-control">
+                <div class="segmented-control" id="vtvCirclesModeSelector">
+                  <button class="segment-btn" onclick="setTopCirclesMode('all', this)">Вывести все</button>
+                  <button class="segment-btn active" onclick="setTopCirclesMode('standard', this)">Стандарт (4 кружка)</button>
+                  <button class="segment-btn" onclick="setTopCirclesMode('collapsed', this)">Схлопнуть в шестеренку</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row" style="background: rgba(124, 140, 248, 0.05); border-left: 3px solid var(--accent); padding-left: 14px;">
+              <div class="setting-info">
+                <span class="setting-title" style="color: #fff;">Выезжающее быстрое меню шестерёнки (Quick Settings Panel)</span>
+                <span class="setting-desc">Шестерёнка открывает аккуратное выпадающее меню со списком прямо на ТВ. Системные настройки Android TV находятся ВНУТРИ списка, а не открываются сразу!</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkSettingsKeyPanel" checked onchange="toggleStudioOption('settings_key_panel', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Круглая кнопка VPN в шапке [ 🛡️ ]</span>
+                <span class="setting-desc">Добавляет отдельный кружок VPN прямо в верхнюю панель для быстрого подключения в 1 клик</span>
+              </div>
+              <div class="setting-control" style="display: flex; align-items: center; gap: 8px;">
+                <select id="selVpnClientPackage" class="input-island" style="font-size: 0.76rem; padding: 4px 8px;" onchange="updateVpnButtonConfig()">
+                  <option value="su.happ.proxyutility">Happ (VLESS / Shadowsocks)</option>
+                  <option value="com.wireguard.android">WireGuard</option>
+                  <option value="org.amnezia.vpn">AmneziaVPN</option>
+                  <option value="org.lumic.byedpi">ByeDPI</option>
+                </select>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkShowVpnButton" onchange="updateVpnButtonConfig()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
 
             <div class="setting-row">
               <div class="setting-info">
@@ -2525,22 +2571,8 @@
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-title">Режим размещения кнопок в шапке</span>
-                <span class="setting-desc">Схлопнуть действия в шестеренку [ ⚙️ ] или вывести отдельными кружочками</span>
-              </div>
-              <div class="setting-control">
-                <div class="segmented-control" id="vtvCirclesModeSelector">
-                  <button class="segment-btn" onclick="setTopCirclesMode('all', this)">Вывести все</button>
-                  <button class="segment-btn active" onclick="setTopCirclesMode('standard', this)">Стандарт</button>
-                  <button class="segment-btn" onclick="setTopCirclesMode('collapsed', this)">Схлопнуть в шестеренку</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Кнопка «Входы телевизора» (HDMI 1, HDMI 2, AV) [ ⇄ ]</span>
-                <span class="setting-desc">Кнопка быстрого меню физических ТВ-входов в правом верхнем углу</span>
+                <span class="setting-title">Кнопка «Входы телевизора» (HDMI 1, 2, AV) [ ⇄ ]</span>
+                <span class="setting-desc">Выводить кружок физических ТВ-входов на экран или скрыть внутрь меню шестерёнки</span>
               </div>
               <div class="setting-control">
                 <label class="toggle-switch">
@@ -2553,7 +2585,7 @@
             <div class="setting-row">
               <div class="setting-info">
                 <span class="setting-title">Кнопка «Сеть Wi-Fi / LAN» [ 📶 ]</span>
-                <span class="setting-desc">Круглая кнопка статуса сети в правом верхнем углу шапки</span>
+                <span class="setting-desc">Круглая кнопка статуса сети на экране ТВ</span>
               </div>
               <div class="setting-control">
                 <label class="toggle-switch">
@@ -2565,38 +2597,25 @@
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-title">Круглая кнопка библиотеки всех приложений [ ▦ ]</span>
-                <span class="setting-desc">Быстрый переход в библиотеку установленных приложений из шапки</span>
+                <span class="setting-title">Кнопка сортировки плиток в шапке [ ⇅ ]</span>
+                <span class="setting-desc">Кнопка быстрого режима перестановки иконок стрелками пульта</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkReorderButton" checked onchange="toggleStudioOption('reorder_button', this.checked); toggleStudioOption('show_reorder', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Кнопка библиотеки всех приложений [ ▦ ]</span>
+                <span class="setting-desc">Выводить кружок библиотеки [ ▦ ] прямо в шапку (по умолчанию скрыта, доступна через скролл вниз)</span>
               </div>
               <div class="setting-control">
                 <label class="toggle-switch">
                   <input type="checkbox" id="chkLibraryButton" onchange="toggleStudioOption('library_button', this.checked); toggleStudioOption('show_library', this.checked)">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Кнопка сортировки плиток в шапке [ ⇅ ]</span>
-                <span class="setting-desc">Добавляет кнопку быстрого режима сортировки иконок прямо в верхнюю панель</span>
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" id="chkReorderButton" onchange="toggleStudioOption('reorder_button', this.checked); toggleStudioOption('show_reorder', this.checked)">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Кнопка настроек Android TV [ 🛠️ ]</span>
-                <span class="setting-desc">Круглая кнопка открытия системных настроек телевизора</span>
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" id="chkHomeSettingsShortcut" onchange="toggleStudioOption('show_home_settings_shortcut', this.checked); toggleStudioOption('show_home_settings', this.checked)">
                   <span class="toggle-slider"></span>
                 </label>
               </div>
@@ -2756,33 +2775,147 @@
               </div>
             </div>
           </div>
-<div class="group-section-title">Методы обхода замедлений YouTube</div>
-          <div class="settings-group">
-            
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Режим обхода замедлений</span>
-                <span class="setting-desc">Выберите способ расщепления пакетов или туннелирования</span>
-              </div>
-              <div class="setting-control">
-                <div class="segmented-control" id="bypassModeSelector">
-                  <button class="segment-btn active" onclick="selectBypassMode('byedpi', this)">ByeDPI на ТВ</button>
-                  <button class="segment-btn" onclick="selectBypassMode('custom_proxy', this)">Внешний Прокси</button>
-                  <button class="segment-btn" onclick="selectBypassMode('adguard_dns', this)">AdGuard DNS</button>
+
+        </section>
+
+        <!-- ==================== TAB 4: SMARTTUBE И ОБХОД БЛОКИРОВОК ==================== -->
+        <section id="tab-youtube" class="tab-pane">
+          
+          <div class="group-section-title">SmartTube: YouTube 4K без рекламы и тормозов</div>
+          <div class="settings-group" style="padding: 16px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+              <div>
+                <div style="font-weight: 600; font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #22c55e;"></span>
+                  SmartTube TV Stable
+                </div>
+                <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 3px;">
+                  Официальный клиент для Android TV с поддержкой 4K HDR, 60fps, SponsorBlock и обходом блокировок
                 </div>
               </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Применить параметры на ТВ</span>
-                <span class="setting-desc">Конфигурирование сетевых параметров и SmartTube</span>
-              </div>
-              <div class="setting-control">
-                <button class="btn-island-primary" onclick="configureYouTube()">Применить на ТВ</button>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-island-secondary" onclick="launchAppOnTv('tv.smarttube.beta')">▶️ Запустить SmartTube</button>
+                <button class="btn-island-primary" onclick="installSingleApp('smarttube')">📥 Установить / Обновить APK</button>
               </div>
             </div>
+          </div>
 
+          <!-- ByeDPI Guide and Config -->
+          <div class="group-section-title">ByeDPI: Локальный обход YouTube (Без VPN и внешних серверов)</div>
+          <div class="settings-group" style="padding: 16px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+              <div style="max-width: 580px;">
+                <div style="font-weight: 600; font-size: 0.88rem; color: #fff;">Что такое ByeDPI и как он работает?</div>
+                <div style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-top: 4px;">
+                  ByeDPI — это локальная утилита, которая запускается прямо на процессоре вашего телевизора и создаёт локальный SOCKS5 прокси на адресе <b>127.0.0.1:1080</b>. Она расщепляет первый сетевой пакет TLS ClientHello на части. Фильтры ТСПУ провайдера не могут прочесть доменное имя <i>googlevideo.com</i> и пропускают видеопоток на полной скорости домашнего интернета.
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-island-secondary" onclick="launchAppOnTv('org.lumic.byedpi')">▶️ Запустить ByeDPI</button>
+                <button class="btn-island-primary" onclick="installSingleApp('byedpi')">📥 Установить ByeDPI</button>
+              </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 14px; font-size: 0.76rem; color: var(--text-dim); line-height: 1.5;">
+              <div style="font-weight: 600; color: var(--accent); margin-bottom: 4px;">📖 Пошаговая инструкция настройки ByeDPI:</div>
+              <div><b>Шаг 1:</b> Установите и запустите приложение <b>ByeDPI</b> на телевизоре. Нажмите большую круглую кнопку «Подключить» (Connect).</div>
+              <div><b>Шаг 2:</b> Откройте <b>SmartTube</b> на телевизоре -> перейдите в <b>Настройки</b> (шестерёнка внизу левого меню) -> <b>Общие</b> -> <b>Сеть / Прокси</b>.</div>
+              <div><b>Шаг 3:</b> Выберите тип прокси: <b>SOCKS5</b>, Адрес: <b>127.0.0.1</b>, Порт: <b>1080</b>.</div>
+              <div><b>Шаг 4:</b> Видео на YouTube в SmartTube начинают моментально воспроизводиться в качестве 4K 60fps!</div>
+            </div>
+          </div>
+
+          <!-- WireGuard (.conf) Uploader -->
+          <div class="group-section-title">WireGuard VPN: Прямой импорт .conf файла с ПК на ТВ</div>
+          <div class="settings-group" style="padding: 16px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+              <div style="max-width: 580px;">
+                <div style="font-weight: 600; font-size: 0.88rem; color: #fff;">У вас есть файл конфигурации WireGuard (.conf)?</div>
+                <div style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; margin-top: 4px;">
+                  Не нужно перепечатывать длинные ключи пультом! Выберите ваш файл <b>.conf</b> на компьютере — программа автоматически передаст его по Wi-Fi в папку <i>/sdcard/Download/</i> на телевизоре и сразу откроет приложение WireGuard для быстрого импорта.
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-island-secondary" onclick="launchAppOnTv('com.wireguard.android')">▶️ Запустить WireGuard</button>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <input type="file" id="wgFileInput" accept=".conf,.txt" style="display: none;" onchange="handleWgFileSelect(event)">
+                <button class="btn-island-secondary" onclick="document.getElementById('wgFileInput').click()">📁 Выбрать .conf файл на компьютере</button>
+                <span id="wgSelectedFileName" style="font-size: 0.76rem; color: var(--text-dim); font-family: monospace;">Файл не выбран</span>
+              </div>
+
+              <textarea id="wgConfPreview" class="input-island" rows="4" placeholder="Здесь появится текст конфигурации WireGuard ([Interface] PrivateKey = ...)" style="width: 100%; box-sizing: border-box; font-family: monospace; font-size: 0.74rem;"></textarea>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <button class="btn-island-primary" onclick="sendWireguardConfToTv()">🚀 Отправить .conf в Download на ТВ и открыть WireGuard</button>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">На ТВ нажмите [+] -> «Импорт из файла» -> выберите файл из Download</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Happ (VLESS, Reality, Shadowsocks, Trojan) -->
+          <div class="group-section-title">Happ Proxy / VPN: VLESS, Reality, Shadowsocks и Clash-подписки</div>
+          <div class="settings-group" style="padding: 16px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+              <div style="max-width: 580px;">
+                <div style="font-weight: 600; font-size: 0.88rem; color: #fff;">У вас есть ссылка подписки Happ или VLESS ключ?</div>
+                <div style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; margin-top: 4px;">
+                  Приложение <b>Happ</b> (на базе XRay ядра) поддерживает самые современные протоколы обхода блокировок: VLESS с Reality, Trojan и Shadowsocks. Вставьте ссылку вашей подписки ниже — Toolbox автоматически передаст её в Happ на телевизоре.
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-island-secondary" onclick="launchAppOnTv('su.happ.proxyutility')">▶️ Запустить Happ</button>
+                <button class="btn-island-primary" onclick="installSingleApp('happ')">📥 Установить Happ APK</button>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="text" id="inputHappSubUrl" class="input-island" placeholder="Вставьте ссылку подписки: https://... или happ://..." style="flex: 1; min-width: 260px;">
+                <button class="btn-island-primary" onclick="sendHappSubscriptionToTv()">🚀 Отправить подписку в Happ на ТВ</button>
+              </div>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">
+                💡 Ссылка будет открыта через прямой Intent в приложении Happ на экране ТВ, и профиль автоматически добавится в список серверов.
+              </span>
+            </div>
+          </div>
+
+          <!-- Protocol Comparison Guide -->
+          <div class="group-section-title">Шпаргалка по протоколам: Какой способ обхода выбрать?</div>
+          <div class="settings-group" style="padding: 16px 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+              
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px;">
+                <div style="font-weight: 600; font-size: 0.82rem; color: var(--accent); margin-bottom: 4px;">⚡ ByeDPI (Локально)</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.4;">
+                  <b>Для чего:</b> Только YouTube.<br>
+                  <b>Плюсы:</b> Бесплатно, без серверов, скорость не падает.<br>
+                  <b>Как настроить:</b> Запустить на ТВ + прописать 127.0.0.1:1080 в SmartTube.
+                </div>
+              </div>
+
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px;">
+                <div style="font-weight: 600; font-size: 0.82rem; color: #38bdf8; margin-bottom: 4px;">🛡️ Happ (VLESS / Reality)</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.4;">
+                  <b>Для чего:</b> Весь трафик ТВ, включая заблокированные кинотеатры.<br>
+                  <b>Плюсы:</b> Максимальная маскировка под обычные сайты, не блокируется провайдерами.<br>
+                  <b>Формат:</b> Ссылка подписки или vless:// ключ.
+                </div>
+              </div>
+
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px;">
+                <div style="font-weight: 600; font-size: 0.82rem; color: #a78bfa; margin-bottom: 4px;">🔒 WireGuard (.conf)</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.4;">
+                  <b>Для чего:</b> Собственный VPS сервер или готовые конфиги от друзей.<br>
+                  <b>Плюсы:</b> Очень высокая скорость, минимальная нагрузка на слабый процессор ТВ.<br>
+                  <b>Формат:</b> Файл с расширением .conf.
+                </div>
+              </div>
+
+            </div>
           </div>
 
         </section>
@@ -4261,8 +4394,15 @@
       const chkReorder = document.getElementById('chkReorderButton');
       if (chkReorder) chkReorder.checked = (studioConfig.reorder_button !== false && studioConfig.show_reorder !== false);
 
-      const chkSettings = document.getElementById('chkHomeSettingsShortcut');
-      if (chkSettings) chkSettings.checked = Boolean(studioConfig.show_home_settings_shortcut || studioConfig.show_home_settings);
+      const chkKeyPanel = document.getElementById('chkSettingsKeyPanel');
+      if (chkKeyPanel) chkKeyPanel.checked = (studioConfig.settings_key_panel !== false);
+
+      const chkVpn = document.getElementById('chkShowVpnButton');
+      if (chkVpn) chkVpn.checked = Boolean(studioConfig.show_vpn_button);
+      const selVpn = document.getElementById('selVpnClientPackage');
+      if (selVpn && studioConfig.vpn_choice) selVpn.value = studioConfig.vpn_choice;
+      const btnVpn = document.getElementById('vtvBtnVpn');
+      if (btnVpn) btnVpn.style.display = studioConfig.show_vpn_button ? 'flex' : 'none';
 
       // Screensaver & Clocks Sync
       const chkClkWall = document.getElementById('chkClockWallpaper');
@@ -4399,6 +4539,84 @@
     }
 
     
+    
+    function updateVpnButtonConfig() {
+      const chk = document.getElementById('chkShowVpnButton');
+      const sel = document.getElementById('selVpnClientPackage');
+      const enabled = chk ? chk.checked : false;
+      const pkg = sel ? sel.value : 'su.happ.proxyutility';
+      studioConfig.show_vpn_button = enabled;
+      studioConfig.vpn_choice = pkg;
+      studioConfig.vpn_app = enabled ? pkg : '';
+      updateTvPreview();
+      log(`Кнопка VPN в шапке: ${enabled ? 'Включена (' + pkg + ')' : 'Отключена'}`);
+      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
+        setTimeout(() => captureLiveTvScreen(false), 2200);
+      });
+    }
+
+    function handleWgFileSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const nameEl = document.getElementById('wgSelectedFileName');
+      if (nameEl) nameEl.innerText = file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const preview = document.getElementById('wgConfPreview');
+        if (preview) preview.value = e.target.result;
+        log(`Файл ${file.name} прочитан (${file.size} байт). Нажмите «Отправить на ТВ».`);
+      };
+      reader.readAsText(file);
+    }
+
+    async function sendWireguardConfToTv() {
+      const text = (document.getElementById('wgConfPreview')?.value || '').trim();
+      const fnLabel = document.getElementById('wgSelectedFileName')?.innerText || 'wg0.conf';
+      const fn = (fnLabel.endsWith('.conf') ? fnLabel : 'wg0.conf');
+      if (!text) {
+        alert('Пожалуйста, выберите файл .conf на компьютере или вставьте текст конфигурации!');
+        return;
+      }
+      log(`Отправка конфигурации WireGuard (${fn}) в /sdcard/Download/ на ТВ...`);
+      try {
+        const res = await callApi('push_wireguard_conf', { conf_content: text, filename: fn });
+        if (res && res.ok) {
+          log(`✓ ${res.msg}`);
+          alert(`✓ ${res.msg}\n\nИнструкция на ТВ:\n1. В открывшемся приложении WireGuard нажмите синюю кнопку [+]\n2. Выберите «Импорт из файла»\n3. Откройте папку Download и нажмите на ${fn}`);
+        } else {
+          log(`⚠️ Ошибка передачи: ${res ? res.error : 'Неизвестная ошибка'}`);
+          alert('Ошибка передачи: ' + (res ? res.error : 'Не удалось связаться с ТВ'));
+        }
+      } catch (e) {
+        log('Ошибка отправки WireGuard конфига: ' + e);
+      }
+    }
+
+    async function sendHappSubscriptionToTv() {
+      const url = (document.getElementById('inputHappSubUrl')?.value || '').trim();
+      if (!url) {
+        alert('Пожалуйста, вставьте ссылку подписки (https://... или happ://...)');
+        return;
+      }
+      log(`Отправка ссылки подписки Happ на телевизор...`);
+      try {
+        const res = await callApi('import_happ_subscription', { url: url });
+        if (res && res.ok) {
+          log(`✓ ${res.msg}`);
+          alert(`✓ ${res.msg}\n\nЕсли приложение Happ открылось на телевизоре, подтвердите сохранение подписки пультами.`);
+        } else {
+          log(`⚠️ Ошибка: ${res ? res.error : 'Не удалось передать'}`);
+        }
+      } catch (e) {
+        log('Ошибка отправки подписки Happ: ' + e);
+      }
+    }
+
+    async function launchAppOnTv(pkg) {
+      log(`Запуск приложения ${pkg} на телевизоре...`);
+      await callApi('execute_raw_adb', { command: `shell monkey -p ${pkg} -c android.intent.category.LAUNCHER 1` });
+    }
+
     function toggleExpertSchemaAccordion() {
       const content = document.getElementById('expertAccordionContent');
       const arrow = document.getElementById('expertAccordionArrow');

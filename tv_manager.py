@@ -294,6 +294,7 @@ CLEANYOURTV_KEYS_SCHEMA = [
     {"key": "wifi_status_color", "title": "Цветной индикатор статуса Wi-Fi", "desc": "Значок сети светится зелёным при активном соединении и белым при отсутствии сети.", "category": "topbar", "type": "bool", "default": True},
     {"key": "wifi_status_warnings", "title": "Предупреждения о проблемах сети", "desc": "Оранжевый цвет значка при подключении без интернета, красный — при обрыве связи.", "category": "topbar", "type": "bool", "default": True},
     {"key": "wifi_label_width", "title": "Ширина имени сети Wi-Fi (dp)", "desc": "Ограничение ширины текстового названия Wi-Fi сети (0 оставляет только значок).", "category": "topbar", "type": "int", "min": 0, "max": 300, "default": 0},
+    {"key": "vpn_app", "title": "Круглая кнопка VPN в шапке", "desc": "Имя пакета VPN-клиента (su.happ.proxyutility, com.wireguard.android) для быстрого запуска из шапки.", "category": "topbar", "type": "string", "default": "su.happ.proxyutility"},
 
     # clock
     {"key": "show_greeting", "title": "Приветствие над часами", "desc": "Показывать фразу приветствия над часами в зависимости от времени суток.", "category": "clock", "type": "bool", "default": True},
@@ -1719,6 +1720,40 @@ class SmartTVManager:
         if "show_home_settings" in clean_cfg:
             clean_cfg["show_home_settings_shortcut"] = bool(clean_cfg.get("show_home_settings"))
 
+        # Ensure Quick Settings Panel is active by default!
+        # When True, clicking the gear opens the QuickSettingsActivity / glassPopup flyout list,
+        # with System Settings INSIDE the list, exactly as requested!
+        clean_cfg["settings_key_panel"] = bool(clean_cfg.get("settings_key_panel", True))
+
+        # Circles Mode handling
+        circles_mode = clean_cfg.get("circles_mode", "")
+        if circles_mode == "collapsed":
+            clean_cfg["top_menu"] = True
+            clean_cfg["show_inputs_pill"] = False
+            clean_cfg["reorder_button"] = False
+            clean_cfg["library_button"] = False
+        elif circles_mode == "all":
+            clean_cfg["top_menu"] = False
+            clean_cfg["show_inputs_pill"] = True
+            clean_cfg["show_network_pill"] = True
+            clean_cfg["reorder_button"] = True
+            clean_cfg["library_button"] = True
+        elif circles_mode == "standard":
+            clean_cfg["top_menu"] = False
+
+        # VPN Button in Top Bar handling
+        vpn_choice = clean_cfg.get("vpn_choice", "su.happ.proxyutility")
+        show_vpn = bool(clean_cfg.get("show_vpn_button", False))
+        top_apps = list(clean_cfg.get("top_bar_apps", []))
+        known_vpn_pkgs = ["su.happ.proxyutility", "com.wireguard.android", "org.amnezia.vpn", "org.lumic.byedpi"]
+        top_apps = [p for p in top_apps if p not in known_vpn_pkgs]
+        if show_vpn and vpn_choice:
+            clean_cfg["vpn_app"] = vpn_choice
+            top_apps.append(vpn_choice)
+        elif not show_vpn:
+            clean_cfg["vpn_app"] = ""
+        clean_cfg["top_bar_apps"] = top_apps
+
         # 4. Save and push config.json
         try:
             with open(local_cfg, "w", encoding="utf-8") as f:
@@ -1763,6 +1798,80 @@ class SmartTVManager:
         self.run_adb(["shell", "am", "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME"], timeout=10)
         self._notify("[CleanYourTV] ✓ Лаунчер полностью сброшен к заводским настройкам!")
         return {"ok": True, "msg": "Лаунчер CleanYourTV сброшен к заводским настройкам"}
+
+
+    def push_wireguard_conf(self, conf_content: str, filename: str = "wg0.conf") -> Dict[str, Any]:
+        """Загружает файл конфигурации WireGuard (.conf) в папку Download на ТВ и открывает приложение."""
+        if not self.current_device:
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
+
+        if not conf_content or not conf_content.strip():
+            return {"ok": False, "error": "Конфигурация WireGuard пуста"}
+
+        if not filename.endswith(".conf"):
+            filename = f"{filename}.conf"
+
+        clean_filename = "".join(c for c in filename if c.isalnum() or c in "._-")
+        if not clean_filename:
+            clean_filename = "wg0.conf"
+
+        local_tmp = self.backups_dir / clean_filename
+        try:
+            with open(local_tmp, "w", encoding="utf-8") as f:
+                f.write(conf_content.strip() + "\n")
+        except Exception as e:
+            return {"ok": False, "error": f"Ошибка сохранения локального файла: {e}"}
+
+        # 1. Create Download dir on TV
+        self.run_adb(["shell", "mkdir", "-p", "/sdcard/Download"])
+        
+        # 2. Push file
+        remote_target = f"/sdcard/Download/{clean_filename}"
+        push_res = self.run_adb(["push", str(local_tmp), remote_target], timeout=15)
+        if not push_res.get("ok"):
+            return {"ok": False, "error": f"Ошибка передачи файла на ТВ: {push_res.get('stderr')}"}
+
+        self.run_adb(["shell", "chmod", "666", remote_target])
+
+        # 3. Try to launch WireGuard on TV
+        self._notify(f"[WireGuard] Файл {clean_filename} успешно загружен в /sdcard/Download/ на ТВ!")
+        self.run_adb(["shell", "am", "start", "-n", "com.wireguard.android/.activity.MainActivity"], timeout=8)
+
+        return {
+            "ok": True,
+            "msg": f"Конфиг {clean_filename} успешно сохранён в папку «Download» на ТВ! Приложение WireGuard запущено на экране.",
+            "path": remote_target
+        }
+
+    def import_happ_subscription(self, url: str) -> Dict[str, Any]:
+        """Отправляет ссылку подписки в приложение Happ на телевизоре через Android Intent."""
+        if not self.current_device:
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
+
+        url = (url or "").strip()
+        if not url:
+            return {"ok": False, "error": "Ссылка подписки Happ пуста"}
+
+        self._notify(f"[Happ] Отправка ссылки подписки на ТВ: {url[:30]}...")
+        self.run_adb(["shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", url], timeout=10)
+        
+        check_pkg = self.run_adb(["shell", "pm", "path", "su.happ.proxyutility"])
+        if not check_pkg.get("ok") or not check_pkg.get("stdout"):
+            return {
+                "ok": True,
+                "msg": "Ссылка отправлена! Примечание: Приложение Happ ещё не установлено на ТВ — установите его кнопкой «Установить Happ».",
+                "happ_installed": False
+            }
+
+        return {"ok": True, "msg": "Ссылка подписки успешно передана в Happ на телевизоре!", "happ_installed": True}
 
     def reset_cleanyourtv_config(self) -> Dict[str, Any]:
         """Сбрасывает конфигурацию CleanYourTV к заводским настройкам (удаляет кастомный config.json с ТВ)."""

@@ -135,6 +135,12 @@ class WebViewBridge:
     def list_third_party(self):
         return self.manager.list_installed_third_party()
 
+    def push_wireguard_conf(self, conf_content="", filename="wg0.conf"):
+        return self.manager.push_wireguard_conf(conf_content, filename)
+
+    def import_happ_subscription(self, url=""):
+        return self.manager.import_happ_subscription(url)
+
     def window_minimize(self):
         if webview.windows:
             webview.windows[0].minimize()

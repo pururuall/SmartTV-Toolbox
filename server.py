@@ -124,6 +124,10 @@ class ToolboxHandler(http.server.SimpleHTTPRequestHandler):
             response = manager.reset_cleanyourtv_config()
         elif endpoint in ("/api/cleanyourtv/factory_reset", "/api/reset_cleanyourtv_to_factory"):
             response = manager.reset_cleanyourtv_to_factory()
+        elif endpoint in ("/api/vpn/wireguard_push", "/api/push_wireguard_conf"):
+            response = manager.push_wireguard_conf(payload.get("conf_content", ""), payload.get("filename", "wg0.conf"))
+        elif endpoint in ("/api/vpn/happ_subscription", "/api/import_happ_subscription"):
+            response = manager.import_happ_subscription(payload.get("url", ""))
         elif endpoint in ("/api/cleanyourtv/apps", "/api/get_installed_tv_apps"):
             response = manager.get_installed_tv_apps()
 
