@@ -294,6 +294,7 @@ CLEANYOURTV_KEYS_SCHEMA = [
     {"key": "wifi_status_color", "title": "Цветной индикатор статуса Wi-Fi", "desc": "Значок сети светится зелёным при активном соединении и белым при отсутствии сети.", "category": "topbar", "type": "bool", "default": True},
     {"key": "wifi_status_warnings", "title": "Предупреждения о проблемах сети", "desc": "Оранжевый цвет значка при подключении без интернета, красный — при обрыве связи.", "category": "topbar", "type": "bool", "default": True},
     {"key": "wifi_label_width", "title": "Ширина имени сети Wi-Fi (dp)", "desc": "Ограничение ширины текстового названия Wi-Fi сети (0 оставляет только значок).", "category": "topbar", "type": "int", "min": 0, "max": 300, "default": 0},
+    {"key": "vpn_app", "title": "Круглая кнопка VPN в шапке", "desc": "Имя пакета VPN-клиента (su.happ.proxyutility, com.wireguard.android) для быстрого запуска из шапки.", "category": "topbar", "type": "string", "default": "su.happ.proxyutility"},
 
     # clock
     {"key": "show_greeting", "title": "Приветствие над часами", "desc": "Показывать фразу приветствия над часами в зависимости от времени суток.", "category": "clock", "type": "bool", "default": True},
@@ -1591,6 +1592,23 @@ class SmartTVManager:
         if not loaded_cfg:
             loaded_cfg = dict(CLEANYOURTV_PRESETS["default"]["config"])
 
+        # Determine granular button placement from TV config
+        wifi_active = loaded_cfg.get("show_network_pill", True)
+        reorder_active = loaded_cfg.get("reorder_button", True)
+        inputs_active = loaded_cfg.get("show_inputs_pill", False)
+        inputs_menu = loaded_cfg.get("show_inputs_menu_row", False)
+        library_active = loaded_cfg.get("library_button", False)
+
+        loaded_cfg["wifi_location"] = "top" if wifi_active else "menu"
+        loaded_cfg["reorder_location"] = "top" if reorder_active else "menu"
+        if inputs_active:
+            loaded_cfg["inputs_location"] = "top"
+        elif inputs_menu:
+            loaded_cfg["inputs_location"] = "menu"
+        else:
+            loaded_cfg["inputs_location"] = "hide"
+        loaded_cfg["library_location"] = "top" if library_active else "hide"
+
         return {
             "ok": True,
             "config": loaded_cfg,
@@ -1600,34 +1618,360 @@ class SmartTVManager:
         }
 
     def save_cleanyourtv_config(self, config_payload: Dict[str, Any], restart_home: bool = True) -> Dict[str, Any]:
-        """Отправляет кастомную конфигурацию CleanYourTV на ТВ и перезапускает домашний экран."""
+        """Сохраняет измененную конфигурацию CleanYourTV на ТВ, пушит обои и перезапускает главный экран."""
         if not self.current_device:
-            return {"ok": False, "error": "Телевизор не подключен по ADB"}
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
 
         remote_dir = "/sdcard/Android/data/com.gathin.tvhome/files"
+        remote_wp_dir = f"{remote_dir}/wallpapers"
         remote_cfg = f"{remote_dir}/config.json"
         local_cfg = self.backups_dir / "cleanyourtv_pushed.json"
 
+        # 1. Clean payload and ensure dock_apps is a list of package strings
+        clean_cfg = dict(config_payload)
+        
+        # Handle dock_apps
+        dock_apps = clean_cfg.get("dock_apps", [])
+        clean_dock_apps = []
+        for app in dock_apps:
+            if isinstance(app, dict):
+                pkg = app.get("package") or app.get("pkg") or ""
+                if pkg:
+                    clean_dock_apps.append(pkg)
+            elif isinstance(app, str) and app:
+                clean_dock_apps.append(app)
+        clean_dock_apps = [p for p in clean_dock_apps if p]
+        if clean_dock_apps:
+            clean_cfg["dock_apps"] = clean_dock_apps
+
+        # 2. Handle Wallpaper & Themes
+        wp_choice = clean_cfg.get("wallpaper_choice")
+        wp_path = clean_cfg.get("wallpaper_path", "")
+        theme_key = clean_cfg.get("theme_key", "")
+        
+        # OLED is ONLY black if explicitly requested
+        is_oled_black = (
+            theme_key == "oled_guard" or 
+            "oled_carbon" in str(wp_path) or
+            "oled_carbon" in str(wp_choice)
+        )
+        
+        import time as _t
+        clean_cfg["theme_revision"] = int(_t.time())
+        self.run_adb(["shell", "mkdir", "-p", remote_wp_dir])
+
+        if is_oled_black:
+            clean_cfg["wallpaper"] = False
+            clean_cfg["wallpaper_choice"] = "none"
+            clean_cfg["oled_guard"] = True
+            oled_file = self._resolve_file("wallpapers/oled_carbon.jpg")
+            if oled_file.exists():
+                self.run_adb(["push", str(oled_file), f"{remote_wp_dir}/01-dusk-peaks.jpg"], timeout=15)
+                self.run_adb(["push", str(oled_file), f"{remote_dir}/wallpaper.jpg"], timeout=15)
+        else:
+            clean_cfg["wallpaper"] = True
+            clean_cfg["oled_guard"] = False
+            target_wp = None
+            if wp_path:
+                wp_basename = os.path.basename(wp_path)
+                local_wp = self._resolve_file(f"wallpapers/{wp_basename}")
+                if local_wp.exists():
+                    target_wp = local_wp
+                    clean_cfg["wallpaper_choice"] = wp_basename
+            elif wp_choice and wp_choice != "none":
+                local_wp = self._resolve_file(f"wallpapers/{wp_choice}")
+                if local_wp.exists():
+                    target_wp = local_wp
+                    clean_cfg["wallpaper_choice"] = wp_choice
+
+            if not target_wp or not target_wp.exists():
+                target_wp = self._resolve_file("wallpapers/01-dusk-peaks.jpg")
+                clean_cfg["wallpaper_choice"] = "01-dusk-peaks.jpg"
+
+            if target_wp and target_wp.exists():
+                self.run_adb(["push", str(target_wp), f"{remote_wp_dir}/01-dusk-peaks.jpg"], timeout=15)
+                self.run_adb(["push", str(target_wp), f"{remote_dir}/wallpaper.jpg"], timeout=15)
+                if clean_cfg.get("wallpaper_choice"):
+                    self.run_adb(["push", str(target_wp), f"{remote_wp_dir}/{clean_cfg['wallpaper_choice']}"], timeout=15)
+
+        # Handle rows and grid layout
+        if "rows_below_dock" in clean_cfg:
+            try:
+                clean_cfg["rows_below_dock"] = int(clean_cfg["rows_below_dock"])
+                clean_cfg["single_row"] = (clean_cfg["rows_below_dock"] == 0)
+            except:
+                pass
+        if "columns" in clean_cfg:
+            try:
+                clean_cfg["columns"] = int(clean_cfg["columns"])
+            except:
+                pass
+        if "fade_rows" in clean_cfg:
+            clean_cfg["fade_rows"] = bool(clean_cfg["fade_rows"])
+        if "cinematic_dots" in clean_cfg:
+            clean_cfg["cinematic_dots"] = bool(clean_cfg["cinematic_dots"])
+
+        # 3. Top Buttons & Title mapping
+        if "dock_title" in clean_cfg:
+            clean_cfg["dock_title"] = bool(clean_cfg.get("dock_title"))
+        if "icon_only_buttons" in clean_cfg:
+            clean_cfg["icon_only_buttons"] = bool(clean_cfg.get("icon_only_buttons"))
+            clean_cfg["icon_only_inputs"] = bool(clean_cfg.get("icon_only_buttons"))
+            if clean_cfg["icon_only_buttons"]:
+                clean_cfg["wifi_label_width"] = 0
+        # Granular button locations: 'top' (circle on screen), 'menu' (collapsed in gear), 'hide' (disabled)
+        wifi_loc = clean_cfg.get("wifi_location")
+        reorder_loc = clean_cfg.get("reorder_location")
+        inputs_loc = clean_cfg.get("inputs_location")
+        library_loc = clean_cfg.get("library_location")
+
+        # Fallback to boolean flags if locations not explicitly passed
+        if wifi_loc is None:
+            wifi_loc = "top" if clean_cfg.get("show_network", True) else "menu"
+        if reorder_loc is None:
+            reorder_loc = "top" if clean_cfg.get("show_reorder", True) else "menu"
+        if inputs_loc is None:
+            inputs_loc = "top" if clean_cfg.get("show_inputs", False) else "hide"
+        if library_loc is None:
+            library_loc = "top" if clean_cfg.get("show_library", False) else "hide"
+
+        # Apply exact CleanYourTV flags
+        clean_cfg["show_network_pill"] = (wifi_loc == "top")
+        clean_cfg["reorder_button"] = (reorder_loc == "top")
+
+        if inputs_loc == "top":
+            clean_cfg["show_inputs_pill"] = True
+            clean_cfg["show_inputs_menu_row"] = True
+        elif inputs_loc == "menu":
+            clean_cfg["show_inputs_pill"] = False
+            clean_cfg["show_inputs_menu_row"] = True
+        else: # hide
+            clean_cfg["show_inputs_pill"] = False
+            clean_cfg["show_inputs_menu_row"] = False
+
+        clean_cfg["library_button"] = (library_loc == "top")
+        clean_cfg["show_library_pill"] = (library_loc == "top")
+
+        if "show_settings" in clean_cfg:
+            clean_cfg["launcher_settings_button"] = bool(clean_cfg.get("show_settings"))
+        if "show_home_settings" in clean_cfg:
+            clean_cfg["show_home_settings_shortcut"] = bool(clean_cfg.get("show_home_settings"))
+
+        # settings_key_panel must ALWAYS be True so clicking the gear opens the flyout menu
+        clean_cfg["settings_key_panel"] = True
+
+        # User requirement:
+        # "если я что то прячу в шестеренку то в шестеренке появляется пункт системные настройки,
+        # А ШЕСТЕРЕНКА НА ЭКРАНЕ ОТКРЫВАЕТ СПИСОК! Если выбрать вывести всё то шестеренка становится вызовом системных настроек."
+        has_collapsed_items = (
+            wifi_loc == "menu" or 
+            reorder_loc == "menu" or 
+            inputs_loc == "menu" or 
+            library_loc == "menu"
+        )
+        clean_cfg["top_menu"] = has_collapsed_items
+        clean_cfg["show_home_settings_shortcut"] = True
+
+        # VPN Button in Top Bar handling
+        vpn_choice = clean_cfg.get("vpn_choice", "su.happ.proxyutility")
+        show_vpn = bool(clean_cfg.get("show_vpn_button", False))
+        top_apps = list(clean_cfg.get("top_bar_apps", []))
+        known_vpn_pkgs = ["su.happ.proxyutility", "com.wireguard.android", "org.amnezia.vpn", "io.github.dovecoteescapee.byedpi", "org.lumic.byedpi"]
+        top_apps = [p for p in top_apps if p not in known_vpn_pkgs]
+        if show_vpn and vpn_choice:
+            # Auto-check and install if missing
+            chk = self.run_adb(["shell", "pm", "path", vpn_choice])
+            if not chk.get("ok") or not chk.get("stdout"):
+                self._notify(f"[CleanYourTV] VPN приложение {vpn_choice} не установлено на ТВ — запускаем авто-установку...")
+                if "wireguard" in vpn_choice:
+                    self.install_vpn_client("wireguard")
+                elif "amnezia" in vpn_choice:
+                    self.install_vpn_client("amnezia")
+                elif "happ" in vpn_choice:
+                    self.install_vpn_client("happ")
+                elif "byedpi" in vpn_choice:
+                    self.install_vpn_client("byedpi")
+            clean_cfg["vpn_app"] = vpn_choice
+            top_apps.append(vpn_choice)
+        elif not show_vpn:
+            clean_cfg["vpn_app"] = ""
+        clean_cfg["top_bar_apps"] = top_apps
+
+        # 4. Save and push config.json
         try:
             with open(local_cfg, "w", encoding="utf-8") as f:
-                json.dump(config_payload, f, ensure_ascii=False, indent=2)
+                json.dump(clean_cfg, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            return {"ok": False, "error": f"Ошибка сохранения локального JSON: {e}"}
+            return {"ok": False, "error": f"Ошибка сохранения JSON: {e}"}
 
-        self.run_adb(["shell", "mkdir", "-p", remote_dir])
         push_res = self.run_adb(["push", str(local_cfg), remote_cfg], timeout=15)
         if not push_res.get("ok"):
-            return {"ok": False, "error": f"Ошибка передачи на ТВ: {push_res.get('stderr')}"}
+            return {"ok": False, "error": f"Ошибка отправки на ТВ: {push_res.get('stderr')}"}
 
         self.run_adb(["shell", "chmod", "666", remote_cfg])
 
+        # 5. Restart Home Screen
         if restart_home:
-            self._notify("[CleanYourTV] Перезапуск домашнего экрана для применения новой темы...")
+            self._notify("[CleanYourTV] Перезапуск домашнего экрана для применения изменений...")
             self.run_adb(["shell", "am", "force-stop", "com.gathin.tvhome"], timeout=10)
             self.run_adb(["shell", "am", "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME"], timeout=10)
 
-        self._notify("[CleanYourTV] ✓ Конфигурация темы и параметров успешно применена на телевизоре!")
-        return {"ok": True, "msg": "Конфигурация успешно применена!"}
+        self._notify("[CleanYourTV] ✓ Конфигурация и обои успешно применены на ТВ!")
+        return {"ok": True, "msg": "Конфигурация и обои успешно применены на ТВ!"}
+
+
+    def get_vpn_status(self) -> Dict[str, Any]:
+        """Проверяет статус установки поддерживаемых VPN клиентов на телевизоре."""
+        status = {
+            "wireguard": False,
+            "amnezia": False,
+            "happ": False,
+            "byedpi": False
+        }
+        if not self.current_device:
+            return {"ok": False, "status": status, "error": "ТВ не подключен"}
+        res = self.run_adb(["shell", "pm", "list", "packages", "-3"], timeout=8)
+        if res.get("ok"):
+            stdout = res.get("stdout", "")
+            status["wireguard"] = ("com.wireguard.android" in stdout)
+            status["amnezia"] = ("org.amnezia.vpn" in stdout)
+            status["happ"] = ("su.happ.proxyutility" in stdout)
+            status["byedpi"] = ("io.github.dovecoteescapee.byedpi" in stdout or "org.lumic.byedpi" in stdout)
+        return {"ok": True, "status": status}
+
+    def install_vpn_client(self, client_name: str) -> Dict[str, Any]:
+        """Устанавливает выбранный VPN клиент на ТВ из встроенной папки apps."""
+        if not self.current_device:
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
+
+        client = (client_name or "").lower().strip()
+        apk_candidates = {
+            "wireguard": ["apps/wireguard.apk"],
+            "amnezia": ["apps/amnezia.apk"],
+            "happ": ["apps/Happ.apk", "apps/media/Happ.apk"],
+            "byedpi": ["apps/youtube/ByeDPI_tv.apk", "apps/byedpi.apk"]
+        }
+        candidates = apk_candidates.get(client, [])
+        target_path = None
+        for cand in candidates:
+            p = self._resolve_file(cand)
+            if p.exists() and p.stat().st_size > 100000:
+                target_path = p
+                break
+        
+        if not target_path:
+            return {"ok": False, "error": f"Файл APK для {client_name} не найден в apps/"}
+
+        self._notify(f"[{client_name.upper()}] Установка {target_path.name} на ТВ...")
+        res = self.install_apk_file(str(target_path))
+        if res.get("ok"):
+            self._notify(f"[{client_name.upper()}] ✓ Приложение успешно установлено на телевизор!")
+        return res
+
+    def reset_cleanyourtv_to_factory(self) -> Dict[str, Any]:
+        """Полный сброс лаунчера CleanYourTV к заводским настройкам (pm clear + восстановление стандартных обоев)."""
+        if not self.current_device:
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
+
+        self._notify("[CleanYourTV] Полный сброс лаунчера к заводским настройкам...")
+        self.run_adb(["shell", "pm", "clear", "com.gathin.tvhome"], timeout=10)
+        
+        remote_files = "/sdcard/Android/data/com.gathin.tvhome/files"
+        self.run_adb(["shell", "mkdir", "-p", f"{remote_files}/wallpapers"])
+        default_wp = self._resolve_file("wallpapers/01-dusk-peaks.jpg")
+        if default_wp.exists():
+            self.run_adb(["push", str(default_wp), f"{remote_files}/wallpapers/01-dusk-peaks.jpg"], timeout=15)
+            self.run_adb(["push", str(default_wp), f"{remote_files}/wallpaper.jpg"], timeout=15)
+        
+        self.run_adb(["shell", "am", "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME"], timeout=10)
+        self._notify("[CleanYourTV] ✓ Лаунчер полностью сброшен к заводским настройкам!")
+        return {"ok": True, "msg": "Лаунчер CleanYourTV сброшен к заводским настройкам"}
+
+
+    def push_wireguard_conf(self, conf_content: str, filename: str = "wg0.conf") -> Dict[str, Any]:
+        """Загружает файл конфигурации WireGuard (.conf) в папку Download на ТВ и открывает приложение."""
+        if not self.current_device:
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
+
+        if not conf_content or not conf_content.strip():
+            return {"ok": False, "error": "Конфигурация WireGuard пуста"}
+
+        if not filename.endswith(".conf"):
+            filename = f"{filename}.conf"
+
+        clean_filename = "".join(c for c in filename if c.isalnum() or c in "._-")
+        if not clean_filename:
+            clean_filename = "wg0.conf"
+
+        local_tmp = self.backups_dir / clean_filename
+        try:
+            with open(local_tmp, "w", encoding="utf-8") as f:
+                f.write(conf_content.strip() + "\n")
+        except Exception as e:
+            return {"ok": False, "error": f"Ошибка сохранения локального файла: {e}"}
+
+        # 1. Create Download dir on TV
+        self.run_adb(["shell", "mkdir", "-p", "/sdcard/Download"])
+        
+        # 2. Push file
+        remote_target = f"/sdcard/Download/{clean_filename}"
+        push_res = self.run_adb(["push", str(local_tmp), remote_target], timeout=15)
+        if not push_res.get("ok"):
+            return {"ok": False, "error": f"Ошибка передачи файла на ТВ: {push_res.get('stderr')}"}
+
+        self.run_adb(["shell", "chmod", "666", remote_target])
+
+        # 3. Try to launch WireGuard on TV
+        self._notify(f"[WireGuard] Файл {clean_filename} успешно загружен в /sdcard/Download/ на ТВ!")
+        self.run_adb(["shell", "am", "start", "-n", "com.wireguard.android/.activity.MainActivity"], timeout=8)
+
+        return {
+            "ok": True,
+            "msg": f"Конфиг {clean_filename} успешно сохранён в папку «Download» на ТВ! Приложение WireGuard запущено на экране.",
+            "path": remote_target
+        }
+
+    def import_happ_subscription(self, url: str) -> Dict[str, Any]:
+        """Отправляет ссылку подписки в приложение Happ на телевизоре через Android Intent."""
+        if not self.current_device:
+            last_ip = self._get_last_known_ip()
+            if last_ip:
+                self.connect_tv(last_ip)
+            else:
+                return {"ok": False, "error": "Телевизор не подключен по ADB"}
+
+        url = (url or "").strip()
+        if not url:
+            return {"ok": False, "error": "Ссылка подписки Happ пуста"}
+
+        self._notify(f"[Happ] Отправка ссылки подписки на ТВ: {url[:30]}...")
+        self.run_adb(["shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", url], timeout=10)
+        
+        check_pkg = self.run_adb(["shell", "pm", "path", "su.happ.proxyutility"])
+        if not check_pkg.get("ok") or not check_pkg.get("stdout"):
+            return {
+                "ok": True,
+                "msg": "Ссылка отправлена! Примечание: Приложение Happ ещё не установлено на ТВ — установите его кнопкой «Установить Happ».",
+                "happ_installed": False
+            }
+
+        return {"ok": True, "msg": "Ссылка подписки успешно передана в Happ на телевизоре!", "happ_installed": True}
 
     def reset_cleanyourtv_config(self) -> Dict[str, Any]:
         """Сбрасывает конфигурацию CleanYourTV к заводским настройкам (удаляет кастомный config.json с ТВ)."""
