@@ -1592,6 +1592,23 @@ class SmartTVManager:
         if not loaded_cfg:
             loaded_cfg = dict(CLEANYOURTV_PRESETS["default"]["config"])
 
+        # Determine granular button placement from TV config
+        wifi_active = loaded_cfg.get("show_network_pill", True)
+        reorder_active = loaded_cfg.get("reorder_button", True)
+        inputs_active = loaded_cfg.get("show_inputs_pill", False)
+        inputs_menu = loaded_cfg.get("show_inputs_menu_row", False)
+        library_active = loaded_cfg.get("library_button", False)
+
+        loaded_cfg["wifi_location"] = "top" if wifi_active else "menu"
+        loaded_cfg["reorder_location"] = "top" if reorder_active else "menu"
+        if inputs_active:
+            loaded_cfg["inputs_location"] = "top"
+        elif inputs_menu:
+            loaded_cfg["inputs_location"] = "menu"
+        else:
+            loaded_cfg["inputs_location"] = "hide"
+        loaded_cfg["library_location"] = "top" if library_active else "hide"
+
         return {
             "ok": True,
             "config": loaded_cfg,
@@ -1706,40 +1723,49 @@ class SmartTVManager:
             clean_cfg["icon_only_inputs"] = bool(clean_cfg.get("icon_only_buttons"))
             if clean_cfg["icon_only_buttons"]:
                 clean_cfg["wifi_label_width"] = 0
-        if "show_inputs" in clean_cfg:
-            clean_cfg["show_inputs_pill"] = bool(clean_cfg.get("show_inputs"))
-        if "show_reorder" in clean_cfg:
-            clean_cfg["reorder_button"] = bool(clean_cfg.get("show_reorder"))
+        # Granular button locations: 'top' (circle on screen), 'menu' (collapsed in gear), 'hide' (disabled)
+        wifi_loc = clean_cfg.get("wifi_location")
+        reorder_loc = clean_cfg.get("reorder_location")
+        inputs_loc = clean_cfg.get("inputs_location")
+        library_loc = clean_cfg.get("library_location")
+
+        # Fallback to boolean flags if locations not explicitly passed
+        if wifi_loc is None:
+            wifi_loc = "top" if clean_cfg.get("show_network", True) else "menu"
+        if reorder_loc is None:
+            reorder_loc = "top" if clean_cfg.get("show_reorder", True) else "menu"
+        if inputs_loc is None:
+            inputs_loc = "top" if clean_cfg.get("show_inputs", False) else "hide"
+        if library_loc is None:
+            library_loc = "top" if clean_cfg.get("show_library", False) else "hide"
+
+        # Apply exact CleanYourTV flags
+        clean_cfg["show_network_pill"] = (wifi_loc == "top")
+        clean_cfg["reorder_button"] = (reorder_loc == "top")
+
+        if inputs_loc == "top":
+            clean_cfg["show_inputs_pill"] = True
+            clean_cfg["show_inputs_menu_row"] = True
+        elif inputs_loc == "menu":
+            clean_cfg["show_inputs_pill"] = False
+            clean_cfg["show_inputs_menu_row"] = True
+        else: # hide
+            clean_cfg["show_inputs_pill"] = False
+            clean_cfg["show_inputs_menu_row"] = False
+
+        clean_cfg["library_button"] = (library_loc == "top")
+        clean_cfg["show_library_pill"] = (library_loc == "top")
+
         if "show_settings" in clean_cfg:
             clean_cfg["launcher_settings_button"] = bool(clean_cfg.get("show_settings"))
-        if "show_library" in clean_cfg:
-            clean_cfg["library_button"] = bool(clean_cfg.get("show_library"))
-            clean_cfg["show_library_pill"] = bool(clean_cfg.get("show_library"))
-        if "show_network" in clean_cfg:
-            clean_cfg["show_network_pill"] = bool(clean_cfg.get("show_network"))
         if "show_home_settings" in clean_cfg:
             clean_cfg["show_home_settings_shortcut"] = bool(clean_cfg.get("show_home_settings"))
 
-        # Ensure Quick Settings Panel is active by default!
-        # When True, clicking the gear opens the QuickSettingsActivity / glassPopup flyout list,
-        # with System Settings INSIDE the list, exactly as requested!
-        clean_cfg["settings_key_panel"] = bool(clean_cfg.get("settings_key_panel", True))
+        # settings_key_panel must ALWAYS be True so clicking the gear opens the flyout menu
+        clean_cfg["settings_key_panel"] = True
 
-        # Circles Mode handling
-        circles_mode = clean_cfg.get("circles_mode", "")
-        if circles_mode == "collapsed":
-            clean_cfg["top_menu"] = True
-            clean_cfg["show_inputs_pill"] = False
-            clean_cfg["reorder_button"] = False
-            clean_cfg["library_button"] = False
-        elif circles_mode == "all":
-            clean_cfg["top_menu"] = False
-            clean_cfg["show_inputs_pill"] = True
-            clean_cfg["show_network_pill"] = True
-            clean_cfg["reorder_button"] = True
-            clean_cfg["library_button"] = True
-        elif circles_mode == "standard":
-            clean_cfg["top_menu"] = False
+        # top_menu is True when buttons are collapsed into the gear flyout
+        clean_cfg["top_menu"] = (wifi_loc == "menu" and reorder_loc == "menu")
 
         # VPN Button in Top Bar handling
         vpn_choice = clean_cfg.get("vpn_choice", "su.happ.proxyutility")

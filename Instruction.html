@@ -1556,7 +1556,160 @@
       border-radius: 12px;
     }
 
-  </style>
+  
+    /* True Native TV Glass Popup */
+    .vtv-glass-popup {
+      position: absolute;
+      top: 46px;
+      right: 14px;
+      width: 280px;
+      background: rgba(22, 24, 29, 0.94);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      z-index: 100;
+      overflow: hidden;
+      animation: vtvPopIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .vtv-glass-popup-inner {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .vtv-glass-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-dim);
+    }
+    .vtv-glass-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 14px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .vtv-glass-close:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .vtv-glass-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .vtv-glass-item:hover, .vtv-glass-item.active-focus {
+      background: #ffffff;
+      color: #111114;
+    }
+    .vtv-glass-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .vtv-glass-item-title {
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+    .vtv-glass-item-badge {
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 400;
+    }
+    .vtv-glass-item:hover .vtv-glass-item-badge {
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* Granular Placement Table */
+    .button-placement-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .button-placement-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .placement-icon {
+      font-size: 1.2rem;
+      width: 28px;
+      text-align: center;
+    }
+    .placement-title {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .placement-desc {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+    .placement-choices {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .choice-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .choice-pill:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #fff;
+    }
+    .choice-pill input[type="radio"] {
+      margin: 0;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .choice-pill.active {
+      background: rgba(124, 140, 248, 0.16);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+</style>
 </head>
 <body>
 
@@ -1994,116 +2147,65 @@
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     </button>
                     <!-- 6. CleanYourTV Gear [ ⚙️ ] -->
-                    <button class="vtv-circle-btn" id="vtvBtnSettings" onclick="toggleVtvSettings()" title="Настройки CleanYourTV (нажмите для открытия выпадающего меню)">
+                    <button class="vtv-circle-btn" id="vtvBtnSettings" onclick="toggleVtvGlassPopup()" title="Настройки CleanYourTV (нажмите для открытия выпадающего меню)">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </button>
                   </div>
                 </div>
 
-                <!-- Floating Settings Flyout (CleanYourTV Quick Config on TV screen) -->
-                <div class="vtv-settings-flyout" id="vtvSettingsFlyout" style="display: none; width: 320px; max-height: 85%; overflow-y: auto;">
-                  <div class="vtv-flyout-header">
-                    <div class="vtv-flyout-title">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 5px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                      Параметры CleanYourTV
+                <!-- Native CleanYourTV Glass Popup (matches physical TV) -->
+                <div class="vtv-glass-popup" id="vtvGlassPopup" style="display: none;">
+                  <div class="vtv-glass-popup-inner">
+                    <div class="vtv-glass-header">
+                      <span>Панель быстрого меню CleanYourTV</span>
+                      <button class="vtv-glass-close" onclick="toggleVtvGlassPopup(false)">✕</button>
                     </div>
-                    <button class="vtv-flyout-close" onclick="toggleVtvSettings(false)">✕</button>
-                  </div>
 
-                  <!-- Quick Preset Mode for Circles -->
-                  <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                    <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Режим кнопок-кружочков:</div>
-                    <div class="segmented-control" style="width: 100%;">
-                      <button class="segment-btn" id="flyCircleAll" onclick="setTopCirclesMode('all', this)">Вывести все</button>
-                      <button class="segment-btn active" id="flyCircleStd" onclick="setTopCirclesMode('standard', this)">Стандарт</button>
-                      <button class="segment-btn" id="flyCircleCol" onclick="setTopCirclesMode('collapsed', this)">Схлопнуть</button>
+                    <!-- 1. Wi-Fi (Network) -->
+                    <div class="vtv-glass-item" id="vtvGlassItemNetwork" onclick="log('Сеть Wi-Fi (нажатие в меню)'); toggleVtvGlassPopup(false)">
+                      <div class="vtv-glass-item-left">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                        <span class="vtv-glass-item-title">Сеть</span>
+                      </div>
+                      <span class="vtv-glass-item-badge">Wi-Fi</span>
                     </div>
-                  </div>
 
-                  <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Кружочки на главном экране:</div>
-
-                  <div class="vtv-flyout-row">
-                    <span class="vtv-flyout-label">Входы HDMI [ ⇄ ]</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="vtvChkInputs" onchange="toggleTopCircle('show_inputs', this.checked)">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="vtv-flyout-row">
-                    <span class="vtv-flyout-label">Сортировка [ ⇅ ]</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="vtvChkReorder" checked onchange="toggleTopCircle('show_reorder', this.checked)">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="vtv-flyout-row">
-                    <span class="vtv-flyout-label">Все приложения [ ▦ ]</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="vtvChkLibrary" onchange="toggleTopCircle('show_library', this.checked)">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="vtv-flyout-row">
-                    <span class="vtv-flyout-label">Индикатор сети [ 📶 ]</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="vtvChkNetwork" onchange="toggleTopCircle('show_network', this.checked)">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="vtv-flyout-row">
-                    <span class="vtv-flyout-label">Системные настройки [ 🛠️ ]</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="vtvChkHomeSettings" onchange="toggleTopCircle('show_home_settings', this.checked)">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <!-- Collapsed Actions (available when hidden from screen) -->
-                  <div id="vtvCollapsedActionsBlock" style="margin-top: 8px; padding: 7px 9px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.12);">
-                    <div style="font-size: 0.62rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Схлопнуто в шестеренку:</div>
-                    <div style="display: flex; flex-direction: column; gap: 4px;" id="vtvCollapsedButtonsList"></div>
-                  </div>
-
-                  <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-top: 10px; margin-bottom: 4px;">Внешний вид и анимация:</div>
-
-                  <div class="vtv-flyout-row">
-                    <span class="vtv-flyout-label">Только иконки (без названий)</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="vtvChkIconOnly" onchange="toggleVtvOption('icon_only', this.checked)">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="vtv-flyout-row">
-                    <span class="vtv-flyout-label">Мягкие анимации (Lite)</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="vtvChkReducedMotion" onchange="toggleVtvOption('reduced_motion', this.checked)">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="vtv-flyout-row" style="flex-direction: column; align-items: flex-start; gap: 6px;">
-                    <span class="vtv-flyout-label">Часы в режиме ожидания:</span>
-                    <div class="segmented-control" style="width: 100%;">
-                      <button class="segment-btn" onclick="setVtvIdleClock(1, this)">1 м</button>
-                      <button class="segment-btn active" onclick="setVtvIdleClock(5, this)">5 м</button>
-                      <button class="segment-btn" onclick="setVtvIdleClock(10, this)">10 м</button>
-                      <button class="segment-btn" onclick="setVtvIdleClock(15, this)">15 м</button>
-                      <button class="segment-btn" onclick="setVtvIdleClock(0, this)">Выкл</button>
+                    <!-- 2. Reorder apps -->
+                    <div class="vtv-glass-item" id="vtvGlassItemReorder" onclick="toggleVtvReorder(); toggleVtvGlassPopup(false)">
+                      <div class="vtv-glass-item-left">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 15 12 20 17 15"></polyline><polyline points="7 9 12 4 17 9"></polyline></svg>
+                        <span class="vtv-glass-item-title">Изменить порядок приложений</span>
+                      </div>
                     </div>
-                  </div>
 
-                  <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
-                    <button class="btn-island-danger" onclick="factoryResetLauncher()" style="padding: 4px 8px; font-size: 11px;">Сброс</button>
-                    <button class="btn-island-primary" onclick="applyCleanYourTvToTv()" style="padding: 4px 10px; font-size: 11px;">Применить на ТВ</button>
+                    <!-- 3. Inputs (HDMI) -->
+                    <div class="vtv-glass-item" id="vtvGlassItemInputs" onclick="toggleVtvInputsMenu(); toggleVtvGlassPopup(false)" style="display: none;">
+                      <div class="vtv-glass-item-left">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        <span class="vtv-glass-item-title">Входы ТВ (HDMI / AV)</span>
+                      </div>
+                    </div>
+
+                    <!-- 4. CleanYourTV Launcher Settings -->
+                    <div class="vtv-glass-item" id="vtvGlassItemSettings" onclick="scrollToCleanYourTvSettings(); toggleVtvGlassPopup(false)">
+                      <div class="vtv-glass-item-left">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <span class="vtv-glass-item-title">Настройки</span>
+                      </div>
+                    </div>
+
+                    <!-- 5. Android TV System Settings (inside the flyout list!) -->
+                    <div class="vtv-glass-item" id="vtvGlassItemTvSettings" onclick="launchAppOnTv('com.android.tv.settings'); toggleVtvGlassPopup(false)">
+                      <div class="vtv-glass-item-left">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                        <span class="vtv-glass-item-title">Настройки Android TV</span>
+                      </div>
+                      <span class="vtv-glass-item-badge" style="opacity: 0.7;">Система</span>
+                    </div>
                   </div>
                 </div>
+                
 
-                <!-- Floating Inputs Menu (Opens on Inputs button click) -->
                 <div class="vtv-inputs-menu" id="vtvInputsMenu" style="display: none;">
                   <div style="font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; margin-bottom: 6px;">Входы телевизора</div>
                   <div class="vtv-input-item active" onclick="selectVtvInput('HDMI 1')"><span class="vtv-input-dot"></span> 📺 HDMI 1 (Консоль / ТВ)</div>
@@ -2506,28 +2608,152 @@
 
           </div>
 
-          <!-- SECTION 5: Кнопки в шапке (Кружочки и Шестерёнка) -->
-          <div class="group-section-title">Кнопки в шапке экрана (Кружочки и выпадающее меню шестеренки)</div>
-          <div class="settings-group">
+          <!-- SECTION 5: Кнопки и выпадающее меню шестерёнки -->
+          <div class="group-section-title">5. Кнопки верхнего бара и выпадающее меню шестерёнки</div>
+          <div class="settings-group" id="secTopButtonsConfig">
 
-            <div class="setting-row">
+            <!-- Presets Bar -->
+            <div class="setting-row" style="background: rgba(124, 140, 248, 0.04); border-left: 3px solid var(--accent); padding: 12px 14px;">
               <div class="setting-info">
-                <span class="setting-title">Режим размещения кнопок в шапке</span>
-                <span class="setting-desc">«Схлопнуть» убирает кнопки в выезжающий список шестерёнки [ ⚙️ ]. «Стандарт» оставляет основные 4 кружка.</span>
+                <span class="setting-title" style="color: #fff;">Быстрый выбор режима кнопок:</span>
+                <span class="setting-desc">Выберите готовый стиль или настройте каждую кнопку индивидуально ниже</span>
               </div>
               <div class="setting-control">
-                <div class="segmented-control" id="vtvCirclesModeSelector">
-                  <button class="segment-btn" onclick="setTopCirclesMode('all', this)">Вывести все</button>
-                  <button class="segment-btn active" onclick="setTopCirclesMode('standard', this)">Стандарт (4 кружка)</button>
-                  <button class="segment-btn" onclick="setTopCirclesMode('collapsed', this)">Схлопнуть в шестеренку</button>
+                <div class="segmented-control" id="secCirclesPresets">
+                  <button class="segment-btn" id="btnPresetOnlyGear" onclick="applyCirclesPreset('only_gear', this)">🎯 Только шестерёнка (все в меню)</button>
+                  <button class="segment-btn active" id="btnPresetStandard" onclick="applyCirclesPreset('standard', this)">📺 Стандарт ТВ (4 кнопки)</button>
+                  <button class="segment-btn" id="btnPresetAll" onclick="applyCirclesPreset('all', this)">🚀 Вывести всё на экран</button>
                 </div>
               </div>
             </div>
 
+            <!-- Granular Placement Table -->
+            <div style="padding: 12px 14px 4px 14px;">
+              <div style="font-size: 0.74rem; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px;">
+                Индивидуальное размещение кнопок (Экран vs Выпадающее меню):
+              </div>
+
+              <!-- 1. Wi-Fi / Сеть -->
+              <div class="button-placement-row">
+                <div class="button-placement-info">
+                  <span class="placement-icon">📶</span>
+                  <div>
+                    <div class="placement-title">Индикатор сети (Wi-Fi)</div>
+                    <div class="placement-desc">Статус беспроводного подключения к сети</div>
+                  </div>
+                </div>
+                <div class="placement-choices">
+                  <label class="choice-pill" id="pillWifiTop">
+                    <input type="radio" name="loc_wifi" value="top" onchange="setButtonPlacement('wifi', 'top')">
+                    <span>Кружок на экране</span>
+                  </label>
+                  <label class="choice-pill" id="pillWifiMenu">
+                    <input type="radio" name="loc_wifi" value="menu" onchange="setButtonPlacement('wifi', 'menu')">
+                    <span>Спрятать в меню шестерёнки</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 2. Сортировка приложений -->
+              <div class="button-placement-row">
+                <div class="button-placement-info">
+                  <span class="placement-icon">⇅</span>
+                  <div>
+                    <div class="placement-title">Сортировка приложений [ ⇅ ]</div>
+                    <div class="placement-desc">Режим перестановки плиток стрелочками</div>
+                  </div>
+                </div>
+                <div class="placement-choices">
+                  <label class="choice-pill" id="pillReorderTop">
+                    <input type="radio" name="loc_reorder" value="top" onchange="setButtonPlacement('reorder', 'top')">
+                    <span>Кружок на экране</span>
+                  </label>
+                  <label class="choice-pill" id="pillReorderMenu">
+                    <input type="radio" name="loc_reorder" value="menu" onchange="setButtonPlacement('reorder', 'menu')">
+                    <span>Спрятать в меню шестерёнки</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 3. Входы ТВ / HDMI -->
+              <div class="button-placement-row">
+                <div class="button-placement-info">
+                  <span class="placement-icon">⇄</span>
+                  <div>
+                    <div class="placement-title">Входы ТВ / HDMI [ ⇄ ]</div>
+                    <div class="placement-desc">Переключение источников (HDMI 1, HDMI 2, AV)</div>
+                  </div>
+                </div>
+                <div class="placement-choices">
+                  <label class="choice-pill" id="pillInputsTop">
+                    <input type="radio" name="loc_inputs" value="top" onchange="setButtonPlacement('inputs', 'top')">
+                    <span>Кружок на экране</span>
+                  </label>
+                  <label class="choice-pill" id="pillInputsMenu">
+                    <input type="radio" name="loc_inputs" value="menu" onchange="setButtonPlacement('inputs', 'menu')">
+                    <span>В меню шестерёнки</span>
+                  </label>
+                  <label class="choice-pill" id="pillInputsHide">
+                    <input type="radio" name="loc_inputs" value="hide" onchange="setButtonPlacement('inputs', 'hide')">
+                    <span>Отключить совсем</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 4. Все приложения / Библиотека -->
+              <div class="button-placement-row">
+                <div class="button-placement-info">
+                  <span class="placement-icon">▦</span>
+                  <div>
+                    <div class="placement-title">Все приложения (Библиотека) [ ▦ ]</div>
+                    <div class="placement-desc">Полный список установленных приложений</div>
+                  </div>
+                </div>
+                <div class="placement-choices">
+                  <label class="choice-pill" id="pillLibraryTop">
+                    <input type="radio" name="loc_library" value="top" onchange="setButtonPlacement('library', 'top')">
+                    <span>Кружок на экране</span>
+                  </label>
+                  <label class="choice-pill" id="pillLibraryHide">
+                    <input type="radio" name="loc_library" value="hide" onchange="setButtonPlacement('library', 'hide')">
+                    <span>Отключить</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 5. Кнопка VPN -->
+              <div class="button-placement-row">
+                <div class="button-placement-info">
+                  <span class="placement-icon">🛡️</span>
+                  <div>
+                    <div class="placement-title">Круглая кнопка VPN [ 🛡️ ]</div>
+                    <div class="placement-desc">Быстрый запуск выбранного VPN клиента прямо с экрана</div>
+                  </div>
+                </div>
+                <div class="placement-choices">
+                  <select id="selVpnClientPackage" class="input-island" style="font-size: 0.76rem; padding: 4px 8px;" onchange="updateVpnButtonConfig()">
+                    <option value="su.happ.proxyutility">Happ (VLESS / Shadowsocks)</option>
+                    <option value="com.wireguard.android">WireGuard</option>
+                    <option value="org.amnezia.vpn">AmneziaVPN</option>
+                    <option value="org.lumic.byedpi">ByeDPI</option>
+                  </select>
+                  <label class="choice-pill" id="pillVpnTop">
+                    <input type="radio" name="loc_vpn" value="top" onchange="setButtonPlacement('vpn', 'top')">
+                    <span>Кружок на экране</span>
+                  </label>
+                  <label class="choice-pill" id="pillVpnHide">
+                    <input type="radio" name="loc_vpn" value="hide" onchange="setButtonPlacement('vpn', 'hide')">
+                    <span>Скрыть</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Settings Key Panel Option -->
             <div class="setting-row" style="background: rgba(124, 140, 248, 0.05); border-left: 3px solid var(--accent); padding-left: 14px;">
               <div class="setting-info">
                 <span class="setting-title" style="color: #fff;">Выезжающее быстрое меню шестерёнки (Quick Settings Panel)</span>
-                <span class="setting-desc">Шестерёнка открывает аккуратное выпадающее меню со списком прямо на ТВ. Системные настройки Android TV находятся ВНУТРИ списка, а не открываются сразу!</span>
+                <span class="setting-desc">Шестерёнка на пульте ТВ открывает всплывающее меню со списком. Системные настройки Android TV находятся ВНУТРИ списка, а не запускаются напрямую!</span>
               </div>
               <div class="setting-control">
                 <label class="toggle-switch">
@@ -2537,85 +2763,15 @@
               </div>
             </div>
 
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Круглая кнопка VPN в шапке [ 🛡️ ]</span>
-                <span class="setting-desc">Добавляет отдельный кружок VPN прямо в верхнюю панель для быстрого подключения в 1 клик</span>
-              </div>
-              <div class="setting-control" style="display: flex; align-items: center; gap: 8px;">
-                <select id="selVpnClientPackage" class="input-island" style="font-size: 0.76rem; padding: 4px 8px;" onchange="updateVpnButtonConfig()">
-                  <option value="su.happ.proxyutility">Happ (VLESS / Shadowsocks)</option>
-                  <option value="com.wireguard.android">WireGuard</option>
-                  <option value="org.amnezia.vpn">AmneziaVPN</option>
-                  <option value="org.lumic.byedpi">ByeDPI</option>
-                </select>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="chkShowVpnButton" onchange="updateVpnButtonConfig()">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
+            <!-- Icon Only Option -->
             <div class="setting-row">
               <div class="setting-info">
                 <span class="setting-title">Только круглые значки без текста (Apple Style)</span>
-                <span class="setting-desc">Убрать любые подписи у кнопок Wi-Fi, Входов HDMI и Настроек, оставив только круглые значки</span>
+                <span class="setting-desc">Убрать любые текстовые надписи у кнопок Wi-Fi, Входов HDMI и Настроек, оставив только круглые значки</span>
               </div>
               <div class="setting-control">
                 <label class="toggle-switch">
                   <input type="checkbox" id="chkIconOnlyButtons" checked onchange="toggleIconOnlyButtons(this.checked)">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Кнопка «Входы телевизора» (HDMI 1, 2, AV) [ ⇄ ]</span>
-                <span class="setting-desc">Выводить кружок физических ТВ-входов на экран или скрыть внутрь меню шестерёнки</span>
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" id="chkShowInputsPill" checked onchange="toggleStudioOption('show_inputs_pill', this.checked); toggleStudioOption('show_inputs', this.checked)">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Кнопка «Сеть Wi-Fi / LAN» [ 📶 ]</span>
-                <span class="setting-desc">Круглая кнопка статуса сети на экране ТВ</span>
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" id="chkShowNetworkPill" checked onchange="toggleStudioOption('show_network_pill', this.checked); toggleStudioOption('show_network', this.checked)">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Кнопка сортировки плиток в шапке [ ⇅ ]</span>
-                <span class="setting-desc">Кнопка быстрого режима перестановки иконок стрелками пульта</span>
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" id="chkReorderButton" checked onchange="toggleStudioOption('reorder_button', this.checked); toggleStudioOption('show_reorder', this.checked)">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Кнопка библиотеки всех приложений [ ▦ ]</span>
-                <span class="setting-desc">Выводить кружок библиотеки [ ▦ ] прямо в шапку (по умолчанию скрыта, доступна через скролл вниз)</span>
-              </div>
-              <div class="setting-control">
-                <label class="toggle-switch">
-                  <input type="checkbox" id="chkLibraryButton" onchange="toggleStudioOption('library_button', this.checked); toggleStudioOption('show_library', this.checked)">
                   <span class="toggle-slider"></span>
                 </label>
               </div>
@@ -3851,393 +4007,168 @@
     }
 
     // Top Right Buttons & Circles Configuration
-    function toggleVtvSettings(force) {
-      const flyout = document.getElementById('vtvSettingsFlyout');
-      if (!flyout) return;
-      const show = force !== undefined ? force : (flyout.style.display === 'none' || !flyout.style.display);
-      flyout.style.display = show ? 'block' : 'none';
+    
+    // ==================== TV GLASS POPUP & BUTTON PLACEMENT LOGIC ====================
+    function toggleVtvGlassPopup(force) {
+      const popup = document.getElementById('vtvGlassPopup');
+      if (!popup) return;
+      const show = force !== undefined ? force : (popup.style.display === 'none' || !popup.style.display);
+      popup.style.display = show ? 'block' : 'none';
       if (show) {
         const inputs = document.getElementById('vtvInputsMenu');
         if (inputs) inputs.style.display = 'none';
-        renderCollapsedActions();
+        renderGlassPopupItems();
       }
     }
 
-    function toggleVtvInputsMenu() {
-      const menu = document.getElementById('vtvInputsMenu');
-      if (!menu) return;
-      const show = menu.style.display === 'none' || !menu.style.display;
-      menu.style.display = show ? 'block' : 'none';
-      if (show) {
-        const flyout = document.getElementById('vtvSettingsFlyout');
-        if (flyout) flyout.style.display = 'none';
+    function renderGlassPopupItems() {
+      // 1. Wi-Fi item in flyout: visible if Wi-Fi is placed in menu
+      const itemNet = document.getElementById('vtvGlassItemNetwork');
+      if (itemNet) {
+        itemNet.style.display = (studioConfig.wifi_location === 'menu' || (!studioConfig.show_network && studioConfig.wifi_location !== 'top')) ? 'flex' : 'none';
+      }
+
+      // 2. Reorder item in flyout: visible if Reorder is placed in menu (or always available)
+      const itemReorder = document.getElementById('vtvGlassItemReorder');
+      if (itemReorder) {
+        itemReorder.style.display = (studioConfig.reorder_location === 'menu' || (!studioConfig.show_reorder && studioConfig.reorder_location !== 'top')) ? 'flex' : 'none';
+      }
+
+      // 3. Inputs item in flyout: visible if Inputs placed in menu
+      const itemInputs = document.getElementById('vtvGlassItemInputs');
+      if (itemInputs) {
+        itemInputs.style.display = (studioConfig.inputs_location === 'menu') ? 'flex' : 'none';
       }
     }
 
-    function selectVtvInput(inputName) {
-      const menu = document.getElementById('vtvInputsMenu');
-      if (menu) menu.style.display = 'none';
-      log(`Выбран видеовход: ${inputName}`);
+    function scrollToCleanYourTvSettings() {
+      const sec = document.getElementById('secTopButtonsConfig') || document.querySelector('.group-section-title');
+      if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+      log('Переход к настройкам CleanYourTV.');
     }
 
-    function toggleVtvReorder() {
-      const hint = document.querySelector('.vtv-dock-hint');
-      if (hint) {
-        hint.style.color = '#7c8cf8';
-        hint.innerText = '⚡ РЕЖИМ СОРТИРОВКИ: перетащите карточки приложений влево/вправо';
-        setTimeout(() => {
-          hint.style.color = 'rgba(255,255,255,0.55)';
-          hint.innerText = '✦ Перетаскивайте мышкой для изменения порядка • Кликните по карточке для замены';
-        }, 4000);
+    // Granular Button Placement Handlers
+    function setButtonPlacement(btnName, placement) {
+      if (!studioConfig) studioConfig = {};
+      studioConfig[`${btnName}_location`] = placement;
+
+      if (btnName === 'wifi') {
+        studioConfig.show_network = (placement === 'top');
+        studioConfig.show_network_pill = (placement === 'top');
+      } else if (btnName === 'reorder') {
+        studioConfig.show_reorder = (placement === 'top');
+        studioConfig.reorder_button = (placement === 'top');
+      } else if (btnName === 'inputs') {
+        studioConfig.show_inputs = (placement === 'top');
+        studioConfig.show_inputs_pill = (placement === 'top');
+        studioConfig.show_inputs_menu_row = (placement === 'menu');
+      } else if (btnName === 'library') {
+        studioConfig.show_library = (placement === 'top');
+        studioConfig.library_button = (placement === 'top');
+      } else if (btnName === 'vpn') {
+        studioConfig.show_vpn_button = (placement === 'top');
+        studioConfig.vpn_location = placement;
       }
-      log('Включен режим перестановки карточек в Dock.');
+
+      // Determine circles_mode preset active state
+      syncCirclesPresetButtons();
+
+      updateTvPreview();
+      renderGlassPopupItems();
+      log(`Кнопка [${btnName}] размещена: ${placement === 'top' ? 'Кружок на экране' : (placement === 'menu' ? 'В меню шестерёнки' : 'Отключено')}`);
     }
 
-    function toggleVtvLibrary() {
-      log('Открытие библиотеки приложений [ ▦ ]');
-      switchIslandTab('tab-apps', document.querySelectorAll('.nav-item')[4]);
-    }
+    function applyCirclesPreset(preset, btn) {
+      if (!studioConfig) studioConfig = {};
+      studioConfig.circles_mode = preset;
 
-    // Circles Configuration Mode: all | standard | collapsed
-    function setTopCirclesMode(mode, btn) {
-      if (btn) selectPill(btn);
-      
-      // sync both segmented controls (in flyout and in page)
-      const pageSelector = document.getElementById('vtvCirclesModeSelector');
-      if (pageSelector) {
-        pageSelector.querySelectorAll('.segment-btn').forEach((b, i) => {
-          const m = i === 0 ? 'all' : (i === 1 ? 'standard' : 'collapsed');
-          b.classList.toggle('active', m === mode);
-        });
-      }
-      const flySelector = document.getElementById('flyCircleAll') ? document.getElementById('flyCircleAll').parentElement : null;
-      if (flySelector) {
-        flySelector.querySelectorAll('.segment-btn').forEach((b, i) => {
-          const m = i === 0 ? 'all' : (i === 1 ? 'standard' : 'collapsed');
-          b.classList.toggle('active', m === mode);
-        });
-      }
-
-      if (mode === 'all') {
-        studioConfig.show_inputs = true;
-        studioConfig.show_reorder = true;
-        studioConfig.show_library = true;
-        studioConfig.show_network = true;
-        studioConfig.show_home_settings = true;
-        log('Кнопки-кружочки: все кнопки выведены на главный экран.');
-      } else if (mode === 'standard') {
-        studioConfig.show_inputs = false;
-        studioConfig.show_reorder = true;
-        studioConfig.show_library = false;
+      if (preset === 'only_gear') {
+        // EXACT match to TV screenshot: only gear on screen, WiFi and Reorder inside flyout!
+        studioConfig.wifi_location = 'menu';
+        studioConfig.reorder_location = 'menu';
+        studioConfig.inputs_location = 'hide';
+        studioConfig.library_location = 'hide';
         studioConfig.show_network = false;
-        studioConfig.show_home_settings = false;
-        log('Кнопки-кружочки: стандартный режим (сортировка + шестеренка).');
-      } else if (mode === 'collapsed') {
-        studioConfig.show_inputs = false;
+        studioConfig.show_network_pill = false;
         studioConfig.show_reorder = false;
+        studioConfig.reorder_button = false;
+        studioConfig.show_inputs = false;
+        studioConfig.show_inputs_pill = false;
+        studioConfig.show_inputs_menu_row = false;
         studioConfig.show_library = false;
-        studioConfig.show_network = false;
-        studioConfig.show_home_settings = false;
-        log('Кнопки-кружочки: все действия схлопнуты внутрь шестеренки.');
+        studioConfig.library_button = false;
+        log('Применен пресет: Только шестерёнка на экране (все кнопки спрятаны в меню, как на вашем ТВ)');
+      } else if (preset === 'standard') {
+        // Standard TV: Inputs, WiFi, Reorder on screen
+        studioConfig.wifi_location = 'top';
+        studioConfig.reorder_location = 'top';
+        studioConfig.inputs_location = 'top';
+        studioConfig.library_location = 'hide';
+        studioConfig.show_network = true;
+        studioConfig.show_network_pill = true;
+        studioConfig.show_reorder = true;
+        studioConfig.reorder_button = true;
+        studioConfig.show_inputs = true;
+        studioConfig.show_inputs_pill = true;
+        studioConfig.show_inputs_menu_row = true;
+        studioConfig.show_library = false;
+        studioConfig.library_button = false;
+        log('Применен пресет: Стандарт ТВ (4 кнопки: Входы, Сеть, Сортировка, Шестерёнка)');
+      } else if (preset === 'all') {
+        // Everything on top bar
+        studioConfig.wifi_location = 'top';
+        studioConfig.reorder_location = 'top';
+        studioConfig.inputs_location = 'top';
+        studioConfig.library_location = 'top';
+        studioConfig.show_network = true;
+        studioConfig.show_network_pill = true;
+        studioConfig.show_reorder = true;
+        studioConfig.reorder_button = true;
+        studioConfig.show_inputs = true;
+        studioConfig.show_inputs_pill = true;
+        studioConfig.show_inputs_menu_row = true;
+        studioConfig.show_library = true;
+        studioConfig.library_button = true;
+        log('Применен пресет: Вывести все кнопки кружками на главный экран');
       }
 
-      studioConfig.circles_mode = mode;
+      syncPlacementRadios();
+      syncCirclesPresetButtons();
       updateTvPreview();
-      renderCollapsedActions();
+      renderGlassPopupItems();
     }
 
-    function toggleTopCircle(key, val) {
-      studioConfig[key] = val;
-      updateTvPreview();
-      renderCollapsedActions();
-      log(`Кружочек ${key} изменен: ${val ? 'на экране' : 'в шестеренке'}`);
+    function syncCirclesPresetButtons() {
+      const bGear = document.getElementById('btnPresetOnlyGear');
+      const bStd = document.getElementById('btnPresetStandard');
+      const bAll = document.getElementById('btnPresetAll');
+
+      const isOnlyGear = (studioConfig.wifi_location === 'menu' && studioConfig.reorder_location === 'menu' && studioConfig.inputs_location !== 'top');
+      const isAll = (studioConfig.wifi_location === 'top' && studioConfig.reorder_location === 'top' && studioConfig.inputs_location === 'top' && studioConfig.library_location === 'top');
+      const isStd = (!isOnlyGear && !isAll);
+
+      if (bGear) bGear.classList.toggle('active', isOnlyGear);
+      if (bStd) bStd.classList.toggle('active', isStd);
+      if (bAll) bAll.classList.toggle('active', isAll);
     }
 
-    function renderCollapsedActions() {
-      const list = document.getElementById('vtvCollapsedButtonsList');
-      if (!list) return;
-      list.innerHTML = '';
-      let count = 0;
-
-      if (!studioConfig.show_inputs) {
-        count++;
-        list.innerHTML += `<div class="vtv-quick-chip" onclick="toggleVtvInputsMenu()"><span style="font-size:13px;">📺</span> <span style="font-weight:600;">Входы HDMI (HDMI 1, 2, AV)</span></div>`;
-      }
-      if (!studioConfig.show_reorder) {
-        count++;
-        list.innerHTML += `<div class="vtv-quick-chip" onclick="toggleVtvReorder(); toggleVtvSettings(false)"><span style="font-size:13px;">⇅</span> <span style="font-weight:600;">Включить сортировку в Dock</span></div>`;
-      }
-      if (!studioConfig.show_library) {
-        count++;
-        list.innerHTML += `<div class="vtv-quick-chip" onclick="toggleVtvLibrary(); toggleVtvSettings(false)"><span style="font-size:13px;">▦</span> <span style="font-weight:600;">Все приложения (Библиотека)</span></div>`;
-      }
-      if (!studioConfig.show_home_settings) {
-        count++;
-        list.innerHTML += `<div class="vtv-quick-chip" onclick="log('Системные настройки Android TV'); toggleVtvSettings(false)"><span style="font-size:13px;">🛠️</span> <span style="font-weight:600;">Настройки Android TV</span></div>`;
-      }
-
-      if (count === 0) {
-        list.innerHTML = `<span style="font-size: 11px; color: var(--text-dim); padding: 4px;">Все доступные действия выведены кружочками на экран.</span>`;
-      }
-    }
-
-    function toggleVtvOption(key, val) {
-      studioConfig[key] = val;
-      if (key === 'icon_only') {
-        const dock = document.getElementById('tvMockupDock');
-        if (dock) dock.classList.toggle('icons-only-mode', val);
-      }
-      log(`Параметр ${key} установлен: ${val}`);
-    }
-
-    // Live TV Clock and Greeting Ticker
-    let liveClockTimer = null;
-    function startLiveTvClockTicker() {
-      if (liveClockTimer) clearInterval(liveClockTimer);
-      function tick() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const mins = String(now.getMinutes()).padStart(2, '0');
-        const timeStr = `${hours}:${mins}`;
-
-        const days = ['ВОСКРЕСЕНЬЕ', 'ПОНЕДЕЛЬНИК', 'ВТОРНИК', 'СРЕДА', 'ЧЕТВЕРГ', 'ПЯТНИЦА', 'СУББОТА'];
-        const months = ['ЯНВАРЯ', 'ФЕВРАЛЯ', 'МАРТА', 'АПРЕЛЯ', 'МАЯ', 'ИЮНЯ', 'ИЮЛЯ', 'АВГУСТА', 'СЕНТЯБРЯ', 'ОКТЯБРЯ', 'НОЯБРЯ', 'ДЕКАБРЯ'];
-        const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
-
-        let period = 'ДОБРЫЙ ДЕНЬ';
-        const h = now.getHours();
-        if (h >= 5 && h < 12) period = 'ДОБРОЕ УТРО';
-        else if (h >= 12 && h < 18) period = 'ДОБРЫЙ ДЕНЬ';
-        else if (h >= 18 && h < 23) period = 'ДОБРЫЙ ВЕЧЕР';
-        else period = 'ДОБРОЙ НОЧИ';
-
-        const greetingName = (studioConfig && studioConfig.greeting_name) ? studioConfig.greeting_name.toUpperCase() : 'СЕМЬЯ';
-        const fullGreeting = `${period}, ${greetingName}`;
-
-        const elTime = document.getElementById('vtvTime');
-        if (elTime) elTime.innerText = timeStr;
-        const elDate = document.getElementById('vtvDate');
-        if (elDate) elDate.innerText = dateStr;
-        const elGreet = document.getElementById('vtvGreeting');
-        if (elGreet) elGreet.innerText = fullGreeting;
-
-        const saverTime = document.getElementById('previewSaverTime');
-        if (saverTime) saverTime.innerText = timeStr;
-        const saverDate = document.getElementById('previewSaverDate');
-        if (saverDate) saverDate.innerText = dateStr;
-        const saverGreet = document.getElementById('previewSaverGreeting');
-        if (saverGreet) saverGreet.innerText = fullGreeting;
-      }
-      tick();
-      liveClockTimer = setInterval(tick, 1000);
-    }
-
-    async function setVtvWallpaper(path, btn, autoSend = true) {
-      const bg = document.getElementById('tvMockupBg');
-      const isOled = path.includes('oled_carbon');
-
-      if (bg) {
-        if (isOled) {
-          bg.style.backgroundImage = 'none';
-          bg.style.backgroundColor = '#000000';
-        } else {
-          bg.style.backgroundImage = `url('${path}')`;
-          bg.style.backgroundColor = 'transparent';
-        }
-        bg.style.display = 'block';
-      }
-
-      studioConfig.wallpaper_path = path;
-      studioConfig.wallpaper = !isOled;
-      studioConfig.oled_guard = isOled;
-      const wpName = isOled ? 'none' : path.split('/').pop();
-      studioConfig.wallpaper_choice = wpName;
-      studioConfig.theme_key = isOled ? 'oled_guard' : 'custom';
-
-      document.querySelectorAll('.vtv-wp-thumb').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      log(`Обои телевизора изменены на макете: ${wpName}`);
-
-      if (autoSend) {
-        log(`Отправка обоев «${wpName}» на телевизор...`);
-        try {
-          const res = await callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true });
-          if (res && res.ok) {
-            log(`✓ Обои «${wpName}» успешно активированы на ТВ!`);
-            setTimeout(() => captureLiveTvScreen(false), 2200);
-          } else {
-            log(`⚠️ Результат применения: ${res ? res.error : 'Ошибка связи'}`);
-          }
-        } catch (e) {
-          log('Ошибка при отправке обоев на ТВ: ' + e);
-        }
-      }
-    }
-
-    function setVtvIdleClock(mins, btn) {
-      studioConfig.home_idle_clock_minutes = mins;
-      if (btn && btn.parentElement) {
-        btn.parentElement.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      }
-      log(`Часы в режиме ожидания установлены на: ${mins === 0 ? 'Выключено' : mins + ' мин'}`);
-      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true });
-    }
-
-    function setStudioRows(val, btn) {
-      if (btn && btn.parentElement) {
-        btn.parentElement.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      }
-      const num = parseInt(val, 10);
-      studioConfig.rows_below_dock = num;
-      studioConfig.single_row = (num === 0);
-      updateTvPreview();
-      log(`Количество строк на экране установлено: ${num === 0 ? '1 строка (Только Док)' : (num + 1) + ' строки'}`);
-      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
-        setTimeout(() => captureLiveTvScreen(false), 2200);
-      });
-    }
-
-    function toggleDockTitle(val) {
-      studioConfig.dock_title = val;
-      const row = document.getElementById('vtvActiveAppRow');
-      if (row) row.style.display = val ? 'flex' : 'none';
-      log(`Показ названия приложения над Доком: ${val ? 'Включен' : 'Отключен (чистый экран)'}`);
-      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
-        setTimeout(() => captureLiveTvScreen(false), 2200);
-      });
-    }
-
-    function toggleIconOnlyButtons(val) {
-      studioConfig.icon_only_buttons = val;
-      studioConfig.icon_only_inputs = val;
-      if (val) studioConfig.wifi_label_width = 0;
-      log(`Надписи у круглых иконок в шапке: ${val ? 'Отключены (только значки)' : 'Включены'}`);
-      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
-        setTimeout(() => captureLiveTvScreen(false), 2200);
-      });
-    }
-
-    function toggleStudioOption(key, val) {
-      studioConfig[key] = val;
-      updateTvPreview();
-      log(`Параметр ${key} установлен: ${val}`);
-      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
-        setTimeout(() => captureLiveTvScreen(false), 2200);
-      });
-    }
-
-    function promptVtvGreeting() {
-      const cur = studioConfig.greeting_name || 'Семья';
-      const val = prompt('Введите имя или обращение на телевизоре (например: Семья, Алексей, Гостиная):', cur);
-      if (val !== null && val.trim()) {
-        studioConfig.greeting_name = val.trim();
-        updateTvPreview();
-        log(`Обращение на ТВ обновлено: ${val.trim()}`);
-        callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true });
-      }
-    }
-
-    // Render Dock & Rows Below Dock
-    function renderVtvDock() {
-      const dock = document.getElementById('tvMockupDock');
-      if (!dock) return;
-      dock.innerHTML = '';
-      
-      const cols = studioConfig.columns || 6;
-      const apps = (studioConfig && studioConfig.dock_apps && studioConfig.dock_apps.length > 0)
-        ? studioConfig.dock_apps
-        : [
-            { name: 'Zona', pkg: 'mobi.zona', brand: 'zona' },
-            { name: 'ByeDPI', pkg: 'org.lumic.byedpi', brand: 'default' },
-            { name: 'HDRezka', pkg: 'com.falcofemoralis.hdrezkaapp', brand: 'hdrezka' },
-            { name: 'Lampa', pkg: 'com.lampa.app', brand: 'lampa' },
-            { name: 'Кинопоиск', pkg: 'ru.kinopoisk.tv', brand: 'default' },
-            { name: 'VK Video', pkg: 'com.vk.tv', brand: 'vk' }
-          ];
-
-      const primaryApps = apps.slice(0, cols);
-      
-      primaryApps.forEach((app, idx) => {
-        const info = getAppInfo(app);
-        const tile = document.createElement('div');
-        tile.className = `vtv-tile vtv-tile-${info.brand}` + (idx === 0 ? ' vtv-tile-focused' : '');
-        tile.draggable = true;
-        tile.title = `${info.name} (${info.pkg})\nПеретащите для смены порядка • Кликните для настройки`;
-        
-        tile.addEventListener('dragstart', (e) => handleDockDragStart(e, idx));
-        tile.addEventListener('dragover', handleDockDragOver);
-        tile.addEventListener('dragleave', handleDockDragLeave);
-        tile.addEventListener('drop', (e) => handleDockDrop(e, idx));
-        tile.addEventListener('dragend', (e) => e.currentTarget.classList.remove('dragging'));
-        tile.addEventListener('click', () => openSlotEditor(idx));
-        tile.addEventListener('mouseenter', () => {
-          const titleEl = document.getElementById('vtvActiveAppTitle');
-          if (titleEl) titleEl.innerText = info.name;
-          dock.querySelectorAll('.vtv-tile').forEach(t => t.classList.remove('vtv-tile-focused'));
-          tile.classList.add('vtv-tile-focused');
+    function syncPlacementRadios() {
+      const setRadio = (name, val) => {
+        const radios = document.querySelectorAll(`input[name="${name}"]`);
+        radios.forEach(r => {
+          r.checked = (r.value === val);
+          const pill = r.closest('.choice-pill');
+          if (pill) pill.classList.toggle('active', r.checked);
         });
-        
-        tile.innerHTML = `
-          <span class="vtv-tile-drag-hint">⋮⋮</span>
-          <div class="vtv-tile-title">${escapeHtml(info.name)}</div>
-        `;
-        dock.appendChild(tile);
-      });
+      };
 
-      const addTile = document.createElement('div');
-      addTile.className = 'vtv-tile-add';
-      addTile.title = 'Добавить приложение в Dock';
-      addTile.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
-      addTile.addEventListener('click', addNewAppSlot);
-      dock.appendChild(addTile);
-
-      // Secondary Row (Rows Below Dock)
-      const subrowsWrapper = document.getElementById('vtvSubrowsWrapper');
-      const secRow = document.getElementById('vtvRowSecondary');
-      const rowsBelow = (studioConfig.rows_below_dock !== undefined) ? parseInt(studioConfig.rows_below_dock, 10) : 1;
-      
-      if (subrowsWrapper && secRow) {
-        if (rowsBelow > 0) {
-          subrowsWrapper.style.display = 'flex';
-          secRow.innerHTML = '';
-          secRow.style.opacity = (studioConfig.fade_rows !== false) ? '0.72' : '1';
-          
-          const secPool = (apps.length > cols) ? apps.slice(cols) : [
-            { name: 'Media Station X', pkg: 'org.msx.app', brand: 'default' },
-            { name: 'RuTube', pkg: 'ru.rutube.app', brand: 'rutube' },
-            { name: 'SmartTube', pkg: 'org.smarttube.stable', brand: 'smarttube' },
-            { name: 'Spotify', pkg: 'com.spotify.tv.android', brand: 'spotify' },
-            { name: 'VK Video', pkg: 'com.vk.tv', brand: 'vk' }
-          ];
-
-          secPool.slice(0, cols).forEach((app) => {
-            const info = getAppInfo(app);
-            const secTile = document.createElement('div');
-            secTile.className = `vtv-tile vtv-tile-${info.brand}`;
-            secTile.style.cursor = 'pointer';
-            secTile.title = `${info.name} (${info.pkg})`;
-            secTile.innerHTML = `<div class="vtv-tile-title">${escapeHtml(info.name)}</div>`;
-            secTile.addEventListener('mouseenter', () => {
-              const titleEl = document.getElementById('vtvActiveAppTitle');
-              if (titleEl) titleEl.innerText = info.name;
-              dock.querySelectorAll('.vtv-tile').forEach(t => t.classList.remove('vtv-tile-focused'));
-            });
-            secRow.appendChild(secTile);
-          });
-        } else {
-          subrowsWrapper.style.display = 'none';
-        }
-      }
-
-      // Update active title from first app
-      if (primaryApps.length > 0) {
-        const info0 = getAppInfo(primaryApps[0]);
-        const titleEl = document.getElementById('vtvActiveAppTitle');
-        if (titleEl) titleEl.innerText = info0.name;
-      }
+      setRadio('loc_wifi', studioConfig.wifi_location || 'top');
+      setRadio('loc_reorder', studioConfig.reorder_location || 'top');
+      setRadio('loc_inputs', studioConfig.inputs_location || 'top');
+      setRadio('loc_library', studioConfig.library_location || 'hide');
+      setRadio('loc_vpn', studioConfig.vpn_location || (studioConfig.show_vpn_button ? 'top' : 'hide'));
     }
+
 
     function updateTvPreview() {
       const glow = document.getElementById('tvMockupGlow');
@@ -4257,21 +4188,44 @@
         }
       }
 
-      // Update Top Buttons visibility on Virtual TV Canvas
+      // Update Top Buttons visibility on Virtual TV Canvas (Accurate 1:1 match to TV)
       const btnInputs = document.getElementById('vtvBtnInputs');
-      if (btnInputs) btnInputs.style.display = (studioConfig.show_inputs !== false) ? 'flex' : 'none';
+      if (btnInputs) {
+        const showInp = (studioConfig.inputs_location === 'top') || (studioConfig.inputs_location === undefined && studioConfig.show_inputs === true);
+        btnInputs.style.display = showInp ? 'flex' : 'none';
+      }
 
       const btnReorder = document.getElementById('vtvBtnReorder');
-      if (btnReorder) btnReorder.style.display = (studioConfig.show_reorder !== false) ? 'flex' : 'none';
-
-      const btnLib = document.getElementById('vtvBtnLibrary');
-      if (btnLib) btnLib.style.display = studioConfig.show_library ? 'flex' : 'none';
+      if (btnReorder) {
+        const showReo = (studioConfig.reorder_location === 'top') || (studioConfig.reorder_location === undefined && studioConfig.show_reorder !== false);
+        btnReorder.style.display = showReo ? 'flex' : 'none';
+      }
 
       const btnNet = document.getElementById('vtvBtnNetwork');
-      if (btnNet) btnNet.style.display = (studioConfig.show_network !== false) ? 'flex' : 'none';
+      if (btnNet) {
+        const showNet = (studioConfig.wifi_location === 'top') || (studioConfig.wifi_location === undefined && studioConfig.show_network !== false);
+        btnNet.style.display = showNet ? 'flex' : 'none';
+      }
 
-      const btnSettings = document.getElementById('vtvBtnTvSettings');
-      if (btnSettings) btnSettings.style.display = studioConfig.show_home_settings ? 'flex' : 'none';
+      const btnLib = document.getElementById('vtvBtnLibrary');
+      if (btnLib) {
+        const showLib = (studioConfig.library_location === 'top') || (studioConfig.library_location === undefined && Boolean(studioConfig.show_library));
+        btnLib.style.display = showLib ? 'flex' : 'none';
+      }
+
+      const btnVpn = document.getElementById('vtvBtnVpn');
+      if (btnVpn) {
+        const showVpn = (studioConfig.vpn_location === 'top') || Boolean(studioConfig.show_vpn_button);
+        btnVpn.style.display = showVpn ? 'flex' : 'none';
+      }
+
+      const btnGear = document.getElementById('vtvBtnSettings');
+      if (btnGear) btnGear.style.display = 'flex';
+
+      // Keep placement radio pills active state in sync
+      if (typeof syncPlacementRadios === 'function') syncPlacementRadios();
+      if (typeof syncCirclesPresetButtons === 'function') syncCirclesPresetButtons();
+      if (typeof renderGlassPopupItems === 'function') renderGlassPopupItems();
 
       // Rows selector sync
       const rowsBelow = (studioConfig.rows_below_dock !== undefined) ? parseInt(studioConfig.rows_below_dock, 10) : 1;
@@ -4401,8 +4355,7 @@
       if (chkVpn) chkVpn.checked = Boolean(studioConfig.show_vpn_button);
       const selVpn = document.getElementById('selVpnClientPackage');
       if (selVpn && studioConfig.vpn_choice) selVpn.value = studioConfig.vpn_choice;
-      const btnVpn = document.getElementById('vtvBtnVpn');
-      if (btnVpn) btnVpn.style.display = studioConfig.show_vpn_button ? 'flex' : 'none';
+
 
       // Screensaver & Clocks Sync
       const chkClkWall = document.getElementById('chkClockWallpaper');
@@ -4741,15 +4694,53 @@
             });
           }
 
-          // Map top buttons from TV config
+          // Map top buttons and locations directly from TV config
           if (res.config.dock_title !== undefined) studioConfig.dock_title = Boolean(res.config.dock_title);
           if (res.config.icon_only_buttons !== undefined) studioConfig.icon_only_buttons = Boolean(res.config.icon_only_buttons);
           if (res.config.icon_only_inputs !== undefined) studioConfig.icon_only_inputs = Boolean(res.config.icon_only_inputs);
-          if (res.config.show_inputs_pill !== undefined) studioConfig.show_inputs = Boolean(res.config.show_inputs_pill);
-          if (res.config.reorder_button !== undefined) studioConfig.show_reorder = Boolean(res.config.reorder_button);
-          if (res.config.show_network_pill !== undefined) studioConfig.show_network = Boolean(res.config.show_network_pill);
-          if (res.config.library_button !== undefined) studioConfig.show_library = Boolean(res.config.library_button);
-          if (res.config.show_home_settings_shortcut !== undefined) studioConfig.show_home_settings = Boolean(res.config.show_home_settings_shortcut);
+          if (res.config.settings_key_panel !== undefined) studioConfig.settings_key_panel = Boolean(res.config.settings_key_panel);
+
+          // Granular button locations
+          if (res.config.wifi_location !== undefined) {
+            studioConfig.wifi_location = res.config.wifi_location;
+          } else {
+            studioConfig.wifi_location = (res.config.show_network_pill !== false) ? 'top' : 'menu';
+          }
+          studioConfig.show_network = (studioConfig.wifi_location === 'top');
+
+          if (res.config.reorder_location !== undefined) {
+            studioConfig.reorder_location = res.config.reorder_location;
+          } else {
+            studioConfig.reorder_location = (res.config.reorder_button !== false) ? 'top' : 'menu';
+          }
+          studioConfig.show_reorder = (studioConfig.reorder_location === 'top');
+
+          if (res.config.inputs_location !== undefined) {
+            studioConfig.inputs_location = res.config.inputs_location;
+          } else if (res.config.show_inputs_pill) {
+            studioConfig.inputs_location = 'top';
+          } else if (res.config.show_inputs_menu_row) {
+            studioConfig.inputs_location = 'menu';
+          } else {
+            studioConfig.inputs_location = 'hide';
+          }
+          studioConfig.show_inputs = (studioConfig.inputs_location === 'top');
+
+          if (res.config.library_location !== undefined) {
+            studioConfig.library_location = res.config.library_location;
+          } else {
+            studioConfig.library_location = res.config.library_button ? 'top' : 'hide';
+          }
+          studioConfig.show_library = (studioConfig.library_location === 'top');
+
+          if (res.config.vpn_app || (res.config.top_bar_apps && res.config.top_bar_apps.length > 0)) {
+            studioConfig.show_vpn_button = true;
+            studioConfig.vpn_location = 'top';
+            if (res.config.vpn_app) studioConfig.vpn_choice = res.config.vpn_app;
+          } else {
+            studioConfig.show_vpn_button = false;
+            studioConfig.vpn_location = 'hide';
+          }
           
           updateTvPreview();
           
