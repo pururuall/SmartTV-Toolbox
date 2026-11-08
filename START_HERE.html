@@ -985,6 +985,70 @@
       color: #fff;
     }
 
+    
+    /* VTV Active App Title & Cinematic Dots (Image 1 replica) */
+    .vtv-active-app-row {
+      display: flex;
+      align-items: center;
+      margin-top: 3px;
+    }
+
+    .vtv-active-app-title {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.45);
+      transition: all 0.2s ease;
+    }
+
+    .vtv-dots-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .vtv-dot {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.35);
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .vtv-dot.active {
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.85);
+    }
+
+    .vtv-subrows-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .vtv-row-secondary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 3px 6px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: opacity 0.3s ease;
+    }
+
+    .vtv-tile.vtv-tile-focused {
+      border: 2px solid #38bdf8 !important;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.6), 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+      transform: scale(1.05) !important;
+      z-index: 5 !important;
+    }
+
     .vtv-top-left {
       display: flex;
       flex-direction: column;
@@ -1803,14 +1867,23 @@
                 <div class="vtv-topbar">
                   <div class="vtv-top-left">
                     <div class="vtv-greeting-row">
-                      <span class="vtv-greeting" id="vtvGreeting" onclick="promptVtvGreeting()" title="Нажмите, чтобы изменить имя">ДОБРОЙ НОЧИ</span>
+                      <span class="vtv-greeting" id="vtvGreeting" onclick="promptVtvGreeting()" title="Нажмите, чтобы изменить имя">ДОБРЫЙ ДЕНЬ, СЕМЬЯ</span>
                     </div>
                     <div class="vtv-clock-row">
-                      <span class="vtv-clock-time" id="vtvTime">03:30</span>
+                      <span class="vtv-clock-time" id="vtvTime">14:12</span>
                       <span class="vtv-clock-date" id="vtvDate">ВОСКРЕСЕНЬЕ, 8 НОЯБРЯ</span>
                     </div>
-                    <div class="vtv-telemetry" id="vtvTelemetry">
-                      <span>CPU 4%</span> • <span>ОЗУ 977 / 1385 МБ</span> • <span>Свободно 9.2 ГБ</span>
+                    <!-- Prominent Active App Title with Glow (Image 1 replica) -->
+                    <div class="vtv-active-app-row" id="vtvActiveAppRow">
+                      <span class="vtv-active-app-title" id="vtvActiveAppTitle">Zona</span>
+                    </div>
+                    <!-- Cinematic Pagination Dots (Image 1 replica) -->
+                    <div class="vtv-dots-row" id="vtvDotsRow">
+                      <span class="vtv-dot active">●</span>
+                      <span class="vtv-dot">▬</span>
+                      <span class="vtv-dot">▬</span>
+                      <span class="vtv-dot">▬</span>
+                      <span class="vtv-dot">▬</span>
                     </div>
                   </div>
 
@@ -1958,7 +2031,13 @@
                 <div class="vtv-dock-wrapper">
                   <div class="vtv-dock-hint">✦ Перетаскивайте мышкой для изменения порядка • Кликните по карточке для замены</div>
                   <div class="vtv-dock-glass" id="tvMockupDock">
-                    <!-- Dynamically populated app tiles -->
+                    <!-- Dynamically populated app tiles (Row 1) -->
+                  </div>
+                  <!-- Rows Below Dock (Row 2, replica of actual TV) -->
+                  <div class="vtv-subrows-wrapper" id="vtvSubrowsWrapper">
+                    <div class="vtv-row-secondary" id="vtvRowSecondary">
+                      <!-- Secondary Row Apps -->
+                    </div>
                   </div>
                 </div>
 
@@ -1966,9 +2045,9 @@
 
               <!-- 2. SCREENSAVER VIEW -->
               <div id="tvMockupSaverView" class="tv-screensaver-view" style="display: none; height: 100%; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10;">
-                <div class="tv-clock-greeting" id="previewSaverGreeting">ДОБРОЙ НОЧИ, СЕМЬЯ</div>
-                <div class="tv-clock-time">03:30</div>
-                <div class="tv-clock-date">ВОСКРЕСЕНЬЕ, 8 НОЯБРЯ</div>
+                <div class="tv-clock-greeting" id="previewSaverGreeting">ДОБРЫЙ ДЕНЬ, СЕМЬЯ</div>
+                <div class="tv-clock-time" id="previewSaverTime">14:12</div>
+                <div class="tv-clock-date" id="previewSaverDate">ВОСКРЕСЕНЬЕ, 8 НОЯБРЯ</div>
                 <div class="tv-clock-telemetry" id="previewSaverTelemetry">
                   <span>CPU: 4%</span> • <span>ОЗУ: 410 МБ свободно</span> • <span>Диск: 9.2 ГБ свободно</span>
                 </div>
@@ -2038,8 +2117,22 @@
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-title">Количество колонок в Доке</span>
-                <span class="setting-desc">Сколько приложений помещается в нижнем ряду на экране телевизора</span>
+                <span class="setting-title">Количество строк на экране</span>
+                <span class="setting-desc">1 строка (только Док) или несколько рядов приложений на главном экране</span>
+              </div>
+              <div class="setting-control">
+                <div class="segmented-control" id="dockRowsSelector">
+                  <button class="segment-btn" id="btnRows0" onclick="setStudioRows(0, this)">1 строка (Док)</button>
+                  <button class="segment-btn active" id="btnRows1" onclick="setStudioRows(1, this)">2 строки (Док + 1 ряд)</button>
+                  <button class="segment-btn" id="btnRows2" onclick="setStudioRows(2, this)">3 строки (Док + 2 ряда)</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Количество колонок в ряду</span>
+                <span class="setting-desc">Сколько приложений помещается по горизонтали (рекомендуется: 6)</span>
               </div>
               <div class="setting-control">
                 <div class="segmented-control" id="dockColumnsSelector">
@@ -2047,6 +2140,19 @@
                   <button class="segment-btn active" onclick="updateStudioConfigKey('columns', 6); selectPill(this)">6</button>
                   <button class="segment-btn" onclick="updateStudioConfigKey('columns', 7); selectPill(this)">7</button>
                 </div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Затухание нижних рядов (Fade Rows)</span>
+                <span class="setting-desc">Плавное затухание прозрачности для рядов ниже основного Дока</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkFadeRows" checked onchange="toggleStudioOption('fade_rows', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
               </div>
             </div>
 
@@ -3188,20 +3294,88 @@
       log(`Параметр ${key} установлен: ${val}`);
     }
 
-    function setVtvWallpaper(path, btn) {
+    // Live TV Clock and Greeting Ticker
+    let liveClockTimer = null;
+    function startLiveTvClockTicker() {
+      if (liveClockTimer) clearInterval(liveClockTimer);
+      function tick() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        const timeStr = `${hours}:${mins}`;
+
+        const days = ['ВОСКРЕСЕНЬЕ', 'ПОНЕДЕЛЬНИК', 'ВТОРНИК', 'СРЕДА', 'ЧЕТВЕРГ', 'ПЯТНИЦА', 'СУББОТА'];
+        const months = ['ЯНВАРЯ', 'ФЕВРАЛЯ', 'МАРТА', 'АПРЕЛЯ', 'МАЯ', 'ИЮНЯ', 'ИЮЛЯ', 'АВГУСТА', 'СЕНТЯБРЯ', 'ОКТЯБРЯ', 'НОЯБРЯ', 'ДЕКАБРЯ'];
+        const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+
+        let period = 'ДОБРЫЙ ДЕНЬ';
+        const h = now.getHours();
+        if (h >= 5 && h < 12) period = 'ДОБРОЕ УТРО';
+        else if (h >= 12 && h < 18) period = 'ДОБРЫЙ ДЕНЬ';
+        else if (h >= 18 && h < 23) period = 'ДОБРЫЙ ВЕЧЕР';
+        else period = 'ДОБРОЙ НОЧИ';
+
+        const greetingName = (studioConfig && studioConfig.greeting_name) ? studioConfig.greeting_name.toUpperCase() : 'СЕМЬЯ';
+        const fullGreeting = `${period}, ${greetingName}`;
+
+        const elTime = document.getElementById('vtvTime');
+        if (elTime) elTime.innerText = timeStr;
+        const elDate = document.getElementById('vtvDate');
+        if (elDate) elDate.innerText = dateStr;
+        const elGreet = document.getElementById('vtvGreeting');
+        if (elGreet) elGreet.innerText = fullGreeting;
+
+        const saverTime = document.getElementById('previewSaverTime');
+        if (saverTime) saverTime.innerText = timeStr;
+        const saverDate = document.getElementById('previewSaverDate');
+        if (saverDate) saverDate.innerText = dateStr;
+        const saverGreet = document.getElementById('previewSaverGreeting');
+        if (saverGreet) saverGreet.innerText = fullGreeting;
+      }
+      tick();
+      liveClockTimer = setInterval(tick, 1000);
+    }
+
+    async function setVtvWallpaper(path, btn, autoSend = true) {
       const bg = document.getElementById('tvMockupBg');
+      const isOled = path.includes('oled_carbon');
+
       if (bg) {
-        bg.style.backgroundImage = `url('${path}')`;
+        if (isOled) {
+          bg.style.backgroundImage = 'none';
+          bg.style.backgroundColor = '#000000';
+        } else {
+          bg.style.backgroundImage = `url('${path}')`;
+          bg.style.backgroundColor = 'transparent';
+        }
         bg.style.display = 'block';
       }
+
       studioConfig.wallpaper_path = path;
-      studioConfig.wallpaper = !path.includes('oled_carbon');
-      if (path.includes('oled_carbon')) {
-        studioConfig.theme_key = 'oled_guard';
-      }
+      studioConfig.wallpaper = !isOled;
+      studioConfig.oled_guard = isOled;
+      const wpName = isOled ? 'none' : path.split('/').pop();
+      studioConfig.wallpaper_choice = wpName;
+      studioConfig.theme_key = isOled ? 'oled_guard' : 'custom';
+
       document.querySelectorAll('.vtv-wp-thumb').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
-      log(`Обои телевизора изменены на макете: ${path}`);
+      log(`Обои телевизора изменены на макете: ${wpName}`);
+
+      if (autoSend) {
+        log(`Отправка обоев «${wpName}» на телевизор...`);
+        try {
+          const res = await callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true });
+          if (res && res.ok) {
+            log(`✓ Обои «${wpName}» успешно активированы на ТВ!`);
+            setTimeout(() => captureLiveTvScreen(false), 2200);
+          } else {
+            log(`⚠️ Результат применения: ${res ? res.error : 'Ошибка связи'}`);
+          }
+        } catch (e) {
+          log('Ошибка при отправке обоев на ТВ: ' + e);
+        }
+      }
     }
 
     function setVtvIdleClock(mins, btn) {
@@ -3211,6 +3385,31 @@
         btn.classList.add('active');
       }
       log(`Часы в режиме ожидания установлены на: ${mins === 0 ? 'Выключено' : mins + ' мин'}`);
+      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true });
+    }
+
+    function setStudioRows(val, btn) {
+      if (btn && btn.parentElement) {
+        btn.parentElement.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      const num = parseInt(val, 10);
+      studioConfig.rows_below_dock = num;
+      studioConfig.single_row = (num === 0);
+      updateTvPreview();
+      log(`Количество строк на экране установлено: ${num === 0 ? '1 строка (Только Док)' : (num + 1) + ' строки'}`);
+      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
+        setTimeout(() => captureLiveTvScreen(false), 2200);
+      });
+    }
+
+    function toggleStudioOption(key, val) {
+      studioConfig[key] = val;
+      updateTvPreview();
+      log(`Параметр ${key} установлен: ${val}`);
+      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
+        setTimeout(() => captureLiveTvScreen(false), 2200);
+      });
     }
 
     function promptVtvGreeting() {
@@ -3220,30 +3419,34 @@
         studioConfig.greeting_name = val.trim();
         updateTvPreview();
         log(`Обращение на ТВ обновлено: ${val.trim()}`);
+        callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true });
       }
     }
 
-    // Render Dock
+    // Render Dock & Rows Below Dock
     function renderVtvDock() {
       const dock = document.getElementById('tvMockupDock');
       if (!dock) return;
       dock.innerHTML = '';
       
+      const cols = studioConfig.columns || 6;
       const apps = (studioConfig && studioConfig.dock_apps && studioConfig.dock_apps.length > 0)
         ? studioConfig.dock_apps
         : [
             { name: 'Zona', pkg: 'mobi.zona', brand: 'zona' },
+            { name: 'ByeDPI', pkg: 'org.lumic.byedpi', brand: 'default' },
             { name: 'HDRezka', pkg: 'com.falcofemoralis.hdrezkaapp', brand: 'hdrezka' },
-            { name: 'Spotify', pkg: 'com.spotify.tv.android', brand: 'spotify' },
-            { name: 'VK Video', pkg: 'com.vk.tv', brand: 'vk' },
-            { name: 'RuTube', pkg: 'ru.rutube.app', brand: 'rutube' },
-            { name: 'SmartTube', pkg: 'org.smarttube.stable', brand: 'smarttube' }
+            { name: 'Lampa', pkg: 'com.lampa.app', brand: 'lampa' },
+            { name: 'Кинопоиск', pkg: 'ru.kinopoisk.tv', brand: 'default' },
+            { name: 'VK Video', pkg: 'com.vk.tv', brand: 'vk' }
           ];
+
+      const primaryApps = apps.slice(0, cols);
       
-      apps.forEach((app, idx) => {
+      primaryApps.forEach((app, idx) => {
         const info = getAppInfo(app);
         const tile = document.createElement('div');
-        tile.className = `vtv-tile vtv-tile-${info.brand}`;
+        tile.className = `vtv-tile vtv-tile-${info.brand}` + (idx === 0 ? ' vtv-tile-focused' : '');
         tile.draggable = true;
         tile.title = `${info.name} (${info.pkg})\nПеретащите для смены порядка • Кликните для настройки`;
         
@@ -3253,6 +3456,12 @@
         tile.addEventListener('drop', (e) => handleDockDrop(e, idx));
         tile.addEventListener('dragend', (e) => e.currentTarget.classList.remove('dragging'));
         tile.addEventListener('click', () => openSlotEditor(idx));
+        tile.addEventListener('mouseenter', () => {
+          const titleEl = document.getElementById('vtvActiveAppTitle');
+          if (titleEl) titleEl.innerText = info.name;
+          dock.querySelectorAll('.vtv-tile').forEach(t => t.classList.remove('vtv-tile-focused'));
+          tile.classList.add('vtv-tile-focused');
+        });
         
         tile.innerHTML = `
           <span class="vtv-tile-drag-hint">⋮⋮</span>
@@ -3267,15 +3476,54 @@
       addTile.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
       addTile.addEventListener('click', addNewAppSlot);
       dock.appendChild(addTile);
+
+      // Secondary Row (Rows Below Dock)
+      const subrowsWrapper = document.getElementById('vtvSubrowsWrapper');
+      const secRow = document.getElementById('vtvRowSecondary');
+      const rowsBelow = (studioConfig.rows_below_dock !== undefined) ? parseInt(studioConfig.rows_below_dock, 10) : 1;
+      
+      if (subrowsWrapper && secRow) {
+        if (rowsBelow > 0) {
+          subrowsWrapper.style.display = 'flex';
+          secRow.innerHTML = '';
+          secRow.style.opacity = (studioConfig.fade_rows !== false) ? '0.72' : '1';
+          
+          const secPool = (apps.length > cols) ? apps.slice(cols) : [
+            { name: 'Media Station X', pkg: 'org.msx.app', brand: 'default' },
+            { name: 'RuTube', pkg: 'ru.rutube.app', brand: 'rutube' },
+            { name: 'SmartTube', pkg: 'org.smarttube.stable', brand: 'smarttube' },
+            { name: 'Spotify', pkg: 'com.spotify.tv.android', brand: 'spotify' },
+            { name: 'VK Video', pkg: 'com.vk.tv', brand: 'vk' }
+          ];
+
+          secPool.slice(0, cols).forEach((app) => {
+            const info = getAppInfo(app);
+            const secTile = document.createElement('div');
+            secTile.className = `vtv-tile vtv-tile-${info.brand}`;
+            secTile.style.cursor = 'pointer';
+            secTile.title = `${info.name} (${info.pkg})`;
+            secTile.innerHTML = `<div class="vtv-tile-title">${escapeHtml(info.name)}</div>`;
+            secTile.addEventListener('mouseenter', () => {
+              const titleEl = document.getElementById('vtvActiveAppTitle');
+              if (titleEl) titleEl.innerText = info.name;
+              dock.querySelectorAll('.vtv-tile').forEach(t => t.classList.remove('vtv-tile-focused'));
+            });
+            secRow.appendChild(secTile);
+          });
+        } else {
+          subrowsWrapper.style.display = 'none';
+        }
+      }
+
+      // Update active title from first app
+      if (primaryApps.length > 0) {
+        const info0 = getAppInfo(primaryApps[0]);
+        const titleEl = document.getElementById('vtvActiveAppTitle');
+        if (titleEl) titleEl.innerText = info0.name;
+      }
     }
 
     function updateTvPreview() {
-      const greeting = document.getElementById('vtvGreeting');
-      if (greeting) greeting.innerText = studioConfig.greeting_name ? studioConfig.greeting_name.toUpperCase() : 'ДОБРОЙ НОЧИ';
-
-      const saverGreeting = document.getElementById('previewSaverGreeting');
-      if (saverGreeting) saverGreeting.innerText = `ДОБРОЙ НОЧИ, ${(studioConfig.greeting_name || 'СЕМЬЯ').toUpperCase()}`;
-
       const glow = document.getElementById('tvMockupGlow');
       if (glow) {
         const acc = studioConfig.accent_color || '#7c8cf8';
@@ -3284,7 +3532,7 @@
 
       const bg = document.getElementById('tvMockupBg');
       if (bg) {
-        if (studioConfig.wallpaper === false || (studioConfig.wallpaper_path && studioConfig.wallpaper_path.includes('oled_carbon'))) {
+        if (studioConfig.wallpaper === false || studioConfig.oled_guard === true || (studioConfig.wallpaper_path && studioConfig.wallpaper_path.includes('oled_carbon'))) {
           bg.style.backgroundImage = 'none';
           bg.style.backgroundColor = '#000000';
         } else if (studioConfig.wallpaper_path) {
@@ -3295,7 +3543,7 @@
 
       // Update Top Buttons visibility on Virtual TV Canvas
       const btnInputs = document.getElementById('vtvBtnInputs');
-      if (btnInputs) btnInputs.style.display = studioConfig.show_inputs ? 'flex' : 'none';
+      if (btnInputs) btnInputs.style.display = (studioConfig.show_inputs !== false) ? 'flex' : 'none';
 
       const btnReorder = document.getElementById('vtvBtnReorder');
       if (btnReorder) btnReorder.style.display = (studioConfig.show_reorder !== false) ? 'flex' : 'none';
@@ -3304,30 +3552,41 @@
       if (btnLib) btnLib.style.display = studioConfig.show_library ? 'flex' : 'none';
 
       const btnNet = document.getElementById('vtvBtnNetwork');
-      if (btnNet) btnNet.style.display = studioConfig.show_network ? 'flex' : 'none';
+      if (btnNet) btnNet.style.display = (studioConfig.show_network !== false) ? 'flex' : 'none';
 
       const btnSettings = document.getElementById('vtvBtnTvSettings');
       if (btnSettings) btnSettings.style.display = studioConfig.show_home_settings ? 'flex' : 'none';
 
-      // Checkbox sync in flyout
-      const chkInputs = document.getElementById('vtvChkInputs');
-      if (chkInputs) chkInputs.checked = Boolean(studioConfig.show_inputs);
-      const chkReorder = document.getElementById('vtvChkReorder');
-      if (chkReorder) chkReorder.checked = (studioConfig.show_reorder !== false);
-      const chkLib = document.getElementById('vtvChkLibrary');
-      if (chkLib) chkLib.checked = Boolean(studioConfig.show_library);
-      const chkNet = document.getElementById('vtvChkNetwork');
-      if (chkNet) chkNet.checked = Boolean(studioConfig.show_network);
-      const chkHome = document.getElementById('vtvChkHomeSettings');
-      if (chkHome) chkHome.checked = Boolean(studioConfig.show_home_settings);
-      const chkIconOnly = document.getElementById('vtvChkIconOnly');
-      if (chkIconOnly && studioConfig.icon_only !== undefined) chkIconOnly.checked = studioConfig.icon_only;
+      // Rows selector sync
+      const rowsBelow = (studioConfig.rows_below_dock !== undefined) ? parseInt(studioConfig.rows_below_dock, 10) : 1;
+      const b0 = document.getElementById('btnRows0');
+      const b1 = document.getElementById('btnRows1');
+      const b2 = document.getElementById('btnRows2');
+      if (b0) b0.classList.toggle('active', rowsBelow === 0);
+      if (b1) b1.classList.toggle('active', rowsBelow === 1);
+      if (b2) b2.classList.toggle('active', rowsBelow === 2);
+
+      // Columns selector sync
+      const cols = studioConfig.columns || 6;
+      const colSelector = document.getElementById('dockColumnsSelector');
+      if (colSelector) {
+        colSelector.querySelectorAll('.segment-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.innerText.trim() === String(cols));
+        });
+      }
+
+      // Cinematic Dots sync
+      const dotsRow = document.getElementById('vtvDotsRow');
+      if (dotsRow) {
+        dotsRow.style.display = (studioConfig.cinematic_dots !== false) ? 'flex' : 'none';
+      }
 
       renderVtvDock();
     }
 
     async function initCleanYourTvStudio(force = false) {
       if (studioInitialized && !force) return;
+      startLiveTvClockTicker();
       log('Инициализация CleanYourTV Studio...');
       try {
         const [cfgRes, appsRes] = await Promise.all([
@@ -3359,39 +3618,72 @@
       }
     }
 
-    function selectStudioPreset(presetKey, btn) {
+    async function selectStudioPreset(presetKey, btn) {
       if (btn) selectPill(btn);
       studioConfig.theme_key = presetKey;
 
       if (presetKey === 'default') {
         studioConfig.wallpaper_path = 'wallpapers/01-dusk-peaks.jpg';
         studioConfig.wallpaper = true;
+        studioConfig.oled_guard = false;
+        studioConfig.wallpaper_choice = '01-dusk-peaks.jpg';
+        studioConfig.rows_below_dock = 1;
+        studioConfig.single_row = false;
+        studioConfig.columns = 6;
         setTopCirclesMode('standard');
-        log('✓ Выбран стиль «Apple TV»: обои Dusk Peaks, кнопки [⇅] и [⚙️].');
+        log('✓ Выбран стиль «Apple TV»: обои Dusk Peaks, 2 ряда, кнопки [⇅] и [⚙️].');
       } else if (presetKey === 'aurora') {
         studioConfig.wallpaper_path = 'wallpapers/04-aurora.jpg';
         studioConfig.wallpaper = true;
+        studioConfig.oled_guard = false;
+        studioConfig.wallpaper_choice = '04-aurora.jpg';
+        studioConfig.rows_below_dock = 1;
+        studioConfig.single_row = false;
+        studioConfig.columns = 6;
         setTopCirclesMode('all');
-        log('✓ Выбран стиль «Aurora»: северное сияние, все кнопки-кружочки на экране.');
+        log('✓ Выбран стиль «Aurora»: северное сияние, 2 ряда, все кнопки-кружочки.');
       } else if (presetKey === 'oled_guard') {
         studioConfig.wallpaper_path = 'wallpapers/oled_carbon.jpg';
         studioConfig.wallpaper = false;
         studioConfig.oled_guard = true;
+        studioConfig.wallpaper_choice = 'none';
+        studioConfig.rows_below_dock = 1;
         setTopCirclesMode('standard');
-        log('✓ Выбран стиль «Night OLED»: чистый чёрный фон #000000 без обоев, защита OLED.');
+        log('✓ Выбран стиль «Night OLED»: чистый чёрный фон #000000, защита матрицы.');
       } else if (presetKey === 'minimal') {
         studioConfig.wallpaper_path = 'wallpapers/oled_carbon.jpg';
         studioConfig.wallpaper = false;
+        studioConfig.oled_guard = true;
+        studioConfig.wallpaper_choice = 'none';
+        studioConfig.rows_below_dock = 0;
+        studioConfig.single_row = true;
         setTopCirclesMode('collapsed');
-        log('✓ Выбран стиль «Minimal»: все кнопки схлопнуты в шестеренку, легкий темный режим.');
+        log('✓ Выбран стиль «Minimal»: 1 строка (только Док), кнопки спрятаны в шестеренку.');
       }
 
       updateTvPreview();
+
+      // Automatically apply to TV
+      log(`Применение стиля «${presetKey}» на подключенный телевизор...`);
+      try {
+        const res = await callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true });
+        if (res && res.ok) {
+          log(`✓ Стиль «${presetKey}» успешно активирован на ТВ!`);
+          setTimeout(() => captureLiveTvScreen(false), 2200);
+        } else {
+          log(`⚠️ Результат применения стиля: ${res ? res.error : 'Неизвестный статус'}`);
+        }
+      } catch (e) {
+        log('Ошибка применения стиля на ТВ: ' + e);
+      }
     }
 
     function updateStudioConfigKey(key, val) {
       studioConfig[key] = val;
       updateTvPreview();
+      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
+        setTimeout(() => captureLiveTvScreen(false), 2200);
+      });
     }
 
     async function loadCleanYourTvConfig() {
@@ -3420,6 +3712,13 @@
               return a;
             });
           }
+
+          // Map top buttons from TV config
+          if (res.config.show_inputs_pill !== undefined) studioConfig.show_inputs = Boolean(res.config.show_inputs_pill);
+          if (res.config.reorder_button !== undefined) studioConfig.show_reorder = Boolean(res.config.reorder_button);
+          if (res.config.show_network_pill !== undefined) studioConfig.show_network = Boolean(res.config.show_network_pill);
+          if (res.config.library_button !== undefined) studioConfig.show_library = Boolean(res.config.library_button);
+          if (res.config.show_home_settings_shortcut !== undefined) studioConfig.show_home_settings = Boolean(res.config.show_home_settings_shortcut);
           
           updateTvPreview();
           
@@ -3445,7 +3744,6 @@
         } else {
           if (btn) btn.innerHTML = origText;
           log(`⚠️ Не удалось считать конфигурацию: ${res ? res.error : 'проверьте соединение с ТВ'}`);
-          alert('Не удалось считать конфигурацию. Проверьте, что телевизор включен и соединен во вкладке «Общее».');
         }
       } catch (e) {
         if (btn) {
@@ -3473,11 +3771,9 @@
         }
         if (res && res.ok) {
           log('✓ Конфигурация и обои успешно применены на ТВ! Домашний экран перезапущен.');
-          // Auto-capture fresh screenshot from TV to show proof
           setTimeout(() => captureLiveTvScreen(false), 2200);
         } else {
           log(`⚠️ Ошибка применения на ТВ: ${res ? res.error : 'Неизвестный статус'}`);
-          alert(`Не удалось применить на ТВ: ${res ? res.error : 'Ошибка связи по ADB'}`);
         }
       } catch (e) {
         if (btn) {
@@ -3520,7 +3816,6 @@
       }
     }
 
-    // Direct Aliases so all buttons work
     const applyCleanYourTvConfig = applyCleanYourTvToTv;
     const resetCleanYourTvConfig = factoryResetLauncher;
 

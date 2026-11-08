@@ -1634,25 +1634,29 @@ class SmartTVManager:
         wp_choice = clean_cfg.get("wallpaper_choice")
         wp_path = clean_cfg.get("wallpaper_path", "")
         theme_key = clean_cfg.get("theme_key", "")
+        
+        # OLED is ONLY black if explicitly requested
         is_oled_black = (
             theme_key == "oled_guard" or 
-            clean_cfg.get("oled_guard") is True or 
-            clean_cfg.get("wallpaper") is False or 
-            "oled_carbon" in wp_path or
-            wp_choice == "none"
+            "oled_carbon" in str(wp_path) or
+            "oled_carbon" in str(wp_choice)
         )
         
+        import time as _t
+        clean_cfg["theme_revision"] = int(_t.time())
         self.run_adb(["shell", "mkdir", "-p", remote_wp_dir])
 
         if is_oled_black:
             clean_cfg["wallpaper"] = False
             clean_cfg["wallpaper_choice"] = "none"
+            clean_cfg["oled_guard"] = True
             oled_file = self._resolve_file("wallpapers/oled_carbon.jpg")
             if oled_file.exists():
                 self.run_adb(["push", str(oled_file), f"{remote_wp_dir}/01-dusk-peaks.jpg"], timeout=15)
                 self.run_adb(["push", str(oled_file), f"{remote_dir}/wallpaper.jpg"], timeout=15)
         else:
             clean_cfg["wallpaper"] = True
+            clean_cfg["oled_guard"] = False
             target_wp = None
             if wp_path:
                 wp_basename = os.path.basename(wp_path)
@@ -1664,13 +1668,34 @@ class SmartTVManager:
                 local_wp = self._resolve_file(f"wallpapers/{wp_choice}")
                 if local_wp.exists():
                     target_wp = local_wp
+                    clean_cfg["wallpaper_choice"] = wp_choice
 
             if not target_wp or not target_wp.exists():
                 target_wp = self._resolve_file("wallpapers/01-dusk-peaks.jpg")
+                clean_cfg["wallpaper_choice"] = "01-dusk-peaks.jpg"
 
             if target_wp and target_wp.exists():
                 self.run_adb(["push", str(target_wp), f"{remote_wp_dir}/01-dusk-peaks.jpg"], timeout=15)
                 self.run_adb(["push", str(target_wp), f"{remote_dir}/wallpaper.jpg"], timeout=15)
+                if clean_cfg.get("wallpaper_choice"):
+                    self.run_adb(["push", str(target_wp), f"{remote_wp_dir}/{clean_cfg['wallpaper_choice']}"], timeout=15)
+
+        # Handle rows and grid layout
+        if "rows_below_dock" in clean_cfg:
+            try:
+                clean_cfg["rows_below_dock"] = int(clean_cfg["rows_below_dock"])
+                clean_cfg["single_row"] = (clean_cfg["rows_below_dock"] == 0)
+            except:
+                pass
+        if "columns" in clean_cfg:
+            try:
+                clean_cfg["columns"] = int(clean_cfg["columns"])
+            except:
+                pass
+        if "fade_rows" in clean_cfg:
+            clean_cfg["fade_rows"] = bool(clean_cfg["fade_rows"])
+        if "cinematic_dots" in clean_cfg:
+            clean_cfg["cinematic_dots"] = bool(clean_cfg["cinematic_dots"])
 
         # 3. Top Buttons mapping
         if "show_inputs" in clean_cfg:
