@@ -3520,22 +3520,13 @@ class SmartTVManager:
 
 
 
-        if inputs_loc == "top":
-
+        # Inputs (HDMI/AV) in CleanYourTV is enabled via show_inputs_pill.
+        # When show_inputs_pill is True, CleanYourTV displays "Источники" inside the glassPopup menu.
+        if inputs_loc in ("top", "menu"):
             clean_cfg["show_inputs_pill"] = True
-
             clean_cfg["show_inputs_menu_row"] = True
-
-        elif inputs_loc == "menu":
-
-            clean_cfg["show_inputs_pill"] = False
-
-            clean_cfg["show_inputs_menu_row"] = True
-
         else: # hide
-
             clean_cfg["show_inputs_pill"] = False
-
             clean_cfg["show_inputs_menu_row"] = False
 
 
@@ -3582,7 +3573,7 @@ class SmartTVManager:
 
         )
 
-        clean_cfg["top_menu"] = has_collapsed_items
+        clean_cfg["top_menu"] = True
 
         clean_cfg["show_home_settings_shortcut"] = True
 
