@@ -467,6 +467,86 @@
       transform: translateX(20px);
     }
 
+    
+    /* Sliders and Schema Accordion */
+    .slider-island-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .slider-island {
+      -webkit-appearance: none;
+      width: 130px;
+      height: 6px;
+      border-radius: 3px;
+      background: #2b2b32;
+      outline: none;
+    }
+    .slider-island::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .slider-val-badge {
+      font-size: 0.74rem;
+      font-family: monospace;
+      color: var(--accent);
+      min-width: 36px;
+      text-align: right;
+    }
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+      border: 1px solid var(--border-subtle);
+    }
+    .accordion-header:hover {
+      background: rgba(255,255,255,0.06);
+    }
+    .accordion-content {
+      display: none;
+      margin-top: 10px;
+    }
+    .accordion-content.open {
+      display: block;
+    }
+    .schema-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      gap: 12px;
+    }
+    .schema-key-badge {
+      font-family: monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      background: rgba(124, 140, 248, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+    .schema-cat-badge {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
     /* ==================== CONTROLS: SEGMENTED PILL ==================== */
     .segmented-control {
       display: inline-flex;
@@ -1873,6 +1953,10 @@
                       <span class="vtv-clock-time" id="vtvTime">14:12</span>
                       <span class="vtv-clock-date" id="vtvDate">ВОСКРЕСЕНЬЕ, 8 НОЯБРЯ</span>
                     </div>
+                    <!-- Telemetry Stats line (show_stats) matching live TV & iPhone app -->
+                    <div class="vtv-stats-row" id="vtvStatsRow" style="display: none; font-size: 0.72rem; color: rgba(255,255,255,0.72); font-family: monospace; margin-top: 3px; letter-spacing: 0.3px;">
+                      <span id="vtvStatsText">CPU 48% • ОЗУ 680 / 1385 МБ • Свободно 9.2 ГБ</span>
+                    </div>
                     <!-- Prominent Active App Title with Glow (Image 1 replica) -->
                     <div class="vtv-active-app-row" id="vtvActiveAppRow">
                       <span class="vtv-active-app-title" id="vtvActiveAppTitle">Zona</span>
@@ -2084,6 +2168,7 @@
             <span class="showcase-label" id="headerShowcaseLabel">Интерактивный экран CleanYourTV с перетаскиванием плиток мыши, обоями и меню настроек шестеренки</span>
           </div>
 
+          <!-- SECTION 1: Стили и быстрая синхронизация -->
           <div class="group-section-title">Оформление и пресеты CleanYourTV Studio</div>
           <div class="settings-group">
             
@@ -2104,16 +2189,102 @@
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-title">Кинематографический режим (Cinematic Shelf)</span>
-                <span class="setting-desc">Полноэкранные постеры с фоновой подсветкой ambient glow</span>
+                <span class="setting-title">Синхронизация с телевизором</span>
+                <span class="setting-desc">Отправка config.json и обоев на ТВ, чтение параметров или заводской сброс</span>
+              </div>
+              <div class="setting-control" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-island-danger" id="btnFactoryReset" onclick="factoryResetLauncher()" title="Полный сброс лаунчера к заводскому состоянию">⚠️ Сброс к заводским</button>
+                <button class="btn-island-secondary" id="btnLoadTvConfig" onclick="loadCleanYourTvConfig()" title="Считать текущий конфиг с ТВ">📥 Считать с ТВ</button>
+                <button class="btn-island-primary" id="btnApplyTvConfig" onclick="applyCleanYourTvToTv()" title="Отправить и применить настройки и обои на ТВ">🚀 Отправить на ТВ</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SECTION 2: Телеметрия и шапка экрана -->
+          <div class="group-section-title">Телеметрия и шапка экрана (iPhone Companion)</div>
+          <div class="settings-group">
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Строка со статистикой (CPU, ОЗУ, Накопитель)</span>
+                <span class="setting-desc">Выводить под часами аккуратные индикаторы текущей загрузки CPU (%), свободной памяти ОЗУ и накопителя</span>
               </div>
               <div class="setting-control">
                 <label class="toggle-switch">
-                  <input type="checkbox" id="chkCinematic" checked onchange="updateStudioConfigKey('cinematic_home', this.checked)">
+                  <input type="checkbox" id="chkShowStats" onchange="toggleStudioOption('show_stats', this.checked)">
                   <span class="toggle-slider"></span>
                 </label>
               </div>
             </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Крупное название приложения над Доком (Dock Title)</span>
+                <span class="setting-desc">Отображать имя выбранного приложения («Zona» и др.) крупным шрифтом над плиткой или оставить только свечение</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkDockTitle" checked onchange="toggleDockTitle(this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Всегда показывать названия всех плиток</span>
+                <span class="setting-desc">Подписи приложений видны под всеми плитками одновременно (приглушённо до наведения)</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkAlwaysShowNames" onchange="toggleStudioOption('always_show_names', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Приветствие над часами</span>
+                <span class="setting-desc">Показывать фразу приветствия над часами в зависимости от времени суток</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkShowGreeting" checked onchange="toggleStudioOption('show_greeting', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Имя приветствия в шапке</span>
+                <span class="setting-desc">Например: «Семья», «Зал», «Гостиная»</span>
+              </div>
+              <div class="setting-control">
+                <input type="text" id="inputGreetingName" class="input-island" value="Семья" style="width: 140px;" oninput="updateStudioConfigKey('greeting_name', this.value)">
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Ярко-белый шрифт даты (Header White)</span>
+                <span class="setting-desc">Дата и разделитель окрашены в яркий белый цвет часов вместо приглушённого</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkHeaderWhite" onchange="toggleStudioOption('header_white', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SECTION 3: Сетка и полка Дока -->
+          <div class="group-section-title">Сетка приложений и полка Дока</div>
+          <div class="settings-group">
 
             <div class="setting-row">
               <div class="setting-info">
@@ -2136,6 +2307,7 @@
               </div>
               <div class="setting-control">
                 <div class="segmented-control" id="dockColumnsSelector">
+                  <button class="segment-btn" onclick="updateStudioConfigKey('columns', 4); selectPill(this)">4</button>
                   <button class="segment-btn" onclick="updateStudioConfigKey('columns', 5); selectPill(this)">5</button>
                   <button class="segment-btn active" onclick="updateStudioConfigKey('columns', 6); selectPill(this)">6</button>
                   <button class="segment-btn" onclick="updateStudioConfigKey('columns', 7); selectPill(this)">7</button>
@@ -2145,8 +2317,171 @@
 
             <div class="setting-row">
               <div class="setting-info">
+                <span class="setting-title">Автозаполнение свободных мест дока</span>
+                <span class="setting-desc">Заполнять свободные места дока первыми приложениями из сетки</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkFillDock" checked onchange="toggleStudioOption('fill_dock', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Стеклянная подложка Дока (Dock Glass)</span>
+                <span class="setting-desc">Подложка дока из полупрозрачного матового стекла в стиле кнопок верхней панели</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkDockGlass" checked onchange="toggleStudioOption('dock_glass', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Непрозрачность подложки дока</span>
+                <span class="setting-desc">Процент затемнения полки дока (от 30% полупрозрачное стекло до 100% сплошная плашка)</span>
+              </div>
+              <div class="setting-control">
+                <div class="slider-island-wrap">
+                  <input type="range" class="slider-island" id="sliderDockOpacity" min="30" max="100" value="85" oninput="document.getElementById('lblDockOpacity').innerText = this.value + '%'; updateStudioConfigKey('dock_opacity', parseInt(this.value, 10))">
+                  <span class="slider-val-badge" id="lblDockOpacity">85%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Равномерные отступы подложки со всех сторон</span>
+                <span class="setting-desc">Отступы со всех четырёх сторон полки равны промежутку между плитками</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkDockEvenPadding" onchange="toggleStudioOption('dock_even_padding', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Сплошная лента подложки для всего ряда</span>
+                <span class="setting-desc">При одном ряде подложка дока тянется за всеми приложениями ряда при прокрутке</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkDockBandAll" onchange="toggleStudioOption('dock_band_all', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Карточки приложений в едином стиле (Uniform Tiles)</span>
+                <span class="setting-desc">Каждая плитка рисуется как лаконичный значок на цветной карточке</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkUniformTiles" onchange="toggleStudioOption('uniform_tiles', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SECTION 4: Кинематографический режим tvOS -->
+          <div class="group-section-title">Кинематографический режим (Кинополка tvOS)</div>
+          <div class="settings-group">
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Кинематографическая верхняя полка tvOS</span>
+                <span class="setting-desc">Полноэкранная кинематографическая полка: постер и фоновая подсветка заполняют верх экрана</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkCinematicHome" checked onchange="toggleStudioOption('cinematic_home', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Индикатор-точки позиции в доке (● ▬ ▬)</span>
+                <span class="setting-desc">Показывать точки пагинации под названием приложения в доке</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkCinematicDots" checked onchange="toggleStudioOption('cinematic_dots', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Индивидуальная подсветка плиток (Ambient Glow)</span>
+                <span class="setting-desc">Подсветка фокуса окрашивается в индивидуальный брендовый цвет приложения</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkAppGlow" checked onchange="toggleStudioOption('app_glow', this.checked); toggleStudioOption('ambient_glow', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Белая подсветка фокуса в полке</span>
+                <span class="setting-desc">Подсветка активной плитки остаётся белой вместо адаптации под цвет приложения</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkCinematicWhiteFocus" onchange="toggleStudioOption('cinematic_white_focus', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Стиль стекла и подсветки фокуса</span>
+                <span class="setting-desc">glass (стекло с бликом), rim (чёткая кромка), halo (мягкое сияние)</span>
+              </div>
+              <div class="setting-control">
+                <div class="segmented-control" id="glassStyleSelector">
+                  <button class="segment-btn active" onclick="updateStudioConfigKey('glass_style', 'glass'); selectPill(this)">Стекло (Glass)</button>
+                  <button class="segment-btn" onclick="updateStudioConfigKey('glass_style', 'rim'); selectPill(this)">Кромка (Rim)</button>
+                  <button class="segment-btn" onclick="updateStudioConfigKey('glass_style', 'halo'); selectPill(this)">Ореол (Halo)</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Форма свечения за приложением</span>
+                <span class="setting-desc">radial (радиальное круговое) или horizon (стекающий сверху горизонт)</span>
+              </div>
+              <div class="setting-control">
+                <div class="segmented-control" id="glowStyleSelector">
+                  <button class="segment-btn active" onclick="updateStudioConfigKey('glow_style', 'radial'); selectPill(this)">Круговое</button>
+                  <button class="segment-btn" onclick="updateStudioConfigKey('glow_style', 'horizon'); selectPill(this)">Горизонт</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
                 <span class="setting-title">Затухание нижних рядов (Fade Rows)</span>
-                <span class="setting-desc">Плавное затухание прозрачности для рядов ниже основного Дока</span>
+                <span class="setting-desc">Плавное затухание прозрачности для рядов ниже основного Дока под часы</span>
               </div>
               <div class="setting-control">
                 <label class="toggle-switch">
@@ -2158,20 +2493,26 @@
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-title">Показ крупного названия приложения над Доком (Dock Title)</span>
-                <span class="setting-desc">Отображать имя выбранного приложения («Zona» и др.) крупным шрифтом над плиткой или оставить только свечение</span>
+                <span class="setting-title">Меньше анимаций (Lite Mode для бюджетных ТВ)</span>
+                <span class="setting-desc">Оптимизация под бюджетные телевизоры: фокус скользит мгновенно (&lt;90 мс) без задержек</span>
               </div>
               <div class="setting-control">
                 <label class="toggle-switch">
-                  <input type="checkbox" id="chkDockTitle" checked onchange="toggleDockTitle(this.checked)">
+                  <input type="checkbox" id="chkReducedMotion" onchange="toggleStudioOption('reduced_motion', this.checked)">
                   <span class="toggle-slider"></span>
                 </label>
               </div>
             </div>
 
+          </div>
+
+          <!-- SECTION 5: Кнопки в шапке (Кружочки) -->
+          <div class="group-section-title">Кнопки-кружочки в шапке экрана (Top Bar)</div>
+          <div class="settings-group">
+
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-title">Только круглые иконки без надписей в шапке (Icon Only Buttons)</span>
+                <span class="setting-title">Только круглые значки без текста (Apple Style)</span>
                 <span class="setting-desc">Убрать любые подписи у кнопок Wi-Fi, Входов HDMI и Настроек, оставив только круглые значки</span>
               </div>
               <div class="setting-control">
@@ -2184,17 +2525,7 @@
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-title">Имя приветствия в шапке</span>
-                <span class="setting-desc">Например: «Семья», «Зал», «Гостиная»</span>
-              </div>
-              <div class="setting-control">
-                <input type="text" id="inputGreetingName" class="input-island" value="Семья" style="width: 140px;" oninput="updateStudioConfigKey('greeting_name', this.value)">
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-info">
-                <span class="setting-title">Кнопки-кружочки в шапке экрана</span>
+                <span class="setting-title">Режим размещения кнопок в шапке</span>
                 <span class="setting-desc">Схлопнуть действия в шестеренку [ ⚙️ ] или вывести отдельными кружочками</span>
               </div>
               <div class="setting-control">
@@ -2208,18 +2539,224 @@
 
             <div class="setting-row">
               <div class="setting-info">
-                <span class="setting-title">Синхронизация с телевизором</span>
-                <span class="setting-desc">Отправка config.json и обоев на ТВ, чтение и заводской сброс</span>
+                <span class="setting-title">Кнопка «Входы телевизора» (HDMI 1, HDMI 2, AV) [ ⇄ ]</span>
+                <span class="setting-desc">Кнопка быстрого меню физических ТВ-входов в правом верхнем углу</span>
               </div>
-              <div class="setting-control" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="btn-island-danger" id="btnFactoryReset" onclick="factoryResetLauncher()" title="Полный сброс лаунчера к заводскому состоянию">⚠️ Сброс к заводским</button>
-                <button class="btn-island-secondary" id="btnLoadTvConfig" onclick="loadCleanYourTvConfig()" title="Считать текущий конфиг с ТВ">📥 Считать с ТВ</button>
-                <button class="btn-island-primary" id="btnApplyTvConfig" onclick="applyCleanYourTvToTv()" title="Отправить и применить настройки и обои на ТВ">🚀 Отправить на ТВ</button>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkShowInputsPill" checked onchange="toggleStudioOption('show_inputs_pill', this.checked); toggleStudioOption('show_inputs', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
               </div>
-            </div></div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Кнопка «Сеть Wi-Fi / LAN» [ 📶 ]</span>
+                <span class="setting-desc">Круглая кнопка статуса сети в правом верхнем углу шапки</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkShowNetworkPill" checked onchange="toggleStudioOption('show_network_pill', this.checked); toggleStudioOption('show_network', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Круглая кнопка библиотеки всех приложений [ ▦ ]</span>
+                <span class="setting-desc">Быстрый переход в библиотеку установленных приложений из шапки</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkLibraryButton" onchange="toggleStudioOption('library_button', this.checked); toggleStudioOption('show_library', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Кнопка сортировки плиток в шапке [ ⇅ ]</span>
+                <span class="setting-desc">Добавляет кнопку быстрого режима сортировки иконок прямо в верхнюю панель</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkReorderButton" onchange="toggleStudioOption('reorder_button', this.checked); toggleStudioOption('show_reorder', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Кнопка настроек Android TV [ 🛠️ ]</span>
+                <span class="setting-desc">Круглая кнопка открытия системных настроек телевизора</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkHomeSettingsShortcut" onchange="toggleStudioOption('show_home_settings_shortcut', this.checked); toggleStudioOption('show_home_settings', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
           </div>
 
-          <div class="group-section-title">Методы обхода замедлений YouTube</div>
+          <!-- SECTION 6: Экранная заставка и Часы -->
+          <div class="group-section-title">Экранная заставка и Часы (Screensaver)</div>
+          <div class="settings-group">
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Запуск заставки при простое</span>
+                <span class="setting-desc">Через сколько минут неактивности включаются плавающие часы</span>
+              </div>
+              <div class="setting-control">
+                <div class="segmented-control" id="idleClockSelector">
+                  <button class="segment-btn" onclick="setVtvIdleClock(0, this)">Выкл</button>
+                  <button class="segment-btn" onclick="setVtvIdleClock(2, this)">2 мин</button>
+                  <button class="segment-btn active" onclick="setVtvIdleClock(5, this)">5 мин</button>
+                  <button class="segment-btn" onclick="setVtvIdleClock(15, this)">15 мин</button>
+                  <button class="segment-btn" onclick="setVtvIdleClock(30, this)">30 мин</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Часы-заставка поверх обоев</span>
+                <span class="setting-desc">Плавающие часы заставки отображаются поверх размытых обоев вместо чёрного фона</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkClockWallpaper" checked onchange="toggleStudioOption('clock_wallpaper', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Цветное свечение часов</span>
+                <span class="setting-desc">Мягкое свечение часов (рекомендуется выключить для OLED экранов)</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkClockGlow" checked onchange="toggleStudioOption('clock_glow', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Затемнение обоев под заставкой (%)</span>
+                <span class="setting-desc">Степень затемнения фото-обоев во время экранной заставки с часами (0-90%)</span>
+              </div>
+              <div class="setting-control">
+                <div class="slider-island-wrap">
+                  <input type="range" class="slider-island" id="sliderClockDim" min="0" max="90" value="50" oninput="document.getElementById('lblClockDim').innerText = this.value + '%'; updateStudioConfigKey('clock_wallpaper_dim', parseInt(this.value, 10))">
+                  <span class="slider-val-badge" id="lblClockDim">50%</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SECTION 7: Оборудование и ТВ-тюнер -->
+          <div class="group-section-title">Оборудование и ТВ-тюнер (Hardware)</div>
+          <div class="settings-group">
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Контекстное меню при удержании OK на плитке</span>
+                <span class="setting-desc">Долгое нажатие OK на плитке открывает меню: «Переместить», «Убрать» и «О приложении»</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkTileMenu" checked onchange="toggleStudioOption('tile_menu', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Панель быстрых настроек вместо настроек ТВ</span>
+                <span class="setting-desc">Кнопка «Настройки» открывает компактное полупрозрачное меню быстрых параметров</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkSettingsKeyPanel" onchange="toggleStudioOption('settings_key_panel', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Устранение двойного шага громкости (TCL / Haier)</span>
+                <span class="setting-desc">Исправляет баг прошивок TCL/Haier, когда нажатие кнопки громкости меняло громкость сразу на 2 деления</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkConsumeVolumeKeys" onchange="toggleStudioOption('consume_volume_keys', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Запуск эфирного ТВ при включении</span>
+                <span class="setting-desc">Сразу при включении телевизора открывает эфирные каналы (live_tv_package)</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkBootToLiveTv" onchange="toggleStudioOption('boot_to_live_tv', this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Пакет приложения эфирного ТВ</span>
+                <span class="setting-desc">Имя системного пакета эфирного тюнера (например: com.tcl.tv, com.haier.tv.input)</span>
+              </div>
+              <div class="setting-control">
+                <input type="text" id="inputLiveTvPackage" class="input-island" placeholder="com.tcl.tv" style="width: 170px;" oninput="updateStudioConfigKey('live_tv_package', this.value.trim())">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SECTION 8: Expert Editor (Все 58 параметров CleanYourTV) -->
+          <div class="group-section-title">Расширенный редактор реестра CleanYourTV</div>
+          <div class="settings-group" style="padding: 14px 18px;">
+            <div class="accordion-header" onclick="toggleExpertSchemaAccordion()">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.1rem;">⚙️</span>
+                <div>
+                  <div style="font-weight: 600; font-size: 0.86rem; color: #fff;">Все параметры лаунчера (Expert Editor — 58 ключей)</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">Прямой доступ ко всем системным параметрам CleanYourTV с поиском и подсказками</div>
+                </div>
+              </div>
+              <span id="expertAccordionArrow" style="font-size: 0.8rem; color: var(--text-muted); transition: transform 0.2s;">▼</span>
+            </div>
+
+            <div class="accordion-content" id="expertAccordionContent">
+              <div style="margin: 12px 0;">
+                <input type="text" id="studioSchemaSearch" class="input-island" placeholder="🔍 Поиск по ключу, названию или описанию (например: show_stats, dock, wallpaper)..." style="width: 100%; box-sizing: border-box;" oninput="filterStudioSchema(this.value)">
+              </div>
+              <div id="studioSchemaContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Dynamically populated from studioSchema -->
+              </div>
+            </div>
+          </div>
+<div class="group-section-title">Методы обхода замедлений YouTube</div>
           <div class="settings-group">
             
             <div class="setting-row">
@@ -3637,6 +4174,133 @@
       const chkIconOnly = document.getElementById('chkIconOnlyButtons');
       if (chkIconOnly) chkIconOnly.checked = Boolean(studioConfig.icon_only_buttons);
 
+      // Telemetry & Header Controls Sync
+      const chkStats = document.getElementById('chkShowStats');
+      if (chkStats) chkStats.checked = Boolean(studioConfig.show_stats);
+      const statsRow = document.getElementById('vtvStatsRow');
+      if (statsRow) statsRow.style.display = studioConfig.show_stats ? 'block' : 'none';
+
+      const chkNames = document.getElementById('chkAlwaysShowNames');
+      if (chkNames) chkNames.checked = Boolean(studioConfig.always_show_names);
+
+      const chkGreet = document.getElementById('chkShowGreeting');
+      if (chkGreet) chkGreet.checked = (studioConfig.show_greeting !== false);
+      const vtvGreetEl = document.getElementById('vtvGreeting');
+      if (vtvGreetEl) {
+        vtvGreetEl.style.display = (studioConfig.show_greeting !== false) ? 'block' : 'none';
+        const gName = (studioConfig.greeting_name || 'Семья').toUpperCase();
+        vtvGreetEl.innerText = `ДОБРЫЙ ДЕНЬ, ${gName}`;
+      }
+      const inGreet = document.getElementById('inputGreetingName');
+      if (inGreet) inGreet.value = studioConfig.greeting_name || 'Семья';
+
+      const chkWhite = document.getElementById('chkHeaderWhite');
+      if (chkWhite) chkWhite.checked = Boolean(studioConfig.header_white);
+      const vtvDateEl = document.getElementById('vtvDate');
+      if (vtvDateEl) vtvDateEl.style.color = studioConfig.header_white ? '#ffffff' : 'rgba(255,255,255,0.65)';
+
+      // Grid & Shelf Controls Sync
+      const chkFill = document.getElementById('chkFillDock');
+      if (chkFill) chkFill.checked = (studioConfig.fill_dock !== false);
+      
+      const chkGlass = document.getElementById('chkDockGlass');
+      if (chkGlass) chkGlass.checked = (studioConfig.dock_glass !== false);
+      
+      const sDockOp = document.getElementById('sliderDockOpacity');
+      if (sDockOp) {
+        const val = studioConfig.dock_opacity !== undefined ? studioConfig.dock_opacity : 85;
+        sDockOp.value = val;
+        const lbl = document.getElementById('lblDockOpacity');
+        if (lbl) lbl.innerText = val + '%';
+      }
+
+      const chkPad = document.getElementById('chkDockEvenPadding');
+      if (chkPad) chkPad.checked = Boolean(studioConfig.dock_even_padding);
+
+      const chkBand = document.getElementById('chkDockBandAll');
+      if (chkBand) chkBand.checked = Boolean(studioConfig.dock_band_all);
+
+      const chkUniform = document.getElementById('chkUniformTiles');
+      if (chkUniform) chkUniform.checked = Boolean(studioConfig.uniform_tiles);
+
+      // Cinematic Controls Sync
+      const chkCinHome = document.getElementById('chkCinematicHome');
+      if (chkCinHome) chkCinHome.checked = (studioConfig.cinematic_home !== false);
+
+      const chkCinDots = document.getElementById('chkCinematicDots');
+      if (chkCinDots) chkCinDots.checked = (studioConfig.cinematic_dots !== false);
+
+      const chkGlow = document.getElementById('chkAppGlow');
+      if (chkGlow) chkGlow.checked = (studioConfig.app_glow !== false);
+
+      const chkWFocus = document.getElementById('chkCinematicWhiteFocus');
+      if (chkWFocus) chkWFocus.checked = Boolean(studioConfig.cinematic_white_focus);
+
+      const chkMotion = document.getElementById('chkReducedMotion');
+      if (chkMotion) chkMotion.checked = Boolean(studioConfig.reduced_motion);
+
+      // Glass style selector
+      const glassStyle = studioConfig.glass_style || 'glass';
+      const glassSel = document.getElementById('glassStyleSelector');
+      if (glassSel) {
+        glassSel.querySelectorAll('.segment-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('onclick').includes(glassStyle));
+        });
+      }
+
+      // Top bar icons sync
+      const chkInputs = document.getElementById('chkShowInputsPill');
+      if (chkInputs) chkInputs.checked = (studioConfig.show_inputs !== false && studioConfig.show_inputs_pill !== false);
+
+      const chkNet = document.getElementById('chkShowNetworkPill');
+      if (chkNet) chkNet.checked = (studioConfig.show_network !== false && studioConfig.show_network_pill !== false);
+
+      const chkLib = document.getElementById('chkLibraryButton');
+      if (chkLib) chkLib.checked = Boolean(studioConfig.library_button || studioConfig.show_library);
+
+      const chkReorder = document.getElementById('chkReorderButton');
+      if (chkReorder) chkReorder.checked = (studioConfig.reorder_button !== false && studioConfig.show_reorder !== false);
+
+      const chkSettings = document.getElementById('chkHomeSettingsShortcut');
+      if (chkSettings) chkSettings.checked = Boolean(studioConfig.show_home_settings_shortcut || studioConfig.show_home_settings);
+
+      // Screensaver & Clocks Sync
+      const chkClkWall = document.getElementById('chkClockWallpaper');
+      if (chkClkWall) chkClkWall.checked = (studioConfig.clock_wallpaper !== false);
+
+      const chkClkGlow = document.getElementById('chkClockGlow');
+      if (chkClkGlow) chkClkGlow.checked = (studioConfig.clock_glow !== false);
+
+      const sClkDim = document.getElementById('sliderClockDim');
+      if (sClkDim) {
+        const val = studioConfig.clock_wallpaper_dim !== undefined ? studioConfig.clock_wallpaper_dim : 50;
+        sClkDim.value = val;
+        const lbl = document.getElementById('lblClockDim');
+        if (lbl) lbl.innerText = val + '%';
+      }
+
+      // Hardware Sync
+      const chkTileM = document.getElementById('chkTileMenu');
+      if (chkTileM) chkTileM.checked = (studioConfig.tile_menu !== false);
+
+      const chkPanel = document.getElementById('chkSettingsKeyPanel');
+      if (chkPanel) chkPanel.checked = Boolean(studioConfig.settings_key_panel);
+
+      const chkVol = document.getElementById('chkConsumeVolumeKeys');
+      if (chkVol) chkVol.checked = Boolean(studioConfig.consume_volume_keys);
+
+      const chkLiveTv = document.getElementById('chkBootToLiveTv');
+      if (chkLiveTv) chkLiveTv.checked = Boolean(studioConfig.boot_to_live_tv);
+
+      const inLivePkg = document.getElementById('inputLiveTvPackage');
+      if (inLivePkg) inLivePkg.value = studioConfig.live_tv_package || '';
+
+      // If Expert Schema Accordion is open, refresh it
+      const expContent = document.getElementById('expertAccordionContent');
+      if (expContent && expContent.classList.contains('open')) {
+        renderStudioSchema(document.getElementById('studioSchemaSearch')?.value || '');
+      }
+
       renderVtvDock();
     }
 
@@ -3732,6 +4396,96 @@
       } catch (e) {
         log('Ошибка применения стиля на ТВ: ' + e);
       }
+    }
+
+    
+    function toggleExpertSchemaAccordion() {
+      const content = document.getElementById('expertAccordionContent');
+      const arrow = document.getElementById('expertAccordionArrow');
+      if (!content) return;
+      const isOpen = content.classList.toggle('open');
+      if (arrow) arrow.style.transform = isOpen ? 'rotate(180deg)' : 'none';
+      if (isOpen && (!document.getElementById('studioSchemaContainer').children.length)) {
+        renderStudioSchema();
+      }
+    }
+
+    function filterStudioSchema(query) {
+      renderStudioSchema(query);
+    }
+
+    function renderStudioSchema(query = '') {
+      const container = document.getElementById('studioSchemaContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      const q = (query || '').toLowerCase().trim();
+      const list = studioSchema && studioSchema.length ? studioSchema : [];
+      
+      const filtered = list.filter(item => {
+        if (!q) return true;
+        return (item.key && item.key.toLowerCase().includes(q)) ||
+               (item.title && item.title.toLowerCase().includes(q)) ||
+               (item.desc && item.desc.toLowerCase().includes(q)) ||
+               (item.category && item.category.toLowerCase().includes(q));
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="font-size: 0.78rem; color: var(--text-muted); padding: 12px; text-align: center;">Ничего не найдено по запросу «' + escapeHtml(q) + '»</div>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'schema-row';
+        
+        const curVal = studioConfig[item.key] !== undefined ? studioConfig[item.key] : item.default;
+        
+        let controlHtml = '';
+        if (item.type === 'bool') {
+          const isChecked = Boolean(curVal) ? 'checked' : '';
+          controlHtml = `
+            <label class="toggle-switch">
+              <input type="checkbox" ${isChecked} onchange="updateStudioConfigKey('${item.key}', this.checked); if ('${item.key}'==='show_stats') toggleStudioOption('show_stats', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          `;
+        } else if (item.type === 'int') {
+          const min = item.min !== undefined ? item.min : 0;
+          const max = item.max !== undefined ? item.max : 100;
+          const val = curVal !== undefined ? curVal : min;
+          controlHtml = `
+            <div class="slider-island-wrap">
+              <input type="range" class="slider-island" min="${min}" max="${max}" value="${val}" oninput="document.getElementById('badge_${item.key}').innerText = this.value; updateStudioConfigKey('${item.key}', parseInt(this.value, 10))">
+              <span class="slider-val-badge" id="badge_${item.key}">${val}</span>
+            </div>
+          `;
+        } else if (item.type === 'select' && Array.isArray(item.options)) {
+          const opts = item.options.map(opt => `<option value="${opt}" ${opt === curVal ? 'selected' : ''}>${opt}</option>`).join('');
+          controlHtml = `
+            <select class="input-island" style="font-size:0.75rem; padding: 4px 8px;" onchange="updateStudioConfigKey('${item.key}', this.value)">
+              ${opts}
+            </select>
+          `;
+        } else {
+          controlHtml = `
+            <input type="text" class="input-island" style="width: 140px; font-size: 0.75rem;" value="${escapeHtml(String(curVal || ''))}" onchange="updateStudioConfigKey('${item.key}', this.value)">
+          `;
+        }
+
+        row.innerHTML = `
+          <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <span class="schema-cat-badge">${escapeHtml(item.category || 'general')}</span>
+              <span style="font-weight: 500; font-size: 0.82rem; color: #fff;">${escapeHtml(item.title)}</span>
+              <span class="schema-key-badge">${escapeHtml(item.key)}</span>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">${escapeHtml(item.desc || '')}</div>
+          </div>
+          <div style="flex-shrink: 0;">${controlHtml}</div>
+        `;
+        container.appendChild(row);
+      });
     }
 
     function updateStudioConfigKey(key, val) {
