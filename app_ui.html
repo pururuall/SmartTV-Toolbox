@@ -8822,12 +8822,7 @@
                     </div>
 
                     <!-- 4. All Apps (Library) -->
-                    <div class="vtv-glass-item" id="vtvGlassItemLibrary" onclick="log('Все приложения (нажатие в меню)'); toggleVtvGlassPopup(false)" style="display: none;">
-                      <div class="vtv-glass-item-left">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        <span class="vtv-glass-item-title">Все приложения</span>
-                      </div>
-                    </div>
+                    <!-- vtvGlassItemLibrary removed: CleanYourTV displays library exclusively as top-bar circle [▦] -->
 
 
 
@@ -8871,35 +8866,7 @@
 
 
 
-                    <div class="vtv-glass-item" id="vtvGlassItemTvSettings" onclick="launchAppOnTv('com.android.tv.settings'); toggleVtvGlassPopup(false)">
-
-
-
-                      <div class="vtv-glass-item-left">
-
-
-
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
-
-
-
-                        <span class="vtv-glass-item-title">Настройки Android TV</span>
-
-
-
-                      </div>
-
-
-
-                      <span class="vtv-glass-item-badge" style="opacity: 0.7;">Система</span>
-
-
-
-                    </div>
-
-
-
-                  </div>
+                    <!-- vtvGlassItemTvSettings removed -->
 
 
 
@@ -10828,57 +10795,14 @@
 
 
                 <div class="placement-choices">
-
-
-
-                  <label class="choice-pill" id="pillInputsTop">
-
-
-
-                    <input type="radio" name="loc_inputs" value="top" onchange="setButtonPlacement('inputs', 'top')">
-
-
-
-                    <span>Кружок на экране</span>
-
-
-
-                  </label>
-
-
-
                   <label class="choice-pill" id="pillInputsMenu">
-
-
-
                     <input type="radio" name="loc_inputs" value="menu" onchange="setButtonPlacement('inputs', 'menu')">
-
-
-
-                    <span>В меню шестерёнки</span>
-
-
-
+                    <span>В меню шестерёнки («Источники»)</span>
                   </label>
-
-
-
                   <label class="choice-pill" id="pillInputsHide">
-
-
-
                     <input type="radio" name="loc_inputs" value="hide" onchange="setButtonPlacement('inputs', 'hide')">
-
-
-
-                    <span>Отключить совсем</span>
-
-
-
+                    <span>Отключить</span>
                   </label>
-
-
-
                 </div>
 
 
@@ -10928,57 +10852,15 @@
 
 
                 <div class="placement-choices">
-
-
-
                   <label class="choice-pill" id="pillLibraryTop">
-
-
-
                     <input type="radio" name="loc_library" value="top" onchange="setButtonPlacement('library', 'top')">
-
-
-
-                    <span>Кружок на экране</span>
-
-
-
+                    <span>Кружок на экране [ ▦ ]</span>
                   </label>
-
-
-
-                  <label class="choice-pill" id="pillLibraryMenu">
-
-
-
-                    <input type="radio" name="loc_library" value="menu" onchange="setButtonPlacement('library', 'menu')">
-
-
-
-                    <span>В меню шестерёнки</span>
-
-
-
-                  </label>
-
-
-
                   <label class="choice-pill" id="pillLibraryHide">
-
-
-
                     <input type="radio" name="loc_library" value="hide" onchange="setButtonPlacement('library', 'hide')">
-
-
-
                     <span>Отключить</span>
-
-
-
                   </label>
-
-
-
+                  <span style="font-size: 0.68rem; color: var(--text-dim); margin-left: 6px;">(в CleanYourTV каталог открывается круглым значком на экране)</span>
                 </div>
 
 
@@ -15545,6 +15427,16 @@ function renderDebloatList() {
         if (c.dataset.pkg && !pkgs.includes(c.dataset.pkg)) pkgs.push(c.dataset.pkg);
       });
 
+      // Auto-fallback: if user didn't check individual boxes, auto-select recommended packages of the active profile
+      if (!pkgs.length) {
+        document.querySelectorAll('.chk-debloat').forEach(c => {
+          if (!c.disabled && c.dataset.recommended === 'true' && c.dataset.pkg) {
+            c.checked = true;
+            if (!pkgs.includes(c.dataset.pkg)) pkgs.push(c.dataset.pkg);
+          }
+        });
+      }
+
       if (!pkgs.length) {
         alert('Не выбрано ни одного пакета для очистки!\nОтметьте галочками нужные службы в списке процессов выше или в списке пакетов профиля ниже.');
         return;
@@ -16771,78 +16663,24 @@ function renderDebloatList() {
 
 
     function renderGlassPopupItems() {
-
-
-
       // 1. Wi-Fi item in flyout: visible if Wi-Fi is placed in menu
-
-
-
       const itemNet = document.getElementById('vtvGlassItemNetwork');
-
-
-
       if (itemNet) {
-
-
-
-        itemNet.style.display = (studioConfig.wifi_location === 'menu' || (!studioConfig.show_network && studioConfig.wifi_location !== 'top')) ? 'flex' : 'none';
-
-
-
+        itemNet.style.display = (studioConfig.wifi_location === 'menu') ? 'flex' : 'none';
       }
 
-
-
-
-
-
-
-      // 2. Reorder item in flyout: visible if Reorder is placed in menu (or always available)
-
-
-
+      // 2. Reorder item in flyout: visible if Reorder is placed in menu
       const itemReorder = document.getElementById('vtvGlassItemReorder');
-
-
-
       if (itemReorder) {
-
-
-
-        itemReorder.style.display = (studioConfig.reorder_location === 'menu' || (!studioConfig.show_reorder && studioConfig.reorder_location !== 'top')) ? 'flex' : 'none';
-
-
-
+        itemReorder.style.display = (studioConfig.reorder_location === 'menu') ? 'flex' : 'none';
       }
 
-
-
-
-
-
-
-      // 3. Inputs item in flyout: visible if Inputs placed in menu
-
-
-
+      // 3. Inputs item in flyout: visible if Inputs enabled (CleanYourTV shows "Источники")
       const itemInputs = document.getElementById('vtvGlassItemInputs');
-
-
-
       if (itemInputs) {
-
-
-
-        itemInputs.style.display = (studioConfig.inputs_location === 'menu') ? 'flex' : 'none';
-      const itemLib = document.getElementById('vtvGlassItemLibrary');
-      if (itemLib) {
-        itemLib.style.display = (studioConfig.library_location === 'menu') ? 'flex' : 'none';
+        itemInputs.style.display = (studioConfig.inputs_location !== 'hide') ? 'flex' : 'none';
       }
-
-
-
-      }
+    }
 
 
 
@@ -16923,18 +16761,9 @@ function renderDebloatList() {
 
 
       } else if (btnName === 'inputs') {
-
-
-
-        studioConfig.show_inputs = (placement === 'top');
-
-
-
-        studioConfig.show_inputs_pill = (placement === 'top');
-
-
-
-        studioConfig.show_inputs_menu_row = (placement === 'menu');
+        studioConfig.show_inputs = (placement !== 'hide');
+        studioConfig.show_inputs_pill = (placement !== 'hide');
+        studioConfig.show_inputs_menu_row = (placement !== 'hide');
 
 
 
@@ -17021,65 +16850,21 @@ function renderDebloatList() {
 
 
       if (preset === 'only_gear') {
-
-
-
-        // EXACT match to TV screenshot: only gear on screen, WiFi and Reorder inside flyout!
-
-
-
         studioConfig.wifi_location = 'menu';
-
-
-
         studioConfig.reorder_location = 'menu';
-
-
-
-        studioConfig.inputs_location = 'hide';
-
-
-
-        studioConfig.library_location = 'hide';
-
-
-
+        studioConfig.inputs_location = 'menu';
+        studioConfig.library_location = 'top';
         studioConfig.show_network = false;
-
-
-
         studioConfig.show_network_pill = false;
-
-
-
         studioConfig.show_reorder = false;
-
-
-
         studioConfig.reorder_button = false;
-
-
-
-        studioConfig.show_inputs = false;
-
-
-
-        studioConfig.show_inputs_pill = false;
-
-
-
-        studioConfig.show_inputs_menu_row = false;
-
-
-
-        studioConfig.show_library = false;
-
-
-
-        studioConfig.library_button = false;
-
-
-
+        studioConfig.show_inputs = true;
+        studioConfig.show_inputs_pill = true;
+        studioConfig.show_inputs_menu_row = true;
+        studioConfig.show_library = true;
+        studioConfig.library_button = true;
+        studioConfig.show_library_pill = true;
+        studioConfig.app_library = true;
         log('Применен пресет: Только шестерёнка на экране (все кнопки спрятаны в меню, как на вашем ТВ)');
 
 
