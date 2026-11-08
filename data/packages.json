@@ -19,48 +19,99 @@
   ],
   "profiles": {
     "yaos": {
-      "title": "Яндекс ТВ (YaOS / CVTE)",
+      "title": "Яндекс ТВ (YaOS / CVTE / Tuvio)",
       "detect_props": [
         "yandex",
         "cvte",
-        "cv9632"
+        "cv9632",
+        "tuvio",
+        "yaos"
       ],
       "stock_launcher": "com.yandex.tv.launcher",
       "packages": [
         {
           "id": "com.yandex.tv.services",
-          "name": "Фоновые сервисы и реклама Яндекса",
+          "name": "Фоновые службы и AppMetrica телеметрия",
           "category": "recommended",
-          "ram": 60,
-          "desc": "Сбор телеметрии, загрузка рекламных баннеров и промо-каруселей на главном экране."
+          "ram": 550,
+          "desc": "Сбор фоновой аналитики и рекламных каруселей. Занимает более 550 МБ ОЗУ на ТВ."
         },
         {
-          "id": "com.yandex.tv.bugreports",
-          "name": "Служба отчетов об ошибках YaOS",
+          "id": "com.yandex.io.sdk",
+          "name": "Яндекс Алиса & Голосовой стек",
           "category": "recommended",
-          "ram": 15,
-          "desc": "Фоновая отправка логов и дампов системы на серверы аналитики."
+          "ram": 330,
+          "desc": "Фоновый демон голосового стека и связки с умным домом. Занимает ~330 МБ ОЗУ."
+        },
+        {
+          "id": "com.yandex.devices.farm.companion",
+          "name": "Служба сопряжения устройств (Companion)",
+          "category": "recommended",
+          "ram": 45,
+          "desc": "Непрерывный поиск устройств и колонок Яндекс в локальной сети."
+        },
+        {
+          "id": "com.yandex.devices.appstore",
+          "name": "Магазин приложений Яндекс (AppStore)",
+          "category": "recommended",
+          "ram": 35,
+          "desc": "Штатный магазин приложений с фоновой автопроверкой обновлений."
         },
         {
           "id": "com.yandex.tv.store.promos",
           "name": "Промо-витрина и рекомендации Кинопоиска",
           "category": "recommended",
-          "ram": 30,
-          "desc": "Автозапуск тяжелых рекламных карточек поверх интерфейса."
+          "ram": 40,
+          "desc": "Автозагрузка промо-баннеров и тяжелых графических карточек."
+        },
+        {
+          "id": "com.yandex.tv.bugreports",
+          "name": "Служба отчетов об ошибках YaOS",
+          "category": "recommended",
+          "ram": 25,
+          "desc": "Фоновая отправка дампов и логов системы на серверы Яндекс."
+        },
+        {
+          "id": "com.yandex.tv.services.platform",
+          "name": "Платформа служб Яндекс (Platform)",
+          "category": "recommended",
+          "ram": 98,
+          "desc": "Фоновые демоны рекламной платформы и синхронизации YaOS."
+        },
+        {
+          "id": "com.yandex.tv.promoview",
+          "name": "Промо-видеоплеер Яндекс",
+          "category": "recommended",
+          "ram": 60,
+          "desc": "Фоновое воспроизведение рекламных трейлеров поверх интерфейса."
+        },
+        {
+          "id": "com.yandex.tv.adblocker",
+          "name": "Рекламный модуль YaOS",
+          "category": "recommended",
+          "ram": 20,
+          "desc": "Показ спонсорских карточек на главном экране."
+        },
+        {
+          "id": "com.yandex.tv.music.overlay",
+          "name": "Фоновый сервис Яндекс Музыки",
+          "category": "recommended",
+          "ram": 40,
+          "desc": "Фоновый аудиоплеер, висящий в памяти даже без активной подписки."
+        },
+        {
+          "id": "ru.yandex.androidkeyboard.tv",
+          "name": "Клавиатура Яндекс ТВ",
+          "category": "optional",
+          "ram": 240,
+          "desc": "Тяжелая экранная клавиатура YaOS (~240 МБ ОЗУ). Отключайте только если установлена Gboard или Leanback."
         },
         {
           "id": "com.yandex.tv.alice",
           "name": "Голосовой ассистент Алиса",
           "category": "optional",
           "ram": 85,
-          "desc": "Постоянно держит голосовой демон в ОЗУ. Отключайте, если не пользуетесь микрофоном в пульте."
-        },
-        {
-          "id": "com.yandex.tv.music.overlay",
-          "name": "Фоновый сервис Яндекс Музыки",
-          "category": "optional",
-          "ram": 40,
-          "desc": "Висит в памяти после старта системы даже без активной подписки."
+          "desc": "Постоянно держит фоновые потоки микрофона. Отключайте, если не пользуетесь кнопкой Алисы на пульте."
         }
       ]
     },
