@@ -2158,6 +2158,32 @@
 
             <div class="setting-row">
               <div class="setting-info">
+                <span class="setting-title">Показ крупного названия приложения над Доком (Dock Title)</span>
+                <span class="setting-desc">Отображать имя выбранного приложения («Zona» и др.) крупным шрифтом над плиткой или оставить только свечение</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkDockTitle" checked onchange="toggleDockTitle(this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-title">Только круглые иконки без надписей в шапке (Icon Only Buttons)</span>
+                <span class="setting-desc">Убрать любые подписи у кнопок Wi-Fi, Входов HDMI и Настроек, оставив только круглые значки</span>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="chkIconOnlyButtons" checked onchange="toggleIconOnlyButtons(this.checked)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
                 <span class="setting-title">Имя приветствия в шапке</span>
                 <span class="setting-desc">Например: «Семья», «Зал», «Гостиная»</span>
               </div>
@@ -3403,6 +3429,26 @@
       });
     }
 
+    function toggleDockTitle(val) {
+      studioConfig.dock_title = val;
+      const row = document.getElementById('vtvActiveAppRow');
+      if (row) row.style.display = val ? 'flex' : 'none';
+      log(`Показ названия приложения над Доком: ${val ? 'Включен' : 'Отключен (чистый экран)'}`);
+      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
+        setTimeout(() => captureLiveTvScreen(false), 2200);
+      });
+    }
+
+    function toggleIconOnlyButtons(val) {
+      studioConfig.icon_only_buttons = val;
+      studioConfig.icon_only_inputs = val;
+      if (val) studioConfig.wifi_label_width = 0;
+      log(`Надписи у круглых иконок в шапке: ${val ? 'Отключены (только значки)' : 'Включены'}`);
+      callApi('save_cleanyourtv_config', { payload: studioConfig, restart: true }).then(() => {
+        setTimeout(() => captureLiveTvScreen(false), 2200);
+      });
+    }
+
     function toggleStudioOption(key, val) {
       studioConfig[key] = val;
       updateTvPreview();
@@ -3581,6 +3627,16 @@
         dotsRow.style.display = (studioConfig.cinematic_dots !== false) ? 'flex' : 'none';
       }
 
+      // Dock Title sync (Hide / Show 'Zona' above dock)
+      const chkTitle = document.getElementById('chkDockTitle');
+      if (chkTitle) chkTitle.checked = (studioConfig.dock_title !== false);
+      const appRow = document.getElementById('vtvActiveAppRow');
+      if (appRow) appRow.style.display = (studioConfig.dock_title !== false) ? 'flex' : 'none';
+
+      // Icon Only Buttons sync (remove text next to round circles)
+      const chkIconOnly = document.getElementById('chkIconOnlyButtons');
+      if (chkIconOnly) chkIconOnly.checked = Boolean(studioConfig.icon_only_buttons);
+
       renderVtvDock();
     }
 
@@ -3714,6 +3770,9 @@
           }
 
           // Map top buttons from TV config
+          if (res.config.dock_title !== undefined) studioConfig.dock_title = Boolean(res.config.dock_title);
+          if (res.config.icon_only_buttons !== undefined) studioConfig.icon_only_buttons = Boolean(res.config.icon_only_buttons);
+          if (res.config.icon_only_inputs !== undefined) studioConfig.icon_only_inputs = Boolean(res.config.icon_only_inputs);
           if (res.config.show_inputs_pill !== undefined) studioConfig.show_inputs = Boolean(res.config.show_inputs_pill);
           if (res.config.reorder_button !== undefined) studioConfig.show_reorder = Boolean(res.config.reorder_button);
           if (res.config.show_network_pill !== undefined) studioConfig.show_network = Boolean(res.config.show_network_pill);

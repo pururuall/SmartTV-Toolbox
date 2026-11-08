@@ -1697,7 +1697,14 @@ class SmartTVManager:
         if "cinematic_dots" in clean_cfg:
             clean_cfg["cinematic_dots"] = bool(clean_cfg["cinematic_dots"])
 
-        # 3. Top Buttons mapping
+        # 3. Top Buttons & Title mapping
+        if "dock_title" in clean_cfg:
+            clean_cfg["dock_title"] = bool(clean_cfg.get("dock_title"))
+        if "icon_only_buttons" in clean_cfg:
+            clean_cfg["icon_only_buttons"] = bool(clean_cfg.get("icon_only_buttons"))
+            clean_cfg["icon_only_inputs"] = bool(clean_cfg.get("icon_only_buttons"))
+            if clean_cfg["icon_only_buttons"]:
+                clean_cfg["wifi_label_width"] = 0
         if "show_inputs" in clean_cfg:
             clean_cfg["show_inputs_pill"] = bool(clean_cfg.get("show_inputs"))
         if "show_reorder" in clean_cfg:
