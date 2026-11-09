@@ -8822,7 +8822,12 @@
                     </div>
 
                     <!-- 4. All Apps (Library) -->
-                    <!-- vtvGlassItemLibrary removed: CleanYourTV displays library exclusively as top-bar circle [▦] -->
+                    <div class="vtv-glass-item" id="vtvGlassItemLibrary" onclick="log('Все приложения (библиотека)'); toggleVtvGlassPopup(false)">
+                      <div class="vtv-glass-item-left">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span class="vtv-glass-item-title">Все приложения</span>
+                      </div>
+                    </div>
 
 
 
@@ -8863,13 +8868,14 @@
 
 
                     <!-- 5. Android TV System Settings (inside the flyout list!) -->
-
-
-
-                    <!-- vtvGlassItemTvSettings removed -->
-
-
-
+                    <div class="vtv-glass-item" id="vtvGlassItemTvSettings" onclick="log('Системные настройки Android TV'); toggleVtvGlassPopup(false)">
+                      <div class="vtv-glass-item-left">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                        <span class="vtv-glass-item-title">Настройки Android TV</span>
+                      </div>
+                      <span class="vtv-glass-item-badge">Система</span>
+                    </div>
+                  </div>
                 </div>
 
 
@@ -13468,17 +13474,11 @@
 
 
       if (tabId === 'tab-launchers') {
-
-
-
         initCleanYourTvStudio();
-
-
-
         updateTvPreview();
-
-
-
+      } else if (tabId === 'tab-debloat') {
+        renderDebloatList();
+        renderLiveProcesses();
       }
 
 
@@ -16679,6 +16679,18 @@ function renderDebloatList() {
       const itemInputs = document.getElementById('vtvGlassItemInputs');
       if (itemInputs) {
         itemInputs.style.display = (studioConfig.inputs_location !== 'hide') ? 'flex' : 'none';
+      }
+
+      // 4. All Apps (Library) in flyout: visible if Library is placed in menu or enabled
+      const itemLib = document.getElementById('vtvGlassItemLibrary');
+      if (itemLib) {
+        itemLib.style.display = (studioConfig.library_location === 'menu' || studioConfig.show_library_menu) ? 'flex' : 'none';
+      }
+
+      // 5. Android TV System Settings: visible in flyout list
+      const itemTv = document.getElementById('vtvGlassItemTvSettings');
+      if (itemTv) {
+        itemTv.style.display = 'flex';
       }
     }
 
@@ -21810,10 +21822,8 @@ function renderDebloatList() {
 
 
     window.addEventListener('DOMContentLoaded', async () => {
-
-
-
       switchAdbGuide('android_tv', null);
+      renderDebloatList();
 
 
 
