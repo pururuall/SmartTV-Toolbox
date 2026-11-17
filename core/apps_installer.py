@@ -722,7 +722,7 @@ class AppsInstallerMixin:
 
             "filemanager": "apps/media/FileManagerPlus.apk",
 
-            "happ": "apps/Happ.apk",
+            "happ": "apps/media/Happ.apk",
 
             "spotify": "apps/media/SpotifyTV.apk",
 
@@ -730,15 +730,15 @@ class AppsInstallerMixin:
 
             "byedpi": "apps/youtube/ByeDPI_tv.apk",
 
-            "wireguard": "apps/wireguard.apk",
+            "wireguard": "apps/media/wireguard.apk",
 
-            "amnezia": "apps/amnezia.apk",
+            "amnezia": "apps/media/amnezia.apk",
 
-            "msx": "apps/Media+Station+X+v.0.1.160.apk",
+            "msx": "apps/media/Media+Station+X+v.0.1.160.apk",
 
-            "num": "apps/NUM_1.0.150-release.apk",
+            "num": "apps/media/NUM_1.0.150-release.apk",
 
-            "webremote": "apps/TVWebRemote.apk",
+            "webremote": "apps/media/TVWebRemote.apk",
 
             "cleanyourtv": "apps/launchers/CleanYourTV.apk",
 
@@ -906,11 +906,11 @@ class AppsInstallerMixin:
 
         apk_candidates = {
 
-            "wireguard": ["apps/wireguard.apk"],
+            "wireguard": ["apps/media/wireguard.apk", "apps/wireguard.apk"],
 
-            "amnezia": ["apps/amnezia.apk"],
+            "amnezia": ["apps/media/amnezia.apk", "apps/amnezia.apk"],
 
-            "happ": ["apps/Happ.apk", "apps/media/Happ.apk"],
+            "happ": ["apps/media/Happ.apk", "apps/Happ.apk"],
 
             "byedpi": ["apps/youtube/ByeDPI_tv.apk", "apps/byedpi.apk"]
 

@@ -1,18 +1,22 @@
-# Python cache & artifacts
+# Python cache & build artifacts
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
 *.spec
 build/
 dist/
 
-# Executables & logs (except tools)
+# Executables & binaries (shipped via GitHub Releases)
 *.exe
 !platform-tools/*.exe
 !python-embed/*.exe
-*.log
 
-# Temp & debug files
+# Logs, debug and scratch
+*.log
+debug.log
+.scratch/
+
+# Temp & testing files
 *.tmp
 temp_*.html
 validate_*.js
