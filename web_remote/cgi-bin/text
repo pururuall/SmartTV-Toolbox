@@ -1,0 +1,16 @@
+#!/system/bin/sh
+echo "Content-Type: application/json"
+echo ""
+
+# Extract t from QUERY_STRING
+RAW=$(echo "$QUERY_STRING" | sed -n 's/.*t=\([^&]*\).*/\1/p')
+
+# URL decode
+TEXT=$(busybox httpd -d "$RAW" 2>/dev/null || echo "$RAW")
+
+if [ -n "$TEXT" ]; then
+    input text "$TEXT"
+    echo "{\"ok\":true,\"text\":\"$TEXT\"}"
+else
+    echo "{\"ok\":false,\"error\":\"empty text\"}"
+fi

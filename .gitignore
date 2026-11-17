@@ -1,0 +1,31 @@
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.spec
+build/
+dist/
+
+# Executables & logs (except tools)
+*.exe
+!platform-tools/*.exe
+!python-embed/*.exe
+*.log
+
+# Temp & debug files
+*.tmp
+temp_*.html
+validate_*.js
+test_*.js
+data/last_ip.txt
+backups/
+home_screen.png
+
+# User drafts & reference assets
+Набросок темы.txt
+Скрины приложения на iPhone/
+iphone_screenshots/
+
+# Standalone APK binaries (kept on disk, excluded from Git repo)
+apps/
+*.apk

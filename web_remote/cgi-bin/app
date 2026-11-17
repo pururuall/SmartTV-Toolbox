@@ -1,0 +1,12 @@
+#!/system/bin/sh
+echo "Content-Type: application/json"
+echo ""
+
+PKG=$(echo "$QUERY_STRING" | sed -n 's/.*pkg=\([^&]*\).*/\1/p')
+
+if [ -n "$PKG" ]; then
+    monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
+    echo "{\"ok\":true,\"pkg\":\"$PKG\"}"
+else
+    echo "{\"ok\":false,\"error\":\"missing package\"}"
+fi
